@@ -14,6 +14,10 @@
 		E7B05EF82298223400D2A094 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7B05EF62298223400D2A094 /* LaunchScreen.storyboard */; };
 		E7B05F032298223400D2A094 /* crdttasklistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F022298223400D2A094 /* crdttasklistTests.swift */; };
 		E7B05F0E2298223400D2A094 /* crdttasklistUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F0D2298223400D2A094 /* crdttasklistUITests.swift */; };
+		E7B05F1C2298231D00D2A094 /* NoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F1B2298231D00D2A094 /* NoteViewController.swift */; };
+		E7B05F1E2298259200D2A094 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F1D2298259200D2A094 /* Note.swift */; };
+		E7B05F202298284100D2A094 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F1F2298284100D2A094 /* Event.swift */; };
+		E7B62C182299B8D1000143C6 /* Rope.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B62C172299B8D1000143C6 /* Rope.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +51,10 @@
 		E7B05F092298223400D2A094 /* crdttasklistUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = crdttasklistUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B05F0D2298223400D2A094 /* crdttasklistUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = crdttasklistUITests.swift; sourceTree = "<group>"; };
 		E7B05F0F2298223400D2A094 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E7B05F1B2298231D00D2A094 /* NoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewController.swift; sourceTree = "<group>"; };
+		E7B05F1D2298259200D2A094 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
+		E7B05F1F2298284100D2A094 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		E7B62C172299B8D1000143C6 /* Rope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rope.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,9 +108,13 @@
 				E7B05EED2298223300D2A094 /* AppDelegate.swift */,
 				E7B05EEF2298223300D2A094 /* ViewController.swift */,
 				E7B05EF12298223300D2A094 /* Main.storyboard */,
+				E7B05F1B2298231D00D2A094 /* NoteViewController.swift */,
 				E7B05EF42298223400D2A094 /* Assets.xcassets */,
 				E7B05EF62298223400D2A094 /* LaunchScreen.storyboard */,
 				E7B05EF92298223400D2A094 /* Info.plist */,
+				E7B05F1D2298259200D2A094 /* Note.swift */,
+				E7B05F1F2298284100D2A094 /* Event.swift */,
+				E7B62C172299B8D1000143C6 /* Rope.swift */,
 			);
 			path = crdttasklist;
 			sourceTree = "<group>";
@@ -258,6 +270,10 @@
 			files = (
 				E7B05EF02298223300D2A094 /* ViewController.swift in Sources */,
 				E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */,
+				E7B05F1C2298231D00D2A094 /* NoteViewController.swift in Sources */,
+				E7B05F1E2298259200D2A094 /* Note.swift in Sources */,
+				E7B05F202298284100D2A094 /* Event.swift in Sources */,
+				E7B62C182299B8D1000143C6 /* Rope.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
