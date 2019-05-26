@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8232B9A47DDF10FBB0A00E76 /* libPods-crdttasklist.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C2FCC9CB3BFA4A7DBD3BA10 /* libPods-crdttasklist.a */; };
 		E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05EED2298223300D2A094 /* AppDelegate.swift */; };
 		E7B05EF02298223300D2A094 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05EEF2298223300D2A094 /* ViewController.swift */; };
 		E7B05EF32298223300D2A094 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7B05EF12298223300D2A094 /* Main.storyboard */; };
@@ -38,6 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2C2FCC9CB3BFA4A7DBD3BA10 /* libPods-crdttasklist.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-crdttasklist.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A8C17A7DCE3E0DA110C218A2 /* Pods-crdttasklist.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklist.debug.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklist/Pods-crdttasklist.debug.xcconfig"; sourceTree = "<group>"; };
 		E7B05EEA2298223300D2A094 /* crdttasklist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = crdttasklist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B05EED2298223300D2A094 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E7B05EEF2298223300D2A094 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -55,6 +58,7 @@
 		E7B05F1D2298259200D2A094 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		E7B05F1F2298284100D2A094 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		E7B62C172299B8D1000143C6 /* Rope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rope.swift; sourceTree = "<group>"; };
+		F25EA82BD8892AE33DAF952B /* Pods-crdttasklist.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklist.release.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklist/Pods-crdttasklist.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8232B9A47DDF10FBB0A00E76 /* libPods-crdttasklist.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +87,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8876416F19CB16E59D93CF4E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2C2FCC9CB3BFA4A7DBD3BA10 /* libPods-crdttasklist.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		903608647B2DDBB1F39C1460 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A8C17A7DCE3E0DA110C218A2 /* Pods-crdttasklist.debug.xcconfig */,
+				F25EA82BD8892AE33DAF952B /* Pods-crdttasklist.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		E7B05EE12298223300D2A094 = {
 			isa = PBXGroup;
 			children = (
@@ -89,6 +111,8 @@
 				E7B05F012298223400D2A094 /* crdttasklistTests */,
 				E7B05F0C2298223400D2A094 /* crdttasklistUITests */,
 				E7B05EEB2298223300D2A094 /* Products */,
+				903608647B2DDBB1F39C1460 /* Pods */,
+				8876416F19CB16E59D93CF4E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -144,6 +168,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E7B05F122298223400D2A094 /* Build configuration list for PBXNativeTarget "crdttasklist" */;
 			buildPhases = (
+				4B481D15F8C7A35CC5617961 /* [CP] Check Pods Manifest.lock */,
 				E7B05EE62298223300D2A094 /* Sources */,
 				E7B05EE72298223300D2A094 /* Frameworks */,
 				E7B05EE82298223300D2A094 /* Resources */,
@@ -262,6 +287,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4B481D15F8C7A35CC5617961 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-crdttasklist-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E7B05EE62298223300D2A094 /* Sources */ = {
@@ -446,6 +492,7 @@
 		};
 		E7B05F132298223400D2A094 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A8C17A7DCE3E0DA110C218A2 /* Pods-crdttasklist.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -463,6 +510,7 @@
 		};
 		E7B05F142298223400D2A094 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F25EA82BD8892AE33DAF952B /* Pods-crdttasklist.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
