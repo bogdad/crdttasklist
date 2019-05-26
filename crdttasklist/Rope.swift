@@ -81,13 +81,12 @@ struct NodeBody<N: NodeInfo> {
 }
 
 class Node<N: NodeInfo> {
-    typealias NL = N.L
     var body: NodeBody<N>
     init(body: NodeBody<N>) {
         self.body = body
     }
 
-    static func from_leaf(l: inout NL) -> Node<N> {
+    static func from_leaf(l: inout N.L) -> Node<N> {
         let len = l.len()
         let info = N.compute_info(leaf: &l)
         return
@@ -247,6 +246,39 @@ class Node<N: NodeInfo> {
             fatalError("should not happen")
         }
     }
+
+    //func measure<M: Metric>() -> Int {
+    //    return M.measure(body.info, len())
+    //}
+
+    func push_subseq(b: inout TreeBuilder<N>, iv: Interval) {
+    if iv.is_empty() {
+    return;
+    }
+    if iv == self.interval() {
+    b.push(self.clone());
+    return;
+    }
+    match self.0.val {
+    NodeVal::Leaf(ref l) => {
+    b.push_leaf_slice(l, iv);
+    }
+    NodeVal::Internal(ref v) => {
+    let mut offset = 0;
+    for child in v {
+    if iv.is_before(offset) {
+    break;
+    }
+    let child_iv = child.interval();
+    // easier just to use signed ints?
+    let rec_iv = iv.intersect(child_iv.translate(offset)).translate_neg(offset);
+    child.push_subseq(b, rec_iv);
+    offset += child.len();
+    }
+    return;
+    }
+    }
+    }
 }
 
 enum NodeVal<N: NodeInfo> {
@@ -256,12 +288,51 @@ enum NodeVal<N: NodeInfo> {
 
 protocol Metric {
     associatedtype N: NodeInfo
-    typealias NL = N.L
     static func measure(info: inout N, len: Int) -> Int
-    static func to_base_units(l: inout NL, in_measured_units: Int) -> Int
-    static func from_base_units(l: inout NL, in_base_units: Int) -> Int
-    static func is_boundary(l: inout NL, offset: Int) -> Bool
-    static func prev(l: inout NL, offset: Int) -> Int?
-    static func next(l: inout NL, offset: Int) -> Int?
+    static func to_base_units(l: inout N.L, in_measured_units: Int) -> Int
+    static func from_base_units(l: inout N.L, in_base_units: Int) -> Int
+    static func is_boundary(l: inout N.L, offset: Int) -> Bool
+    static func prev(l: inout N.L, offset: Int) -> Int?
+    static func next(l: inout N.L, offset: Int) -> Int?
     static func can_fragment() -> Bool
+}
+
+struct TreeBuilder<N: NodeInfo> {
+    var node: Node<N>?
+    init() {
+        self.node = nil
+    }
+
+    mutating func push(n: Node<N>) {
+        switch node {
+        case .some(var buf):
+            self.node = Optional.some(Node.concat(rope1: &buf, rope2: n))
+        default:
+            self.node = Optional.some(n)
+        }
+    }
+
+    mutating func push_leaves(leaves: [N.L]) {
+        var stack = [[Node<N>]]()
+        for var leaf in leaves {
+            var newleaf = leaf
+            var new = Node.from_leaf(l: &newleaf)
+            while (true) {
+                if stack.last.map(_:{(r: Node<N>) -> Bool in
+                    return r[0].height() != new.height()}) ?? true {
+                    stack.append([Node<N>]())
+                }
+                stack.last_mut().unwrap().push(new);
+                if stack.last!.count < Constants.MAX_CHILDREN {
+                    break;
+                }
+                new = Node.from_nodes(stack.pop())
+            }
+        }
+        for v in stack {
+            for r in v {
+                self.push(n: r)
+            }
+        }
+    }
 }
