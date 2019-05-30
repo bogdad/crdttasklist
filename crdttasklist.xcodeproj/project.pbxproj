@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8232B9A47DDF10FBB0A00E76 /* libPods-crdttasklist.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C2FCC9CB3BFA4A7DBD3BA10 /* libPods-crdttasklist.a */; };
+		17AB4585AECE26613F877B5D /* Pods_crdttasklist.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E06E61FDE88080403324CEA5 /* Pods_crdttasklist.framework */; };
+		58CDACCE71946714C90E0D08 /* Pods_crdttasklistTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 774E340CE3DC7990C588D757 /* Pods_crdttasklistTests.framework */; };
+		E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76E278522A0120C00E86AB2 /* RopeTests.swift */; };
 		E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05EED2298223300D2A094 /* AppDelegate.swift */; };
 		E7B05EF02298223300D2A094 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05EEF2298223300D2A094 /* ViewController.swift */; };
 		E7B05EF32298223300D2A094 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7B05EF12298223300D2A094 /* Main.storyboard */; };
@@ -39,8 +41,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2C2FCC9CB3BFA4A7DBD3BA10 /* libPods-crdttasklist.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-crdttasklist.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6EB7996330C56F2773939B97 /* Pods-crdttasklistTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklistTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests.debug.xcconfig"; sourceTree = "<group>"; };
+		774E340CE3DC7990C588D757 /* Pods_crdttasklistTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_crdttasklistTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8C17A7DCE3E0DA110C218A2 /* Pods-crdttasklist.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklist.debug.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklist/Pods-crdttasklist.debug.xcconfig"; sourceTree = "<group>"; };
+		CBC63A97996E075536225CAE /* Pods-crdttasklistTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklistTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests.release.xcconfig"; sourceTree = "<group>"; };
+		E06E61FDE88080403324CEA5 /* Pods_crdttasklist.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_crdttasklist.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E76E278522A0120C00E86AB2 /* RopeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RopeTests.swift; sourceTree = "<group>"; };
 		E7B05EEA2298223300D2A094 /* crdttasklist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = crdttasklist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B05EED2298223300D2A094 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E7B05EEF2298223300D2A094 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -66,7 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8232B9A47DDF10FBB0A00E76 /* libPods-crdttasklist.a in Frameworks */,
+				17AB4585AECE26613F877B5D /* Pods_crdttasklist.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				58CDACCE71946714C90E0D08 /* Pods_crdttasklistTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,7 +97,8 @@
 		8876416F19CB16E59D93CF4E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2C2FCC9CB3BFA4A7DBD3BA10 /* libPods-crdttasklist.a */,
+				E06E61FDE88080403324CEA5 /* Pods_crdttasklist.framework */,
+				774E340CE3DC7990C588D757 /* Pods_crdttasklistTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -100,6 +108,8 @@
 			children = (
 				A8C17A7DCE3E0DA110C218A2 /* Pods-crdttasklist.debug.xcconfig */,
 				F25EA82BD8892AE33DAF952B /* Pods-crdttasklist.release.xcconfig */,
+				6EB7996330C56F2773939B97 /* Pods-crdttasklistTests.debug.xcconfig */,
+				CBC63A97996E075536225CAE /* Pods-crdttasklistTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -148,6 +158,7 @@
 			children = (
 				E7B05F022298223400D2A094 /* crdttasklistTests.swift */,
 				E7B05F042298223400D2A094 /* Info.plist */,
+				E76E278522A0120C00E86AB2 /* RopeTests.swift */,
 			);
 			path = crdttasklistTests;
 			sourceTree = "<group>";
@@ -172,6 +183,7 @@
 				E7B05EE62298223300D2A094 /* Sources */,
 				E7B05EE72298223300D2A094 /* Frameworks */,
 				E7B05EE82298223300D2A094 /* Resources */,
+				176DF8877D2A6B8E74848CFA /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -186,9 +198,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E7B05F152298223400D2A094 /* Build configuration list for PBXNativeTarget "crdttasklistTests" */;
 			buildPhases = (
+				25C97F4E6BECC2DAC3B3C26F /* [CP] Check Pods Manifest.lock */,
 				E7B05EFA2298223400D2A094 /* Sources */,
 				E7B05EFB2298223400D2A094 /* Frameworks */,
 				E7B05EFC2298223400D2A094 /* Resources */,
+				DFA37D6236262E4D597B755F /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -289,6 +303,42 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		176DF8877D2A6B8E74848CFA /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-crdttasklist/Pods-crdttasklist-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/IteratorTools/IteratorTools.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IteratorTools.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-crdttasklist/Pods-crdttasklist-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		25C97F4E6BECC2DAC3B3C26F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-crdttasklistTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		4B481D15F8C7A35CC5617961 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -305,6 +355,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DFA37D6236262E4D597B755F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/IteratorTools/IteratorTools.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IteratorTools.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -328,6 +396,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7B05F032298223400D2A094 /* crdttasklistTests.swift in Sources */,
+				E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -528,6 +597,7 @@
 		};
 		E7B05F162298223400D2A094 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6EB7996330C56F2773939B97 /* Pods-crdttasklistTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -548,6 +618,7 @@
 		};
 		E7B05F172298223400D2A094 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CBC63A97996E075536225CAE /* Pods-crdttasklistTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
