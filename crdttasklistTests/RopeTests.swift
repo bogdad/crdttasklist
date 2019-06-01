@@ -31,13 +31,20 @@ class RopeTests: XCTestCase {
         }
     }
 
-    func eq_rope_with_stack() {
-        let n: UInt = 2_000
-        let s = build_triangle(n:n)
-        var builder_default = crdttasklist.TreeBuilder()
-        var builder_stacked = crdttasklist.TreeBuilder()
-        builder_default.push_str(&s)
-        builder_stacked.push_str_stacked(&s)
+    func test_eq_node_from_leaf() {
+        var s = build_triangle(n: 2_000)
+        let node = Node<RopeInfo>.from_leaf(l: &s)
+        XCTAssertEqual(node.height(), 0)
+    }
+
+    func testeq_rope_with_stack() {
+        let n: UInt = 5
+        var s = build_triangle(n: n)
+        print(s)
+        var builder_default = crdttasklist.TreeBuilder<RopeInfo>()
+        var builder_stacked = crdttasklist.TreeBuilder<RopeInfo>()
+        builder_default.push_str(s: &s)
+        builder_stacked.push_str_stacked(s: &s)
         let tree_default = builder_default.build()
         let tree_stacked = builder_stacked.build()
         XCTAssertEqual(tree_default, tree_stacked)
