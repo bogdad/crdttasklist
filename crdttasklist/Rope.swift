@@ -219,13 +219,12 @@ class Node<N: NodeInfo> : Equatable {
         if both_ok {
             return from_nodes(nodes: [rope1, rope2])
         }
-        var node1 = rope1.body
         let newOpt = rope2.get_leaf(f: { (leaf2: inout N.L) -> N.L? in
-            if case var NodeVal.Leaf(leaf1) = node1.val {
+            if case NodeVal.Leaf(var leaf1) = rope1.body.val {
                 let leaf2_iv = Interval(start: 0, end: leaf2.len())
                 let new = leaf1.push_maybe_split(other: &leaf2, iv: leaf2_iv)
-                node1.len = leaf1.len()
-                node1.info = N.compute_info(leaf: &leaf1)
+                rope1.body.len = leaf1.len()
+                rope1.body.info = N.compute_info(leaf: &leaf1)
                 return new
             } else {
                 fatalError("merge_leaves called on non-leaf")
@@ -239,7 +238,7 @@ class Node<N: NodeInfo> : Equatable {
         }
     }
 
-    static func concat(rope1: inout Node<N>, rope2: Node<N>) -> Node<N> {
+    static func concat(rope1: Node<N>, rope2: Node<N>) -> Node<N> {
         let h1 = rope1.height()
         let h2 = rope2.height()
 
@@ -248,7 +247,7 @@ class Node<N: NodeInfo> : Equatable {
                 if h1 == h2 - 1 && rope1.is_ok_child() {
                     return merge_nodes(children1: [rope1], children2: rope2_children)
                 }
-                let newrope = concat(rope1: &rope1, rope2: rope2_children[0])
+                let newrope = concat(rope1: rope1, rope2: rope2_children[0])
                 if newrope.height() == h2 - 1 {
                     return merge_nodes(children1: [newrope], children2: Array(rope2_children[1...]))
                 } else {
@@ -278,7 +277,7 @@ class Node<N: NodeInfo> : Equatable {
                     return merge_nodes(children1: rope1_children, children2: [rope2])
                 }
                 let lastix = rope1_children.count - 1
-                let newrope = concat(rope1: &rope1_children[lastix], rope2: rope2)
+                let newrope = concat(rope1: rope1_children[lastix], rope2: rope2)
                 if newrope.height() == h1 - 1 {
                     return merge_nodes(children1: Array(rope1_children[...lastix]), children2: [newrope])
                 }
@@ -352,9 +351,9 @@ struct TreeBuilder<N: NodeInfo> {
 
     mutating func push(n: Node<N>) {
         switch node {
-        case var .some(buf):
+        case .some(let buf):
             //print("VOVAVO push buf node", buf.height(), Unmanaged.passUnretained(buf).toOpaque(), Unmanaged.passUnretained(n).toOpaque(), n.height())
-            node = Optional.some(Node.concat(rope1: &buf, rope2: n))
+            node = Optional.some(Node.concat(rope1: buf, rope2: n))
         default:
             //print("VOVAVO push node", n.height(), Unmanaged.passUnretained(n).toOpaque())
             node = Optional.some(n)
@@ -426,7 +425,7 @@ extension TreeBuilder where N == RopeInfo {
         }
         var ss = s[...]
         while !ss.isEmpty {
-            //print("VOVAVO push_str ", s)
+            //print("VOVAVO push_str ", ss)
             let splitpoint = ss.len() > RopeConstants.MAX_LEAF ? Utils.find_leaf_split_for_bulk(s: ss) : ss.len()
             let splitpoint_i: String.Index = String.Index(utf16Offset: Int(splitpoint), in: ss)
             let prefix = ss[..<splitpoint_i]
