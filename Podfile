@@ -7,5 +7,10 @@ target 'crdttasklist' do
       inherit! :search_paths
       pod 'IteratorTools', '~> 1.1.0'
   end
+
+  target 'crdttasklistUITests' do
+      inherit! :search_paths
+      pod 'IteratorTools', '~> 1.1.0'
+  end
 end
 
