@@ -428,7 +428,7 @@ extension TreeBuilder where N == RopeInfo {
         while !ss.isEmpty {
             //print("VOVAVO push_str ", s)
             let splitpoint = ss.len() > RopeConstants.MAX_LEAF ? Utils.find_leaf_split_for_bulk(s: ss) : ss.len()
-            let splitpoint_i: String.Index = String.Index(encodedOffset: Int(splitpoint))
+            let splitpoint_i: String.Index = String.Index(utf16Offset: Int(splitpoint), in: ss)
             let prefix = ss[..<splitpoint_i]
             self.push_leaf(l: String(prefix))
             // TODO: is it correct?
@@ -458,14 +458,14 @@ extension String: Leaf {
     mutating func push_maybe_split(other: inout String, iv: Interval) -> String? {
         //print("VOVAVO push_maybe_split", other, iv);
         let (start, end) = iv.start_end()
-        let s_i = String.Index(encodedOffset: Int(start))
-        let e_i = String.Index(encodedOffset: Int(end))
+        let s_i = String.Index(utf16Offset: Int(start), in: other)
+        let e_i = String.Index(utf16Offset: Int(end), in: other)
         self.append(contentsOf: other[s_i..<e_i])
         if self.len() <= RopeConstants.MAX_LEAF {
             return Optional.none
         } else {
             let splitpoint = Utils.find_leaf_split_for_merge(s: self[...])
-            let splitpoint_i = String.Index(encodedOffset: Int(splitpoint))
+            let splitpoint_i = String.Index(utf16Offset: Int(splitpoint), in: self)
             let right_str = String(self[splitpoint_i...])
             self.removeSubrange(self.startIndex...splitpoint_i)
             //self.shrink_to_fit()
@@ -572,14 +572,14 @@ struct Utils {
 
     static func find_leaf_split(s: Substring, minsplit: UInt) -> UInt {
         var splitpoint = min(RopeConstants.MAX_LEAF, s.len() - RopeConstants.MIN_LEAF)
-        let s_ind = String.Index(encodedOffset: Int(minsplit - 1))
-        let e_ind = String.Index(encodedOffset: Int(splitpoint))
+        let s_ind = String.Index(utf16Offset: Int(minsplit - 1), in: s)
+        let e_ind = String.Index(utf16Offset: Int(splitpoint), in: s)
         let substr = s[s_ind..<e_ind]
         let res = substr.firstIndex(of: "\n")
         switch res {
         case .some(let rng):
             // TODO: find out if utf16Offset is safe to be called on substr and not on substr.utf16
-            return minsplit + UInt(rng.encodedOffset)
+            return minsplit + UInt(rng.utf16Offset(in: substr))
         case .none:
             while !s.is_char_boundary(index: splitpoint) {
                 splitpoint -= 1
@@ -593,7 +593,7 @@ struct Utils {
         var ss = s[s.startIndex..<s.endIndex]
         while !ss.isEmpty {
             let splitpoint = ss.count > RopeConstants.MAX_LEAF ? Utils.find_leaf_split_for_bulk(s: ss) : ss.len()
-            let splitpoint_i: String.Index = String.Index(encodedOffset: Int(splitpoint))
+            let splitpoint_i: String.Index = String.Index(utf16Offset: Int(splitpoint), in: ss)
             let prefix = ss[..<splitpoint_i]
             nodes.append(String(prefix))
             // TODO: is it correct?
