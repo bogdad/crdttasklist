@@ -114,7 +114,7 @@ struct NodeBody<N: NodeInfo> : Equatable {
         self.len = len
         self.info = info
         self.val = val
-        print("VOVAVO nodebody", val)
+        //print("VOVAVO nodebody", val)
     }
 }
 
@@ -138,7 +138,7 @@ class Node<N: NodeInfo> : Equatable {
 
     static func from_nodes(nodes: [Node<N>]) -> Node<N> {
         assert(nodes.count > 0)
-        print("VOVAVO from_nodes", nodes)
+        //print("VOVAVO from_nodes", nodes)
         let height = nodes[0].body.height + 1
         var len = nodes[0].body.len
         var info = nodes[0].body.info
@@ -273,7 +273,7 @@ class Node<N: NodeInfo> : Equatable {
             })
         } else if h1 > h2 {
             return rope1.get_children(f: { (rope1_children: inout [Node<N>]) -> Node<N> in
-                NSLog("concat h1>h2 %d, %d", h1, h2)
+                // print("VOVAVO concat h1>h2", h1, h2)
                 if h2 == h1 - 1 && rope2.is_ok_child() {
                     return merge_nodes(children1: rope1_children, children2: [rope2])
                 }
@@ -353,10 +353,10 @@ struct TreeBuilder<N: NodeInfo> {
     mutating func push(n: Node<N>) {
         switch node {
         case var .some(buf):
-            print("VOVAVO push buf node", buf.height(), Unmanaged.passUnretained(buf).toOpaque(), Unmanaged.passUnretained(n).toOpaque(), n.height())
+            //print("VOVAVO push buf node", buf.height(), Unmanaged.passUnretained(buf).toOpaque(), Unmanaged.passUnretained(n).toOpaque(), n.height())
             node = Optional.some(Node.concat(rope1: &buf, rope2: n))
         default:
-            print("VOVAVO push node", n.height(), Unmanaged.passUnretained(n).toOpaque())
+            //print("VOVAVO push node", n.height(), Unmanaged.passUnretained(n).toOpaque())
             node = Optional.some(n)
         }
     }
@@ -426,18 +426,19 @@ extension TreeBuilder where N == RopeInfo {
         }
         var ss = s[...]
         while !ss.isEmpty {
-            print("VOVAVO push_str ", s)
-            let splitpoint = s.len() > RopeConstants.MAX_LEAF ? Utils.find_leaf_split_for_bulk(s: ss) : ss.len()
-            let splitpoint_i: String.Index = String.Index(utf16Offset: Int(splitpoint), in: ss)
+            //print("VOVAVO push_str ", s)
+            let splitpoint = ss.len() > RopeConstants.MAX_LEAF ? Utils.find_leaf_split_for_bulk(s: ss) : ss.len()
+            let splitpoint_i: String.Index = String.Index(encodedOffset: Int(splitpoint))
             let prefix = ss[..<splitpoint_i]
             self.push_leaf(l: String(prefix))
             // TODO: is it correct?
             ss.removeSubrange(..<splitpoint_i)
+            //print("VOVAVO removing substring")
         }
     }
 
     mutating func push_str_stacked(s: inout String) {
-        print("VOVAVO push_str_stacked", s)
+        //print("VOVAVO push_str_stacked", s)
         let leaves = Utils.split_as_leaves(s: s)
         self.push_leaves(leaves: leaves)
     }
@@ -455,16 +456,16 @@ extension String: Leaf {
     }
 
     mutating func push_maybe_split(other: inout String, iv: Interval) -> String? {
-        print("VOVAVO push_maybe_split", other, iv);
+        //print("VOVAVO push_maybe_split", other, iv);
         let (start, end) = iv.start_end()
-        let s_i = String.Index(utf16Offset: Int(start), in: other)
-        let e_i = String.Index(utf16Offset: Int(end), in: other)
-        self.append(contentsOf: other[s_i...e_i])
+        let s_i = String.Index(encodedOffset: Int(start))
+        let e_i = String.Index(encodedOffset: Int(end))
+        self.append(contentsOf: other[s_i..<e_i])
         if self.len() <= RopeConstants.MAX_LEAF {
             return Optional.none
         } else {
             let splitpoint = Utils.find_leaf_split_for_merge(s: self[...])
-            let splitpoint_i = String.Index(utf16Offset: Int(splitpoint), in: self)
+            let splitpoint_i = String.Index(encodedOffset: Int(splitpoint))
             let right_str = String(self[splitpoint_i...])
             self.removeSubrange(self.startIndex...splitpoint_i)
             //self.shrink_to_fit()
@@ -570,15 +571,15 @@ struct Utils {
     }
 
     static func find_leaf_split(s: Substring, minsplit: UInt) -> UInt {
-        var splitpoint = min(RopeConstants.MAX_LEAF, UInt(s.count) - RopeConstants.MIN_LEAF)
-        let s_ind = String.Index(utf16Offset: Int(minsplit - 1), in: s)
-        let e_ind = String.Index(utf16Offset: Int(splitpoint), in: s)
+        var splitpoint = min(RopeConstants.MAX_LEAF, s.len() - RopeConstants.MIN_LEAF)
+        let s_ind = String.Index(encodedOffset: Int(minsplit - 1))
+        let e_ind = String.Index(encodedOffset: Int(splitpoint))
         let substr = s[s_ind..<e_ind]
         let res = substr.firstIndex(of: "\n")
         switch res {
         case .some(let rng):
             // TODO: find out if utf16Offset is safe to be called on substr and not on substr.utf16
-            return minsplit + UInt(rng.utf16Offset(in: substr))
+            return minsplit + UInt(rng.encodedOffset)
         case .none:
             while !s.is_char_boundary(index: splitpoint) {
                 splitpoint -= 1
@@ -592,7 +593,7 @@ struct Utils {
         var ss = s[s.startIndex..<s.endIndex]
         while !ss.isEmpty {
             let splitpoint = ss.count > RopeConstants.MAX_LEAF ? Utils.find_leaf_split_for_bulk(s: ss) : ss.len()
-            let splitpoint_i: String.Index = String.Index(utf16Offset: Int(splitpoint), in: ss)
+            let splitpoint_i: String.Index = String.Index(encodedOffset: Int(splitpoint))
             let prefix = ss[..<splitpoint_i]
             nodes.append(String(prefix))
             // TODO: is it correct?

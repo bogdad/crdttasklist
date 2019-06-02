@@ -10,6 +10,7 @@
 		17AB4585AECE26613F877B5D /* Pods_crdttasklist.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E06E61FDE88080403324CEA5 /* Pods_crdttasklist.framework */; };
 		58CDACCE71946714C90E0D08 /* Pods_crdttasklistTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 774E340CE3DC7990C588D757 /* Pods_crdttasklistTests.framework */; };
 		E755519B22A2FCBC004A111C /* .travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = E755519A22A2FCBC004A111C /* .travis.yml */; };
+		E755519D22A3E85F004A111C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E755519C22A3E85F004A111C /* README.md */; };
 		E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76E278522A0120C00E86AB2 /* RopeTests.swift */; };
 		E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05EED2298223300D2A094 /* AppDelegate.swift */; };
 		E7B05EF02298223300D2A094 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05EEF2298223300D2A094 /* ViewController.swift */; };
@@ -48,6 +49,7 @@
 		CBC63A97996E075536225CAE /* Pods-crdttasklistTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklistTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests.release.xcconfig"; sourceTree = "<group>"; };
 		E06E61FDE88080403324CEA5 /* Pods_crdttasklist.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_crdttasklist.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E755519A22A2FCBC004A111C /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
+		E755519C22A3E85F004A111C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E76E278522A0120C00E86AB2 /* RopeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RopeTests.swift; sourceTree = "<group>"; };
 		E7B05EEA2298223300D2A094 /* crdttasklist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = crdttasklist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B05EED2298223300D2A094 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 		E7B05EE12298223300D2A094 = {
 			isa = PBXGroup;
 			children = (
+				E755519C22A3E85F004A111C /* README.md */,
 				E755519A22A2FCBC004A111C /* .travis.yml */,
 				E7B05EEC2298223300D2A094 /* crdttasklist */,
 				E7B05F012298223400D2A094 /* crdttasklistTests */,
@@ -285,6 +288,7 @@
 			files = (
 				E7B05EF82298223400D2A094 /* LaunchScreen.storyboard in Resources */,
 				E7B05EF52298223400D2A094 /* Assets.xcassets in Resources */,
+				E755519D22A3E85F004A111C /* README.md in Resources */,
 				E755519B22A2FCBC004A111C /* .travis.yml in Resources */,
 				E7B05EF32298223300D2A094 /* Main.storyboard in Resources */,
 			);
