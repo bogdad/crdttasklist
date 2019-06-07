@@ -8,6 +8,23 @@
 //  Its actually a direct translation of Rope from
 //  https://github.com/xi-editor/xi-editor/blob/master/rust/rope/src/rope.rs
 //  to Swift
+//
+//
+//
+// Copyright 2016 The xi-editor Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 
 import Foundation
 import IteratorTools
@@ -15,6 +32,7 @@ import IteratorTools
 struct Constants {
     static let MIN_CHILDREN = 4
     static let MAX_CHILDREN = 8
+    static let CURSOR_CACHE_SIZE = 4;
 }
 
 struct RopeConstants {
@@ -252,7 +270,7 @@ class Node<N: NodeInfo> : Equatable {
                     return merge_nodes(children1: [newrope], children2: Array(rope2_children[1...]))
                 } else {
                     return newrope.get_children(f: { (newrope_children: inout [Node<N>]) -> Node<N> in
-                        merge_nodes(children1: newrope_children, children2: Array(rope2_children[1...]))
+                        return merge_nodes(children1: newrope_children, children2: Array(rope2_children[1...]))
                     })
                 }
             }
@@ -267,7 +285,7 @@ class Node<N: NodeInfo> : Equatable {
             }
             return rope1.get_children(f: { (rope1_children: inout [Node<N>]) -> Node<N> in
                 rope2.get_children(f: { (rope2_children: inout [Node<N>]) -> Node<N> in
-                    merge_nodes(children1: rope1_children, children2: rope2_children)
+                    return merge_nodes(children1: rope1_children, children2: rope2_children)
                 })
             })
         } else if h1 > h2 {
@@ -282,7 +300,7 @@ class Node<N: NodeInfo> : Equatable {
                     return merge_nodes(children1: Array(rope1_children[...lastix]), children2: [newrope])
                 }
                 return newrope.get_children(f: { (newrope_children: inout [Node<N>]) -> Node<N> in
-                    merge_nodes(children1: Array(rope1_children[...lastix]), children2: newrope_children)
+                    return merge_nodes(children1: Array(rope1_children[...lastix]), children2: newrope_children)
                 })
             })
         } else {
@@ -493,6 +511,10 @@ extension String: Leaf {
         }
         return res
     }
+
+    static func from(rope: Rope) {
+        r.slice_to_cow(..)
+    }
 }
 
 extension Substring {
@@ -532,14 +554,151 @@ struct RopeInfo: NodeInfo {
 
     static func compute_info(leaf s: inout String) -> RopeInfo {
         return RopeInfo(
-            lines: Utils.count_newlines(s: &s),
+            lines: Utils.count_newlines(s: s[...]),
             utf16_size: Utils.count_utf16_code_units(s: &s))
+    }
+}
+
+struct LinesMetric: Metric {
+    static func measure(info: inout RopeInfo, len: UInt) -> UInt {
+        return info.lines
+    }
+
+    static func to_base_units(l: inout String, in_measured_units: UInt) -> UInt {
+        var offset:UInt = 0;
+        for _ in 0...in_measured_units {
+            let s_ind = String.Index(utf16Offset: Int(offset), in: l)
+            let substr = l[s_ind...]
+            let res = substr.firstIndex(of: "\n")
+            switch res {
+            case .some(let pos):
+                offset += UInt(pos.utf16Offset(in: substr)) + 1
+            default:
+                fatalError("to_base_units called with arg too large")
+            }
+        }
+        return offset
+    }
+
+    static func from_base_units(l: inout String, in_base_units: UInt) -> UInt {
+        return Utils.count_newlines(s:l[...String.Index(utf16Offset: Int(in_base_units), in: l)])
+    }
+
+    static func is_boundary(l: inout String, offset: UInt) -> Bool {
+        if offset == 0 {
+            // shouldn't be called with this, but be defensive
+            return false
+        } else {
+            return l[String.Index(utf16Offset: Int(offset - 1), in: l)] == "\n"
+        }
+    }
+
+    static func prev(l: inout String, offset: UInt) -> UInt? {
+        assert(offset > 0, "caller is responsible for validating input")
+        let substr = l[...String.Index(utf16Offset: Int(offset), in: l)]
+        return substr.firstIndex(of: "\n").map({ (pos:Substring.Index) -> UInt in
+            return UInt(pos.utf16Offset(in: substr) + 1)
+        })
+    }
+
+    static func next(l: inout String, offset: UInt) -> UInt? {
+        let substr = l[String.Index(utf16Offset: Int(offset), in: l)...]
+        return substr.firstIndex(of: "\n").map({ (pos:Substring.Index) -> UInt in
+            return UInt(pos.utf16Offset(in: substr) + 1)
+        })
+    }
+
+    static func can_fragment() -> Bool {
+        return true
+    }
+
+    typealias N = RopeInfo
+
+    // number of lines
+    var val: UInt
+
+    init() {
+        val = 0
+    }
+
+}
+
+protocol IntervalBounds {
+    func into_interval(upper_bound:UInt) -> Interval
+}
+
+struct Cursor<N: NodeInfo> {
+    /// The tree being traversed by this cursor.
+    let root: Node<N>
+    /// The current position of the cursor.
+    ///
+    /// It is always less than or equal to the tree length.
+    let position: UInt
+    /// The cache holds the tail of the path from the root to the current leaf.
+    ///
+    /// Each entry is a reference to the parent node and the index of the child. It
+    /// is stored bottom-up; `cache[0]` is the parent of the leaf and the index of
+    /// the leaf within that parent.
+    ///
+    /// The main motivation for this being a fixed-size array is to keep the cursor
+    /// an allocation-free data structure.
+    var cache = [(Node<N>, UInt)?](repeatElement(nil, count: 4))
+    /// The leaf containing the current position, when the cursor is valid.
+    ///
+    /// The position is only at the end of the leaf when it is at the end of the tree.
+    var leaf: N.L?
+    /// The offset of `leaf` within the tree.
+    var offset_of_leaf: UInt
+
+    init(rope: Rope, start: UInt) {
+        self.root = rope
+        self.position = start
+    }
+}
+
+struct ChunkIter {
+    let cursor: Cursor<RopeInfo>
+    let end: UInt
+
+    init(cursor: Cursor<RopeInfo>, end: UInt) {
+        self.cursor = cursor
+        self.end = end
+    }
+}
+
+typealias Rope = Node<RopeInfo>
+
+extension Rope {
+
+    func iter_chunks<T: IntervalBounds>(range: T) -> ChunkIter {
+        let interval = range.into_interval(upper_bound: self.body.len)
+
+        return ChunkIter(cursor: Cursor(self, start: interval.start), end: interval.end)
+    }
+
+    func slice_to_cow<T: IntervalBounds>(range: T) -> String {
+        var iter = self.iter_chunks(range: range)
+    let first = iter.next();
+    let second = iter.next();
+
+    match (first, second) {
+    (None, None) => Cow::from(""),
+    (Some(s), None) => Cow::from(s),
+    (Some(one), Some(two)) => {
+    let mut result = [one, two].concat();
+    for chunk in iter {
+    result.push_str(chunk);
+    }
+    Cow::from(result)
+    }
+    (None, Some(_)) => unreachable!(),
+    }
     }
 }
 
 struct Utils {
 
-    static func count_newlines(s: inout String) -> UInt {
+    static func count_newlines(s: Substring) -> UInt {
         let ns = s as NSString
         var count:UInt = 0
         ns.enumerateLines { (str, _) in

@@ -67,6 +67,10 @@ class RopeTests: XCTestCase {
         XCTAssertTrue(n1.height() == 0)
     }
 
+    func testNodeConcat2() {
+
+    }
+
     func ignore_testeq_rope_with_stack_large() {
         let n: UInt = 200
         var s = build_triangle(n: n)
