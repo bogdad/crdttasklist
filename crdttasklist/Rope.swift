@@ -633,7 +633,7 @@ struct Cursor<N: NodeInfo> {
     /// The current position of the cursor.
     ///
     /// It is always less than or equal to the tree length.
-    let position: UInt
+    var position: UInt
     /// The cache holds the tail of the path from the root to the current leaf.
     ///
     /// Each entry is a reference to the parent node and the index of the child. It
@@ -650,19 +650,72 @@ struct Cursor<N: NodeInfo> {
     /// The offset of `leaf` within the tree.
     var offset_of_leaf: UInt
 
-    init(rope: Rope, start: UInt) {
+    init(rope: Node<N>, start: UInt) {
         self.root = rope
         self.position = start
     }
+
+    func get_leaf() -> (N.L, UInt)? {
+        return self.leaf.map({ (l: N.L) -> (N.L, UInt) in
+            return (l, self.position - self.offset_of_leaf)
+        })
+    }
+
+    func pos() -> UInt {
+        return self.position
+    }
+
+    mutating func next_leaf() -> (N.L, UInt)? {
+        let leaf = self.leaf!
+        self.position = self.offset_of_leaf + leaf.len()
+        for i in 0...Constants.CURSOR_CACHE_SIZE {
+            if self.cache[i] == nil {
+                // this probably can't happen
+                self.leaf = .none
+                return .none
+            }
+    let (node, j) = self.cache[i].unwrap();
+    if j + 1 < node.get_children().len() {
+    self.cache[i] = Some((node, j + 1));
+    let mut node_down = &node.get_children()[j + 1];
+    for k in (0..i).rev() {
+    self.cache[k] = Some((node_down, 0));
+    node_down = &node_down.get_children()[0];
+    }
+    self.leaf = Some(node_down.get_leaf());
+    self.offset_of_leaf = self.position;
+    return self.get_leaf();
+    }
+    }
+    if self.offset_of_leaf + self.leaf.unwrap().len() == self.root.len() {
+    self.leaf = None;
+    return None;
+    }
+    self.descend();
+    self.get_leaf()
+    }
+
 }
 
-struct ChunkIter {
+struct ChunkIter: IteratorProtocol {
+    typealias Element = RopeInfo
+
     let cursor: Cursor<RopeInfo>
     let end: UInt
 
     init(cursor: Cursor<RopeInfo>, end: UInt) {
         self.cursor = cursor
         self.end = end
+    }
+
+    mutating func next() -> RopeInfo? {
+        if self.cursor.pos() >= self.end {
+            return .none
+        }
+        let (leaf, start_pos) = self.cursor.get_leaf()!
+        let len = min(self.end - self.cursor.pos(), leaf.len() - start_pos)
+        self.cursor.next_leaf()
+        return .some(leaf[start_pos...start_pos + len])
     }
 }
 
@@ -673,7 +726,7 @@ extension Rope {
     func iter_chunks<T: IntervalBounds>(range: T) -> ChunkIter {
         let interval = range.into_interval(upper_bound: self.body.len)
 
-        return ChunkIter(cursor: Cursor(self, start: interval.start), end: interval.end)
+        return ChunkIter(cursor: Cursor(rope: self, start: interval.start), end: interval.end)
     }
 
     func slice_to_cow<T: IntervalBounds>(range: T) -> String {
