@@ -409,12 +409,14 @@ struct Cursor<N: NodeInfo> {
     /// The offset of `leaf` within the tree.
     var offset_of_leaf: UInt
 
-    init(rope: Node<N>, start: UInt) {
-        self.root = rope
-        self.position = start
+    init(n: Node<N>, position: UInt) {
+        self.root = n
+        self.position = position
         self.leaf = .none
         self.offset_of_leaf = 0
+        descend()
     }
+
 
     func get_leaf() -> (N.L, UInt)? {
         return self.leaf.map({ (l: N.L) -> (N.L, UInt) in

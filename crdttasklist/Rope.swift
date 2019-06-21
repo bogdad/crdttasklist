@@ -36,8 +36,8 @@ struct Constants {
 }
 
 struct RopeConstants {
-    static let MIN_LEAF: UInt = 511;
-    static let MAX_LEAF: UInt = 1024;
+    static let MIN_LEAF: UInt = 8;
+    static let MAX_LEAF: UInt = 14;
 }
 
 struct Interval: Equatable {
@@ -206,14 +206,47 @@ typealias Rope = Node<RopeInfo>
 
 extension Rope {
 
+    static func from_str(s: inout String) -> Rope {
+        var b = TreeBuilder<RopeInfo>()
+        b.push_str(s: &s)
+        return b.build()
+    }
+
     func iter_chunks<T: IntervalBounds>(range: T) -> ChunkIter {
         let interval = range.into_interval(upper_bound: self.body.len)
 
-        return ChunkIter(cursor: Cursor(rope: self, start: interval.start), end: interval.end)
+        return ChunkIter(cursor: Cursor(n: self, position: interval.start), end: interval.end)
+    }
+
+    func slice_to_cow<T: IntervalBounds>(range: T) -> String {
+        var iter = self.iter_chunks(range: range)
+        let first = iter.next()
+        let second = iter.next()
+        if first == nil && second == nil {
+            return ""
+        }
+        if second == nil {
+            return first!
+        }
+        if first == nil {
+            fatalError("should never happen")
+        }
+        let one = first!
+        let two = second!
+
+        var result = one + two
+        for chunk in iter {
+            result.append(chunk)
+        }
+        return result
+    }
+
+    func to_string() -> String {
+        return slice_to_cow(range: RangeFull())
     }
 }
 
-struct ChunkIter: IteratorProtocol {
+struct ChunkIter: IteratorProtocol, Sequence {
     typealias Element = String
 
     var cursor: Cursor<RopeInfo>
@@ -229,8 +262,9 @@ struct ChunkIter: IteratorProtocol {
             return .none
         }
         let (leaf, start_pos) = self.cursor.get_leaf()!
-        let len = min(self.end - self.cursor.pos(), leaf.len() - start_pos)
+        let len = Swift.min(self.end - self.cursor.pos(), leaf.len() - start_pos)
         self.cursor.next_leaf()
-        return .some(String(leaf.uintC(start: start_pos, end: start_pos + len)))
+        return .some(String(leaf.uintO(start: start_pos, end: start_pos + len)))
     }
+    
 }

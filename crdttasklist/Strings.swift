@@ -181,3 +181,9 @@ extension Substring {
         return UInt(self.count)
     }
 }
+
+struct RangeFull: IntervalBounds {
+    func into_interval(upper_bound: UInt) -> Interval {
+        return Interval(start: 0, end: upper_bound)
+    }
+}
