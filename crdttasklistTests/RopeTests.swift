@@ -80,6 +80,25 @@ class RopeTests: XCTestCase {
         var builder = crdttasklist.TreeBuilder<RopeInfo>()
         builder.push_str(s: &s)
         let rope = builder.build()
+        //print(rope.to_string())
+        XCTAssertEqual(s, rope.to_string())
+    }
+
+    func testverybig() {
+        var s = build_triangle(n: 14)
+        var builder = crdttasklist.TreeBuilder<RopeInfo>()
+        builder.push_str(s: &s)
+        let rope = builder.build()
+        //print(rope.to_string())
+        XCTAssertEqual(s, rope.to_string())
+    }
+
+    func testveryverybig() {
+        var s = build_triangle(n: 194)
+        var builder = crdttasklist.TreeBuilder<RopeInfo>()
+        builder.push_str(s: &s)
+        let rope = builder.build()
+        //print(rope.to_string())
         XCTAssertEqual(s, rope.to_string())
     }
 
@@ -92,15 +111,16 @@ class RopeTests: XCTestCase {
         builder_stacked.push_str_stacked(s: &s)
         let tree_default = builder_default.build()
         let tree_stacked = builder_stacked.build()
-        print("default ", tree_default.to_string())
-        print("stacked ", tree_stacked.to_string())
+        //print("default ", tree_default.to_string())
+        //print("stacked ", tree_stacked.to_string())
         XCTAssertEqual(tree_default, tree_stacked)
     }
 
     func build_triangle(n: UInt) -> String {
         var s = String()
         var line = String()
-        for _ in 0...n {
+        for i in 0...n {
+            s += String(i)
             s += line
             s += "\n"
             line += "a"

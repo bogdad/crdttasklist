@@ -60,7 +60,6 @@ struct NodeBody<N: NodeInfo> : Equatable {
         self.len = len
         self.info = info
         self.val = val
-        //print("VOVAVO nodebody", val)
     }
 }
 
@@ -84,7 +83,6 @@ class Node<N: NodeInfo> : Equatable {
 
     static func from_nodes(nodes: [Node<N>]) -> Node<N> {
         assert(nodes.count > 0)
-        //print("VOVAVO from_nodes", nodes)
         let height = nodes[0].body.height + 1
         var len = nodes[0].body.len
         var info = nodes[0].body.info
@@ -116,9 +114,10 @@ class Node<N: NodeInfo> : Equatable {
     }
 
     func get_children<R>(f: (inout [Node<N>]) -> R) -> R {
-        if case var NodeVal.Internal(nodes) = body.val {
+        switch body.val {
+        case .Internal(var nodes):
             return f(&nodes)
-        } else {
+        default:
             fatalError("get_children called on leaf node")
         }
     }
@@ -226,17 +225,16 @@ class Node<N: NodeInfo> : Equatable {
             })
         } else if h1 > h2 {
             return rope1.get_children(f: { (rope1_children: inout [Node<N>]) -> Node<N> in
-                // print("VOVAVO concat h1>h2", h1, h2)
                 if h2 == h1 - 1 && rope2.is_ok_child() {
                     return merge_nodes(children1: rope1_children, children2: [rope2])
                 }
                 let lastix = rope1_children.count - 1
                 let newrope = concat(rope1: rope1_children[lastix], rope2: rope2)
                 if newrope.height() == h1 - 1 {
-                    return merge_nodes(children1: Array(rope1_children[...lastix]), children2: [newrope])
+                    return merge_nodes(children1: Array(rope1_children[..<lastix]), children2: [newrope])
                 }
                 return newrope.get_children(f: { (newrope_children: inout [Node<N>]) -> Node<N> in
-                    return merge_nodes(children1: Array(rope1_children[...lastix]), children2: newrope_children)
+                    return merge_nodes(children1: Array(rope1_children[..<lastix]), children2: newrope_children)
                 })
             })
         } else {
@@ -295,10 +293,8 @@ struct TreeBuilder<N: NodeInfo> {
     mutating func push(n: Node<N>) {
         switch node {
         case .some(let buf):
-            //print("VOVAVO push buf node", buf.height(), Unmanaged.passUnretained(buf).toOpaque(), Unmanaged.passUnretained(n).toOpaque(), n.height())
             node = Optional.some(Node.concat(rope1: buf, rope2: n))
         default:
-            //print("VOVAVO push node", n.height(), Unmanaged.passUnretained(n).toOpaque())
             node = Optional.some(n)
         }
     }
@@ -368,19 +364,15 @@ extension TreeBuilder where N == RopeInfo {
         }
         var ss = s[...]
         while !ss.isEmpty {
-            //print("VOVAVO push_str ", ss)
             let splitpoint = ss.len() > RopeConstants.MAX_LEAF ? Utils.find_leaf_split_for_bulk(s: ss) : ss.len()
             let splitpoint_i: String.Index = String.Index(utf16Offset: Int(splitpoint), in: ss)
             let prefix = ss[..<splitpoint_i]
             self.push_leaf(l: String(prefix))
-            // TODO: is it correct?
             ss.removeSubrange(..<splitpoint_i)
-            //print("VOVAVO removing substring")
         }
     }
 
     mutating func push_str_stacked(s: inout String) {
-        //print("VOVAVO push_str_stacked", s)
         let leaves = Utils.split_as_leaves(s: s)
         self.push_leaves(leaves: leaves)
     }
@@ -435,7 +427,7 @@ struct Cursor<N: NodeInfo> {
     mutating func next_leaf() -> (N.L, UInt)? {
         let leaf = self.leaf!
         self.position = self.offset_of_leaf + leaf.len()
-        for i in 0...Constants.CURSOR_CACHE_SIZE {
+        for i in 0..<Constants.CURSOR_CACHE_SIZE {
             if self.cache[i] == nil {
                 // this probably can't happen
                 self.leaf = .none
@@ -449,7 +441,7 @@ struct Cursor<N: NodeInfo> {
                 }
                 let node_down = node.get_children(f: {node_children -> Node<N> in
                     var node_down = node_children[Int(j) + 1]
-                    for k in (0...i).reversed() {
+                    for k in (0..<i).reversed() {
                         self.set_cache(elem: node_down, pos: 0, k: k)
                         node_down = node_down.get_children(f: get_first_child)
                     }
@@ -472,7 +464,7 @@ struct Cursor<N: NodeInfo> {
         var node = self.root
         var offset: UInt = 0
         while node.height() > 0 {
-            node = root.get_children(f: { (children: inout [Node<N>]) -> Node<N> in
+            node = node.get_children(f: { (children: inout [Node<N>]) -> Node<N> in
                 var i = 0;
                 while true {
                     if i + 1 == children.count {

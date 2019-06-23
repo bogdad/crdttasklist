@@ -116,7 +116,6 @@ extension String: Leaf {
     }
 
     mutating func push_maybe_split(other: inout String, iv: Interval) -> String? {
-        //print("VOVAVO push_maybe_split", other, iv);
         let (start, end) = iv.start_end()
         self.append(contentsOf: other.uintO(start: start, end: end))
         if self.len() <= RopeConstants.MAX_LEAF {
