@@ -316,7 +316,7 @@ struct TreeBuilder<N: NodeInfo> {
                 if stack.last!.count < Constants.MAX_CHILDREN {
                     break
                 }
-                new = Node.from_nodes(nodes: stack.removeFirst())
+                new = Node.from_nodes(nodes: stack.removeLast())
             }
         }
         for v in stack {

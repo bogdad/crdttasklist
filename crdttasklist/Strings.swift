@@ -84,7 +84,6 @@ struct Utils {
             let splitpoint_i: String.Index = String.Index(utf16Offset: Int(splitpoint), in: ss)
             let prefix = ss[..<splitpoint_i]
             nodes.append(String(prefix))
-            // TODO: is it correct?
             ss.removeSubrange(..<splitpoint_i)
         }
         return nodes

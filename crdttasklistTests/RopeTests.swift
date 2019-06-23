@@ -102,8 +102,16 @@ class RopeTests: XCTestCase {
         XCTAssertEqual(s, rope.to_string())
     }
 
+    func teststackedsmall() {
+        var s = build_triangle(n: 100)
+        var builder = crdttasklist.TreeBuilder<RopeInfo>()
+        builder.push_str_stacked(s: &s)
+        let rope = builder.build()
+        XCTAssertEqual(s, rope.to_string())
+    }
+
     func testeq_rope_with_stack_large() {
-        let n: UInt = 200
+        let n: UInt = 50
         var s = build_triangle(n: n)
         var builder_default = crdttasklist.TreeBuilder<RopeInfo>()
         var builder_stacked = crdttasklist.TreeBuilder<RopeInfo>()
@@ -111,8 +119,8 @@ class RopeTests: XCTestCase {
         builder_stacked.push_str_stacked(s: &s)
         let tree_default = builder_default.build()
         let tree_stacked = builder_stacked.build()
-        //print("default ", tree_default.to_string())
-        //print("stacked ", tree_stacked.to_string())
+        print("default ", tree_default.to_string())
+        print("stacked ", tree_stacked.to_string())
         XCTAssertEqual(tree_default, tree_stacked)
     }
 
