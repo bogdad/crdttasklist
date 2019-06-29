@@ -92,12 +92,12 @@ struct Utils {
 }
 
 extension String {
-    func uintO(start: UInt, end: UInt) -> Substring {
+    func uintO(_ start: UInt, _ end: UInt) -> Substring {
         let s_i = String.Index(utf16Offset: Int(start), in: self)
         let e_i = String.Index(utf16Offset: Int(end), in: self)
         return self[s_i..<e_i]
     }
-    func uintC(start: UInt, end: UInt) -> Substring {
+    func uintC(_ start: UInt, _ end: UInt) -> Substring {
         let s_i = String.Index(utf16Offset: Int(start), in: self)
         let e_i = String.Index(utf16Offset: Int(end), in: self)
         return self[s_i...e_i]
@@ -116,7 +116,7 @@ extension String: Leaf {
 
     mutating func push_maybe_split(other: inout String, iv: Interval) -> String? {
         let (start, end) = iv.start_end()
-        self.append(contentsOf: other.uintO(start: start, end: end))
+        self.append(contentsOf: other.uintO(start, end))
         if self.len() <= RopeConstants.MAX_LEAF {
             return Optional.none
         } else {

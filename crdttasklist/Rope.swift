@@ -273,7 +273,7 @@ struct ChunkIter: IteratorProtocol, Sequence {
         let (leaf, start_pos) = self.cursor.get_leaf()!
         let len = Swift.min(self.end - self.cursor.pos(), leaf.len() - start_pos)
         self.cursor.next_leaf()
-        return .some(String(leaf.uintO(start: start_pos, end: start_pos + len)))
+        return .some(String(leaf.uintO(start_pos, start_pos + len)))
     }
     
 }

@@ -77,7 +77,7 @@ struct Subset {
     func delete_from_string(_ s: inout String) -> String {
         var result = String()
             for (b, e) in self.range_iter(CountMatcher.Zero) {
-                result.append(String(s.uintO(start: b, end: e)))
+                result.append(contentsOf: s.uintO(b, e))
         }
         return result
     }
