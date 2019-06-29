@@ -43,7 +43,7 @@ struct RopeConstants {
 struct Interval: Equatable {
     var start: UInt
     var end: UInt
-    init(start: UInt, end: UInt) {
+    init(_ start: UInt, _ end: UInt) {
         assert(start < end)
         self.start = start
         self.end = end
@@ -64,16 +64,16 @@ struct Interval: Equatable {
     func intersect(other: Interval) -> Interval {
         let start = max(self.start, other.start)
         let end = min(self.end, other.end)
-        return Interval(start: start, end: max(start, end))
+        return Interval(start, max(start, end))
     }
 
     func translate(amount: UInt) -> Interval {
-        return Interval(start: start + amount, end: end + amount)
+        return Interval(start + amount, end + amount)
     }
 
     func translate_neg(amount: UInt) -> Interval {
         assert(start >= amount)
-        return Interval(start: start - amount, end: end - amount)
+        return Interval(start - amount, end - amount)
     }
 
     func start_end() -> (UInt, UInt) {

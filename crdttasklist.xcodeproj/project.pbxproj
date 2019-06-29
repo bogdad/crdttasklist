@@ -14,6 +14,7 @@
 		E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76E278522A0120C00E86AB2 /* RopeTests.swift */; };
 		E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8622C7ED06007099E5 /* Delta.swift */; };
 		E79E1F8922C7F237007099E5 /* DeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8822C7F237007099E5 /* DeltaTests.swift */; };
+		E79E1F8B22C7F37B007099E5 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = E79E1F8A22C7F37B007099E5 /* .gitignore */; };
 		E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05EED2298223300D2A094 /* AppDelegate.swift */; };
 		E7B05EF02298223300D2A094 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05EEF2298223300D2A094 /* ViewController.swift */; };
 		E7B05EF32298223300D2A094 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7B05EF12298223300D2A094 /* Main.storyboard */; };
@@ -57,6 +58,7 @@
 		E76E278522A0120C00E86AB2 /* RopeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RopeTests.swift; sourceTree = "<group>"; };
 		E79E1F8622C7ED06007099E5 /* Delta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delta.swift; sourceTree = "<group>"; };
 		E79E1F8822C7F237007099E5 /* DeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeltaTests.swift; sourceTree = "<group>"; };
+		E79E1F8A22C7F37B007099E5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		E7B05EEA2298223300D2A094 /* crdttasklist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = crdttasklist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B05EED2298223300D2A094 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E7B05EEF2298223300D2A094 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 		E7B05EE12298223300D2A094 = {
 			isa = PBXGroup;
 			children = (
+				E79E1F8A22C7F37B007099E5 /* .gitignore */,
 				E755519C22A3E85F004A111C /* README.md */,
 				E755519A22A2FCBC004A111C /* .travis.yml */,
 				E7B05EEC2298223300D2A094 /* crdttasklist */,
@@ -310,6 +313,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E79E1F8B22C7F37B007099E5 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

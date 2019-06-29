@@ -182,6 +182,6 @@ extension Substring {
 
 struct RangeFull: IntervalBounds {
     func into_interval(upper_bound: UInt) -> Interval {
-        return Interval(start: 0, end: upper_bound)
+        return Interval(0, upper_bound)
     }
 }

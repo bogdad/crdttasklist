@@ -41,7 +41,7 @@ extension NodeInfo {
     }
 
     func interval(len: UInt) -> Interval {
-        return Interval(start: 0, end: len)
+        return Interval(0, len)
     }
 }
 
@@ -178,7 +178,7 @@ class Node<N: NodeInfo> : Equatable {
         }
         let newOpt = rope2.get_leaf(f: { (leaf2: inout N.L) -> N.L? in
             if case NodeVal.Leaf(var leaf1) = rope1.body.val {
-                let leaf2_iv = Interval(start: 0, end: leaf2.len())
+                let leaf2_iv = Interval(0, leaf2.len())
                 let new = leaf1.push_maybe_split(other: &leaf2, iv: leaf2_iv)
                 rope1.body.len = leaf1.len()
                 rope1.body.info = N.compute_info(leaf: &leaf1)
