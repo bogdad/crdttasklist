@@ -1,5 +1,5 @@
 //
-//  Rope.swift
+//  Delta.swift
 //  crdttasklist
 //
 //  Created by Vladimir Shakhov on 5/25/19.

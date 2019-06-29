@@ -15,6 +15,7 @@
 		E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8622C7ED06007099E5 /* Delta.swift */; };
 		E79E1F8922C7F237007099E5 /* DeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8822C7F237007099E5 /* DeltaTests.swift */; };
 		E79E1F8B22C7F37B007099E5 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = E79E1F8A22C7F37B007099E5 /* .gitignore */; };
+		E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8C22C7FA36007099E5 /* Multiset.swift */; };
 		E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05EED2298223300D2A094 /* AppDelegate.swift */; };
 		E7B05EF02298223300D2A094 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05EEF2298223300D2A094 /* ViewController.swift */; };
 		E7B05EF32298223300D2A094 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7B05EF12298223300D2A094 /* Main.storyboard */; };
@@ -59,6 +60,7 @@
 		E79E1F8622C7ED06007099E5 /* Delta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delta.swift; sourceTree = "<group>"; };
 		E79E1F8822C7F237007099E5 /* DeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeltaTests.swift; sourceTree = "<group>"; };
 		E79E1F8A22C7F37B007099E5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		E79E1F8C22C7FA36007099E5 /* Multiset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Multiset.swift; sourceTree = "<group>"; };
 		E7B05EEA2298223300D2A094 /* crdttasklist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = crdttasklist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B05EED2298223300D2A094 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E7B05EEF2298223300D2A094 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 				E7F0325D22BD261F00D0BF2D /* Tree.swift */,
 				E7F0325F22BD26F300D0BF2D /* Strings.swift */,
 				E79E1F8622C7ED06007099E5 /* Delta.swift */,
+				E79E1F8C22C7FA36007099E5 /* Multiset.swift */,
 			);
 			path = crdttasklist;
 			sourceTree = "<group>";
@@ -406,6 +409,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */,
 				E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */,
 				E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */,
 				E7B05EF02298223300D2A094 /* ViewController.swift in Sources */,
