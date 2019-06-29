@@ -36,8 +36,8 @@ struct Constants {
 }
 
 struct RopeConstants {
-    static let MIN_LEAF: UInt = 8;
-    static let MAX_LEAF: UInt = 14;
+    static let MIN_LEAF: UInt = 511;
+    static let MAX_LEAF: UInt = 1024;
 }
 
 struct Interval: Equatable {

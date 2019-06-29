@@ -61,6 +61,10 @@ struct NodeBody<N: NodeInfo> : Equatable {
         self.info = info
         self.val = val
     }
+
+    static func == (lhs: NodeBody<N>, rhs: NodeBody<N>) -> Bool {
+        return lhs.height == rhs.height && lhs.len == rhs.len && lhs.info == rhs.info && lhs.val == rhs.val
+    }
 }
 
 class Node<N: NodeInfo> : Equatable {
@@ -196,7 +200,8 @@ class Node<N: NodeInfo> : Equatable {
         let h2 = rope2.height()
 
         if h1 < h2 {
-            let res = rope2.get_children(f: { (rope2_children: inout [Node<N>]) -> Node<N> in
+            print("vvvvv concat <", h1, h2)
+            return rope2.get_children(f: { (rope2_children: inout [Node<N>]) -> Node<N> in
                 if h1 == h2 - 1 && rope1.is_ok_child() {
                     return merge_nodes(children1: [rope1], children2: rope2_children)
                 }
@@ -208,10 +213,9 @@ class Node<N: NodeInfo> : Equatable {
                         return merge_nodes(children1: newrope_children, children2: Array(rope2_children[1...]))
                     })
                 }
-            }
-            )
-            return res
+            })
         } else if h1 == h2 {
+            print("vvvvv concat ==", h1, h2)
             if rope1.is_ok_child() && rope2.is_ok_child() {
                 return from_nodes(nodes: [rope1, rope2])
             }
@@ -224,6 +228,7 @@ class Node<N: NodeInfo> : Equatable {
                 })
             })
         } else if h1 > h2 {
+            print("vvvvv concat >", h1, h2)
             return rope1.get_children(f: { (rope1_children: inout [Node<N>]) -> Node<N> in
                 if h2 == h1 - 1 && rope2.is_ok_child() {
                     return merge_nodes(children1: rope1_children, children2: [rope2])
@@ -356,6 +361,7 @@ extension TreeBuilder where N == RopeInfo {
     /// Splits the provided string in chunks that fit in a leaf
     /// and pushes the leaves one by one onto the tree by calling.
     mutating func push_str(s: inout String) {
+        print("vvvvv push_str")
         if s.len() <= RopeConstants.MAX_LEAF {
             if !s.isEmpty {
                 self.push_leaf(l: String(s))
@@ -373,6 +379,7 @@ extension TreeBuilder where N == RopeInfo {
     }
 
     mutating func push_str_stacked(s: inout String) {
+        print("vvvvv push_str_stacked")
         let leaves = Utils.split_as_leaves(s: s)
         self.push_leaves(leaves: leaves)
     }
