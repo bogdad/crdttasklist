@@ -42,23 +42,24 @@ class RopeTests: XCTestCase {
         var s = build_triangle(n: n)
         var builder_default = crdttasklist.TreeBuilder<RopeInfo>()
         var builder_stacked = crdttasklist.TreeBuilder<RopeInfo>()
-        builder_default.push_str(s: &s)
+        builder_default.push_str(s: s[...])
         builder_stacked.push_str_stacked(s: &s)
         let tree_default = builder_default.build()
         let tree_stacked = builder_stacked.build()
         // Stacked and Default produce different trees for now
+        // And that is exactly how xi-editor rope eq is implemented
         XCTAssertEqual(tree_default.to_string(), tree_stacked.to_string())
     }
 
     func testNodeConcat() {
         var s1 = "abcdefghijk"
         var b1 = crdttasklist.TreeBuilder<RopeInfo>()
-        b1.push_str(s: &s1)
+        b1.push_str(s: s1[...])
         let n1 = b1.build()
 
         var s2 = "12345"
         var b2 = crdttasklist.TreeBuilder<RopeInfo>()
-        b2.push_str(s: &s2)
+        b2.push_str(s: s2[...])
         let n2 = b2.build()
 
         let n3 = Node.concat(rope1: n1, rope2: n2)
@@ -71,7 +72,7 @@ class RopeTests: XCTestCase {
     func testtostrsmall() {
         var s = "12345678"
         var builder = crdttasklist.TreeBuilder<RopeInfo>()
-        builder.push_str(s: &s)
+        builder.push_str(s: s[...])
         let rope = builder.build()
         XCTAssertEqual(s, rope.to_string())
     }
@@ -79,7 +80,7 @@ class RopeTests: XCTestCase {
     func testtostrbig() {
         var s = "123456781234567812345678"
         var builder = crdttasklist.TreeBuilder<RopeInfo>()
-        builder.push_str(s: &s)
+        builder.push_str(s: s[...])
         let rope = builder.build()
         //print(rope.to_string())
         XCTAssertEqual(s, rope.to_string())
@@ -88,7 +89,7 @@ class RopeTests: XCTestCase {
     func testverybig() {
         var s = build_triangle(n: 14)
         var builder = crdttasklist.TreeBuilder<RopeInfo>()
-        builder.push_str(s: &s)
+        builder.push_str(s: s[...])
         let rope = builder.build()
         //print(rope.to_string())
         XCTAssertEqual(s, rope.to_string())
@@ -97,7 +98,7 @@ class RopeTests: XCTestCase {
     func testveryverybig() {
         var s = build_triangle(n: 194)
         var builder = crdttasklist.TreeBuilder<RopeInfo>()
-        builder.push_str(s: &s)
+        builder.push_str(s: s[...])
         let rope = builder.build()
         //print(rope.to_string())
         XCTAssertEqual(s, rope.to_string())
@@ -116,13 +117,13 @@ class RopeTests: XCTestCase {
         var s = build_triangle(n: n)
         var builder_default = crdttasklist.TreeBuilder<RopeInfo>()
         var builder_stacked = crdttasklist.TreeBuilder<RopeInfo>()
-        builder_default.push_str(s: &s)
+        builder_default.push_str(s: s[...])
         builder_stacked.push_str_stacked(s: &s)
         let tree_default = builder_default.build()
         let tree_stacked = builder_stacked.build()
 
         // to string works, but the trees are different!
-        // in xi-editor the test is comparing the trees
+        // it is exactly how xi-editor == works
         XCTAssertEqual(tree_default.to_string(), tree_stacked.to_string())
     }
 

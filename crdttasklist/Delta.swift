@@ -50,6 +50,43 @@ struct Delta<N: NodeInfo> {
         return builder.build()
     }
 
+    /// Apply the delta to the given rope. May not work well if the length of the rope
+    /// is not compatible with the construction of the delta.
+    func apply(_ base: inout Node<N>) -> Node<N> {
+        assert(base.len() == self.base_len, "must apply Delta to Node of correct length")
+        var b = TreeBuilder<N>()
+        for elem in self.els {
+            switch elem {
+            case .Copy(let tpl):
+                base.push_subseq(b: &b, iv: Interval(tpl.0, tpl.1))
+            case .Insert(let n):
+                b.push(n: n.clone())
+            }
+        }
+        return b.build()
+    }
+
+    /// Returns the length of the new document. In other words, the length of
+    /// the transformed string after this Delta is applied.
+    ///
+    /// `d.apply(r).len() == d.new_document_len()`
+    func new_document_len() -> UInt {
+        return Delta.total_element_len(self.els)
+    }
+
+    static func total_element_len(_ els: [DeltaElement<N>]) -> UInt {
+        return els.reduce(UInt(0), { (sum, el) in
+
+            var add: UInt = 0
+            switch el {
+            case .Copy(let beg, let end):
+                add = end - beg
+            case .Insert(let n):
+                add = n.len()
+            }
+            return sum + add
+        })
+    }
 }
 
 struct InsertDelta<N: NodeInfo>{

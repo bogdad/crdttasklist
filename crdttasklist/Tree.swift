@@ -360,7 +360,7 @@ extension TreeBuilder where N == RopeInfo {
     ///
     /// Splits the provided string in chunks that fit in a leaf
     /// and pushes the leaves one by one onto the tree by calling.
-    mutating func push_str(s: inout String) {
+    mutating func push_str(s: Substring) {
         print("vvvvv push_str")
         if s.len() <= RopeConstants.MAX_LEAF {
             if !s.isEmpty {

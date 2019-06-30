@@ -151,8 +151,8 @@ extension String: Leaf {
         return res
     }
 
-    static func from(rope: Rope) {
-        //r.slice_to_cow(..)
+    static func from(rope: Rope) -> String {
+        return rope.to_string()
     }
 }
 

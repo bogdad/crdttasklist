@@ -210,14 +210,9 @@ typealias Rope = Node<RopeInfo>
 
 extension Rope {
 
-    static func from_str_copy(_ s: String) -> Rope {
-        var ss = s
-        return from_str(&ss)
-    }
-
-    static func from_str(_ s: inout String) -> Rope {
+    static func from_str(_ s: Substring) -> Rope {
         var b = TreeBuilder<RopeInfo>()
-        b.push_str(s: &s)
+        b.push_str(s: s)
         return b.build()
     }
 
