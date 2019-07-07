@@ -182,6 +182,7 @@ class Node<N: NodeInfo> : Equatable {
                 let new = leaf1.push_maybe_split(other: &leaf2, iv: leaf2_iv)
                 rope1.body.len = leaf1.len()
                 rope1.body.info = N.compute_info(leaf: &leaf1)
+                rope1.body.val = NodeVal.Leaf(leaf1)
                 return new
             } else {
                 fatalError("merge_leaves called on non-leaf")
