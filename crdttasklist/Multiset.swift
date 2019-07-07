@@ -51,8 +51,6 @@ enum CountMatcher {
            return (seg.count != 0)
         case .All:
             return true
-        default:
-            fatalError("should not happen")
         }
     }
 }

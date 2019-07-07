@@ -273,3 +273,5 @@ struct ChunkIter: IteratorProtocol, Sequence {
     }
     
 }
+
+typealias RopeDelta = Delta<RopeInfo>

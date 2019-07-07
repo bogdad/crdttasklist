@@ -41,7 +41,7 @@ struct Delta<N: NodeInfo> {
     }
 
     static func simple_edit<T: IntervalBounds>(_ interval: T, _ rope: Node<N>, _ base_len: UInt) -> Delta<N> {
-        var builder = Builder<N>(base_len)
+        var builder = DeltaBuilder<N>(base_len)
         if rope.is_empty() {
             builder.delete(interval)
         } else {
@@ -93,7 +93,7 @@ struct InsertDelta<N: NodeInfo>{
     var elem: Delta<N>
 }
 
-struct Builder<N: NodeInfo> {
+struct DeltaBuilder<N: NodeInfo> {
     var delta: Delta<N>
     var last_offset: UInt
 
