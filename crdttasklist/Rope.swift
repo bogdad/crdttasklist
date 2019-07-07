@@ -96,7 +96,8 @@ extension Leaf {
     mutating func subseq(iv: Interval) -> Self {
         var result = type(of: self).def()
         let is_good = result.push_maybe_split(other: &self, iv: iv)
-        if is_good == nil {
+        // should consume everything
+        if is_good != nil {
             fatalError("unexpected split")
         }
         return result
