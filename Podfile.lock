@@ -1,16 +1,20 @@
 PODS:
+  - BTree (4.1.0)
   - IteratorTools (1.1.0)
 
 DEPENDENCIES:
+  - BTree (~> 4.1.0)
   - IteratorTools (~> 1.1.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - BTree
     - IteratorTools
 
 SPEC CHECKSUMS:
+  BTree: 99b99930790b88dc5e8bafbf666a5dfb8d7808b4
   IteratorTools: 085fb5125062d3dc2f7a9919be1b805bef72a94f
 
-PODFILE CHECKSUM: 41c97e9f03e1b9a9360bfec4ffb04da9d983578d
+PODFILE CHECKSUM: a58e8a67623f0584fd708dc17b28db6a09a3382d
 
 COCOAPODS: 1.5.2
