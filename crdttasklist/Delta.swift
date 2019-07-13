@@ -87,6 +87,33 @@ struct Delta<N: NodeInfo> {
             return sum + add
         })
     }
+
+    // FIXME: what does it do?
+    func factor() -> (InsertDelta<N>, Subset) {
+        var ins = [DeltaElement<N>]()
+        var sb = SubsetBuilder()
+        var b1: UInt = 0
+        var e1: UInt = 0
+        for elem in self.els {
+            switch elem {
+            case DeltaElement.Copy(let b, let e):
+                sb.add_range(e1, b, 1)
+                e1 = e
+            case DeltaElement.Insert(let n):
+                if e1 > b1 {
+                    ins.append(DeltaElement.Copy(b1, e1))
+                }
+                b1 = e1
+                ins.append(DeltaElement.Insert(n))
+            }
+        }
+        if b1 < self.base_len {
+            ins.append(DeltaElement.Copy(b1, self.base_len));
+        }
+        sb.add_range(e1, self.base_len, 1)
+        sb.pad_to_len(self.base_len);
+        return (InsertDelta(elem: Delta(ins, self.base_len)), sb.build())
+    }
 }
 
 struct InsertDelta<N: NodeInfo>{

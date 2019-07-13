@@ -110,6 +110,27 @@ struct SubsetBuilder {
         self.segments.append(Segment(len, count))
     }
 
+    /// Sets the count for a given range. This method must be called with a
+    /// non-empty range with `begin` not before the largest range or segment added
+    /// so far. Gaps will be filled with a 0-count segment.
+    mutating func add_range(_ begin: UInt, _ end: UInt, _ count: UInt) {
+        assert(begin >= self.total_len, "ranges must be added in non-decreasing order")
+        // assert!(begin < end, "ranges added must be non-empty: [{},{})", begin, end);
+        if begin >= end {
+            return
+        }
+        let len = end - begin
+        let cur_total_len = self.total_len
+
+        // add 0-count segment to fill any gap
+        if begin > self.total_len {
+            self.push_segment(begin - cur_total_len, 0)
+        }
+
+        self.push_segment(len, count)
+    }
+
+
     mutating func pad_to_len(_ total_len: UInt) {
         if total_len > self.total_len {
             let cur_len = self.total_len

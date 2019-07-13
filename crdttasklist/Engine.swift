@@ -28,6 +28,17 @@ import Foundation
 import BTree
 
 typealias SessionId = (UInt64, UInt32)
+typealias RevToken = UInt64
+
+/// Type for errors that occur during CRDT operations.
+enum CrdtError: Error {
+    /// An edit specified a revision that did not exist. The revision may
+    /// have been GC'd, or it may have specified incorrectly.
+    case MissingRevision(RevToken)
+    /// A delta was applied which had a `base_len` that did not match the length
+    /// of the revision it was applied to.
+    case MalformedDelta(rev_len: UInt, delta_len: UInt)
+}
 
 struct Edit {
     var priority: UInt
@@ -56,7 +67,7 @@ enum Contents {
     case Undo(undo: Undo)
 }
 
-struct RevId {
+struct RevId: Hashable {
     // 96 bits has a 10^(-12) chance of collision with 400 million sessions and 10^(-6) with 100 billion.
     // `session1==session2==0` is reserved for initialization which is the same on all sessions.
     // A colliding session will break merge invariants and the document will start crashing Xi.
@@ -66,6 +77,16 @@ struct RevId {
     // There will probably never be a document with more than 4 billion edits
     // in a single session.
     var num: UInt32
+
+    func token() -> RevToken {
+        // Rust is unlikely to break the property that this hash is strongly collision-resistant
+        // and it only needs to be consistent over one execution.
+        var hasher = Hasher64()
+        hasher.combine(session1)
+        hasher.combine(session2)
+        hasher.combine(num)
+        return hasher.finalize()
+    }
 }
 
 struct Revision {
@@ -115,5 +136,25 @@ struct Engine {
     /// Get text of head revision.
     func get_head() -> Rope {
         return self.text
+    }
+
+    func find_rev_token(_ rev_token: RevToken) -> UInt? {
+        return self.revs
+            .makeIterator()
+            .enumerated()
+            .reversed()
+            .first(where: { $0.1.rev_id.token() == rev_token})
+            .map {  UInt($0.0) }
+    }
+
+    // NOTE: maybe just deprecate this? we can panic on the other side of
+    // the call if/when that makes sense.
+    /// Create a new edit based on `base_rev`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `base_rev` does not exist, or if `delta` is poorly formed.
+    mutating func edit_rev(priority: UInt, undo_group: UInt, base_rev: RevToken, delta: Delta<RopeInfo>) {
+        
     }
 }

@@ -16,6 +16,8 @@
 		E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74C3DC522D24086001B9CA7 /* Selection.swift */; };
 		E755519B22A2FCBC004A111C /* .travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = E755519A22A2FCBC004A111C /* .travis.yml */; };
 		E755519D22A3E85F004A111C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E755519C22A3E85F004A111C /* README.md */; };
+		E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9922DA5DCE003572EC /* Hashes.swift */; };
+		E763DF9C22DA6FF4003572EC /* EngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9B22DA6FF4003572EC /* EngineTests.swift */; };
 		E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76E278522A0120C00E86AB2 /* RopeTests.swift */; };
 		E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8622C7ED06007099E5 /* Delta.swift */; };
 		E79E1F8922C7F237007099E5 /* DeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8822C7F237007099E5 /* DeltaTests.swift */; };
@@ -67,6 +69,8 @@
 		E74C3DC522D24086001B9CA7 /* Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
 		E755519A22A2FCBC004A111C /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		E755519C22A3E85F004A111C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		E763DF9922DA5DCE003572EC /* Hashes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hashes.swift; sourceTree = "<group>"; };
+		E763DF9B22DA6FF4003572EC /* EngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineTests.swift; sourceTree = "<group>"; };
 		E76E278522A0120C00E86AB2 /* RopeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RopeTests.swift; sourceTree = "<group>"; };
 		E79E1F8622C7ED06007099E5 /* Delta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delta.swift; sourceTree = "<group>"; };
 		E79E1F8822C7F237007099E5 /* DeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeltaTests.swift; sourceTree = "<group>"; };
@@ -192,6 +196,7 @@
 				E74C3DBF22D23620001B9CA7 /* Engine.swift */,
 				E74C3DC122D23E7F001B9CA7 /* View.swift */,
 				E74C3DC522D24086001B9CA7 /* Selection.swift */,
+				E763DF9922DA5DCE003572EC /* Hashes.swift */,
 			);
 			path = crdttasklist;
 			sourceTree = "<group>";
@@ -203,6 +208,7 @@
 				E7B05F042298223400D2A094 /* Info.plist */,
 				E76E278522A0120C00E86AB2 /* RopeTests.swift */,
 				E79E1F8822C7F237007099E5 /* DeltaTests.swift */,
+				E763DF9B22DA6FF4003572EC /* EngineTests.swift */,
 			);
 			path = crdttasklistTests;
 			sourceTree = "<group>";
@@ -473,6 +479,7 @@
 				E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */,
 				E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */,
 				E74C3DC022D23620001B9CA7 /* Engine.swift in Sources */,
+				E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */,
 				E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */,
 				E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */,
 				E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */,
@@ -491,6 +498,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7B05F032298223400D2A094 /* crdttasklistTests.swift in Sources */,
+				E763DF9C22DA6FF4003572EC /* EngineTests.swift in Sources */,
 				E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */,
 				E79E1F8922C7F237007099E5 /* DeltaTests.swift in Sources */,
 			);

@@ -70,7 +70,7 @@ struct Editor {
     var live_undos: [UInt]
     /// The index of the current undo; subsequent undos are currently 'undone'
     /// (but may be redone)
-    var cur_undo: Int
+    var cur_undo: UInt
     /// undo groups that are undone
     var undos: SortedSet<UInt>
     /// undo groups that are no longer live and should be gc'ed
@@ -116,7 +116,7 @@ struct Editor {
         let undo_group = self.calculate_undo_group()
         self.last_edit_type = self.this_edit_type
         let priority = 0x10000;
-        self.engine.edit_rev(priority, undo_group, head_rev_id.token(), delta)
+        //self.engine.edit_rev(priority, undo_group, head_rev_id.token(), delta)
         self.text = self.engine.get_head().clone()
     }
 
@@ -130,10 +130,10 @@ struct Editor {
         } else {
             let undo_group = self.undo_group_id;
             // FIXME: can it be made faster?
-            for elem in self.live_undos[self.cur_undo...] {
+            for elem in self.live_undos[Int(self.cur_undo)...] {
                 self.gc_undos.insert(elem)
             }
-            self.live_undos.removeFirst(self.cur_undo)
+            self.live_undos.removeFirst(Int(self.cur_undo))
             self.live_undos.append(undo_group)
             if self.live_undos.count <= EditorConstants.MAX_UNDOS {
                 self.cur_undo += 1
@@ -144,5 +144,4 @@ struct Editor {
             return undo_group
         }
     }
-
 }
