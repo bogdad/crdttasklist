@@ -129,6 +129,35 @@ struct Engine {
     /// The revision history of the document
     var revs: [Revision]
 
+    init() {
+        let deletes_from_union = Subset::new(0)
+        let rev = Revision {
+            rev_id: RevId { session1: 0, session2: 0, num: 0 },
+            edit: Undo {
+                toggled_groups: BTreeSet::new(),
+                deletes_bitxor: deletes_from_union.clone(),
+            },
+            max_undo_so_far: 0,
+        }
+        self.session = default_session()
+        self.rev_id_counter = 1
+        self.text = Rope.default()
+        self.tombstones = Rope.default()
+        self.deletes_from_union = deletes_from_union
+        self.undone_groups = SortedSet.init()
+        self.revs = [rev]
+    }
+
+    static init(_ initial_contents: Rope) -> Engine {
+        let mut engine = Engine.empty()
+        if !initial_contents.is_empty() {
+        let first_rev = engine.get_head_rev_id().token()
+        let delta = Delta::simple_edit(Interval.new(0, 0), initial_contents, 0)
+            engine.edit_rev(0, 0, first_rev, delta)
+        }
+        engine
+    }
+
     func get_head_rev_id() -> RevId {
         return self.revs.last!.rev_id
     }
