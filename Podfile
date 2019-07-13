@@ -14,6 +14,7 @@ target 'crdttasklist' do
       use_frameworks!
       inherit! :search_paths
       pod 'IteratorTools', '~> 1.1.0'
+      pod 'BTree', '~> 4.1.0'
   end
 end
 
