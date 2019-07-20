@@ -23,10 +23,10 @@ class EngineTests: XCTestCase {
     }
 
     func test_edit_rev_simple() {
-        var engine = Engine(Rope.from_str(TEST_STR[...]))
+        var engine = Engine.make_from_rope(Rope.from_str(TEST_STR[...]))
         let first_rev = engine.get_head_rev_id().token()
         engine.edit_rev(0, 1, first_rev, build_delta_1());
-        XCTAssertEqual(("0123456789abcDEEFghijklmnopqr999stuvz", String.from(engine.get_head()))
+        XCTAssertEqual("0123456789abcDEEFghijklmnopqr999stuvz", String.from(rope: engine.get_head()))
     }
 
 }

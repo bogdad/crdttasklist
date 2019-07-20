@@ -59,6 +59,10 @@ struct Undo {
     /// Used to store a reversible difference between the old
     /// and new deletes_from_union
     var deletes_bitxor: Subset
+    init(toggled_groups: SortedSet<UInt>, deletes_bitxor: Subset) {
+        self.toggled_groups = toggled_groups
+        self.deletes_bitxor = deletes_bitxor
+    }
 }
 
 // FIXME: is it good in memory?
@@ -77,6 +81,12 @@ struct RevId: Hashable {
     // There will probably never be a document with more than 4 billion edits
     // in a single session.
     var num: UInt32
+
+    init(session1: UInt64, session2: UInt32, num: UInt32) {
+        self.session1 = session1
+        self.session2 = session2
+        self.num = num
+    }
 
     func token() -> RevToken {
         // Rust is unlikely to break the property that this hash is strongly collision-resistant
@@ -97,6 +107,12 @@ struct Revision {
     /// point. Used to optimize undo to not look further back.
     var max_undo_so_far: UInt
     var edit: Contents
+
+    init(rev_id: RevId, edit: Contents, max_undo_so_far: UInt) {
+        self.rev_id = rev_id
+        self.edit = edit
+        self.max_undo_so_far = max_undo_so_far
+    }
 }
 
 struct Engine {
@@ -130,32 +146,31 @@ struct Engine {
     var revs: [Revision]
 
     init() {
-        let deletes_from_union = Subset::new(0)
-        let rev = Revision {
-            rev_id: RevId { session1: 0, session2: 0, num: 0 },
-            edit: Undo {
-                toggled_groups: BTreeSet::new(),
-                deletes_bitxor: deletes_from_union.clone(),
-            },
-            max_undo_so_far: 0,
-        }
-        self.session = default_session()
+        let deletes_from_union = Subset.make_empty(0)
+        let rev = Revision(
+            rev_id: RevId(session1: 0, session2: 0, num: 0),
+            edit: Contents.Undo(undo: Undo(
+                toggled_groups: SortedSet(),
+                deletes_bitxor: deletes_from_union.clone()
+            )),
+            max_undo_so_far: 0)
+        self.session = Engine.default_session()
         self.rev_id_counter = 1
-        self.text = Rope.default()
-        self.tombstones = Rope.default()
+        self.text = Rope.def()
+        self.tombstones = Rope.def()
         self.deletes_from_union = deletes_from_union
         self.undone_groups = SortedSet.init()
         self.revs = [rev]
     }
 
-    static init(_ initial_contents: Rope) -> Engine {
-        let mut engine = Engine.empty()
+    static func make_from_rope(_ initial_contents: Rope) -> Engine {
+        var engine = Engine()
         if !initial_contents.is_empty() {
-        let first_rev = engine.get_head_rev_id().token()
-        let delta = Delta::simple_edit(Interval.new(0, 0), initial_contents, 0)
+            let first_rev = engine.get_head_rev_id().token()
+            let delta = Delta.simple_edit(Interval(0, 0), initial_contents, 0)
             engine.edit_rev(0, 0, first_rev, delta)
         }
-        engine
+        return engine
     }
 
     func get_head_rev_id() -> RevId {
@@ -183,7 +198,11 @@ struct Engine {
     /// # Panics
     ///
     /// Panics if `base_rev` does not exist, or if `delta` is poorly formed.
-    mutating func edit_rev(priority: UInt, undo_group: UInt, base_rev: RevToken, delta: Delta<RopeInfo>) {
+    mutating func edit_rev(_ priority: UInt, _ undo_group: UInt, _ base_rev: RevToken, _ delta: Delta<RopeInfo>) {
         
+    }
+
+    static func default_session() -> (UInt64, UInt32) {
+        return (1, 0)
     }
 }

@@ -283,6 +283,11 @@ class Node<N: NodeInfo> : Equatable {
     func clone() -> Node<N> {
         return Node(body: body)
     }
+
+    static func def() -> Node<N> {
+        var def = N.L.def()
+        return Node.from_leaf(l: &def)
+    }
 }
 
 enum NodeVal<N: NodeInfo> : Equatable {

@@ -85,6 +85,10 @@ struct Subset {
     func range_iter(_ matcher: CountMatcher) -> RangeIter {
         return RangeIter(self.segments.makeIterator(), matcher)
     }
+
+    func clone() -> Subset {
+        return Subset(self.segments)
+    }
 }
 
 struct SubsetBuilder {
