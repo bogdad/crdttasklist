@@ -139,9 +139,9 @@ struct Engine {
     /// You could construct the "union string" from `text`, `tombstones` and
     /// `deletes_from_union` by splicing a segment of `tombstones` into `text`
     /// wherever there's a non-zero-count segment in `deletes_from_union`.
-    var deletes_from_union: Subset
+    var deletes_from_union: Cow<Subset>
     // TODO: switch to a persistent Set representation to avoid O(n) copying
-    var undone_groups: SortedSet<UInt> // set of undo_group id's
+    var undone_groups: Cow<SortedSet<UInt>> // set of undo_group id's
     /// The revision history of the document
     var revs: [Revision]
 
@@ -158,7 +158,7 @@ struct Engine {
         self.rev_id_counter = 1
         self.text = Rope.def()
         self.tombstones = Rope.def()
-        self.deletes_from_union = deletes_from_union
+        self.deletes_from_union = Cow(deletes_from_union)
         self.undone_groups = SortedSet.init()
         self.revs = [rev]
     }
@@ -199,7 +199,142 @@ struct Engine {
     ///
     /// Panics if `base_rev` does not exist, or if `delta` is poorly formed.
     mutating func edit_rev(_ priority: UInt, _ undo_group: UInt, _ base_rev: RevToken, _ delta: Delta<RopeInfo>) {
-        
+         let res = self.try_edit_rev(priority, undo_group, base_rev, delta)
+        switch res {
+        case .success(()):
+            return
+        case .failure(let err):
+            fatalError("edit_rev error " + err.localizedDescription)
+        }
+    }
+
+    mutating func try_edit_rev(_ priority: UInt, _ undo_group: UInt, _ base_rev: RevToken, _ delta: Delta<RopeInfo>) -> Result<(), Error> {
+        let (new_rev, new_text, new_tombstones, new_deletes_from_union) =
+            self.mk_new_rev(priority, undo_group, base_rev, delta)?
+    }
+
+    func mk_new_rev(
+    _ new_priority: UInt,
+    _ undo_group: UInt,
+    _ base_rev: RevToken,
+    _ delta: Delta<RopeInfo>) -> Result<(Revision, Rope, Rope, Subset), CrdtError> {
+
+        let revtoken = self.find_rev_token(base_rev)
+        if (revtoken == nil) {
+            return .failure(CrdtError.MissingRevision(base_rev))
+        }
+        let ix = revtoken!
+        let (ins_delta, deletes) = delta.factor()
+
+        // rebase delta to be on the base_rev union instead of the text
+        let deletes_at_rev = self.deletes_from_union_for_index(rev_index: ix)
+
+    // validate delta
+    if ins_delta.base_len != deletes_at_rev.len_after_delete() {
+    return Err(Error::MalformedDelta {
+    delta_len: ins_delta.base_len,
+    rev_len: deletes_at_rev.len_after_delete(),
+    });
+    }
+
+    let mut union_ins_delta = ins_delta.transform_expand(&deletes_at_rev, true);
+    let mut new_deletes = deletes.transform_expand(&deletes_at_rev);
+
+    // rebase the delta to be on the head union instead of the base_rev union
+    let new_full_priority = FullPriority { priority: new_priority, session_id: self.session };
+    for r in &self.revs[ix + 1..] {
+    if let Edit { priority, ref inserts, .. } = r.edit {
+    if !inserts.is_empty() {
+    let full_priority =
+    FullPriority { priority, session_id: r.rev_id.session_id() };
+    let after = new_full_priority >= full_priority; // should never be ==
+    union_ins_delta = union_ins_delta.transform_expand(inserts, after);
+    new_deletes = new_deletes.transform_expand(inserts);
+    }
+    }
+    }
+
+    // rebase the deletion to be after the inserts instead of directly on the head union
+    let new_inserts = union_ins_delta.inserted_subset();
+    if !new_inserts.is_empty() {
+    new_deletes = new_deletes.transform_expand(&new_inserts);
+    }
+
+    // rebase insertions on text and apply
+    let cur_deletes_from_union = &self.deletes_from_union;
+    let text_ins_delta = union_ins_delta.transform_shrink(cur_deletes_from_union);
+    let text_with_inserts = text_ins_delta.apply(&self.text);
+    let rebased_deletes_from_union = cur_deletes_from_union.transform_expand(&new_inserts);
+
+    // is the new edit in an undo group that was already undone due to concurrency?
+    let undone = self.undone_groups.contains(&undo_group);
+    let new_deletes_from_union = {
+    let to_delete = if undone { &new_inserts } else { &new_deletes };
+    rebased_deletes_from_union.union(to_delete)
+    };
+
+    // move deleted or undone-inserted things from text to tombstones
+    let (new_text, new_tombstones) = shuffle(
+    &text_with_inserts,
+    &self.tombstones,
+    &rebased_deletes_from_union,
+    &new_deletes_from_union,
+    );
+
+    let head_rev = &self.revs.last().unwrap();
+    Ok((
+    Revision {
+    rev_id: self.next_rev_id(),
+    max_undo_so_far: std::cmp::max(undo_group, head_rev.max_undo_so_far),
+    edit: Edit {
+    priority: new_priority,
+    undo_group,
+    inserts: new_inserts,
+    deletes: new_deletes,
+    },
+    },
+    new_text,
+    new_tombstones,
+    new_deletes_from_union,
+    ))
+    }
+
+    // TODO: does Cow really help much here? It certainly won't after making Subsets a rope.
+    /// Find what the `deletes_from_union` field in Engine would have been at the time
+    /// of a certain `rev_index`. In other words, the deletes from the union string at that time.
+    func deletes_from_union_for_index(rev_index: UInt) -> Cow<Subset> {
+        return self.deletes_from_union_before_index(rev_index + 1, true)
+    }
+
+    func deletes_from_union_before_index(rev_index: UInt, invert_undos: bool) -> Cow<Subset> {
+        var deletes_from_union = self.deletes_from_union
+        var undone_groups = self.undone_groups
+
+        // invert the changes to deletes_from_union starting in the present and working backwards
+        for rev in self.revs[Int(rev_index)...].makeIterator().reversed() {
+            deletes_from_union = match rev.edit {
+                Edit { ref inserts, ref deletes, ref undo_group, .. } => {
+                    if undone_groups.contains(undo_group) {
+                        // no need to un-delete undone inserts since we'll just shrink them out
+                        Cow::Owned(deletes_from_union.transform_shrink(inserts))
+                    } else {
+                        let un_deleted = deletes_from_union.subtract(deletes);
+                        Cow::Owned(un_deleted.transform_shrink(inserts))
+                    }
+                }
+                Undo { ref toggled_groups, ref deletes_bitxor } => {
+                    if invert_undos {
+                        let new_undone =
+                            undone_groups.symmetric_difference(toggled_groups).cloned().collect();
+                        undone_groups = Cow::Owned(new_undone);
+                        Cow::Owned(deletes_from_union.bitxor(deletes_bitxor))
+                    } else {
+                        deletes_from_union
+                    }
+                }
+            }
+        }
+        return deletes_from_union
     }
 
     static func default_session() -> (UInt64, UInt32) {

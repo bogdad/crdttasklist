@@ -48,7 +48,7 @@ struct Interval: Equatable, IntervalBounds {
     var start: UInt
     var end: UInt
     init(_ start: UInt, _ end: UInt) {
-        assert(start < end)
+        assert(start <= end)
         self.start = start
         self.end = end
     }
