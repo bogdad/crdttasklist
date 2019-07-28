@@ -53,6 +53,17 @@ enum CountMatcher {
             return true
         }
     }
+
+    func matches(seg: Segment) -> Bool {
+        switch self {
+        case .Zero:
+            return (seg.count == 0)
+        case .NonZero:
+            return (seg.count != 0)
+        case .All:
+            return true
+        }
+    }
 }
 
 
@@ -84,6 +95,25 @@ struct Subset {
     /// These will often be easier to work with than raw segments.
     func range_iter(_ matcher: CountMatcher) -> RangeIter {
         return RangeIter(self.segments.makeIterator(), matcher)
+    }
+
+    /// The length of the resulting sequence after deleting this subset. A
+    /// convenience alias for `self.count(CountMatcher::Zero)` to reduce
+    /// thinking about what that means in the cases where the length after
+    /// delete is what you want to know.
+    ///
+    /// `self.delete_from_string(s).len() = self.len(s.len())`
+    func len_after_delete() -> UInt {
+        return self.count(CountMatcher.Zero)
+    }
+
+    /// Count the total length of all the segments matching `matcher`.
+    func count(_ matcher: CountMatcher) -> UInt {
+        return
+            self.segments.makeIterator()
+                .filter { matcher.matches(seg: $0)}
+                .map {$0.count}
+                .reduce(0, +)
     }
 
     func clone() -> Subset {

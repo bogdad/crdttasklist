@@ -159,7 +159,7 @@ struct Engine {
         self.text = Rope.def()
         self.tombstones = Rope.def()
         self.deletes_from_union = Cow(deletes_from_union)
-        self.undone_groups = SortedSet.init()
+        self.undone_groups = Cow(SortedSet())
         self.revs = [rev]
     }
 
@@ -229,13 +229,12 @@ struct Engine {
         // rebase delta to be on the base_rev union instead of the text
         let deletes_at_rev = self.deletes_from_union_for_index(rev_index: ix)
 
-    // validate delta
-    if ins_delta.base_len != deletes_at_rev.len_after_delete() {
-    return Err(Error::MalformedDelta {
-    delta_len: ins_delta.base_len,
-    rev_len: deletes_at_rev.len_after_delete(),
-    });
-    }
+        // validate delta
+        if ins_delta.elem.base_len != deletes_at_rev.value.len_after_delete() {
+            return .failure(CrdtError.MalformedDelta(
+                delta_len: ins_delta.base_len,
+                rev_len: deletes_at_rev.len_after_delete()))
+        }
 
     let mut union_ins_delta = ins_delta.transform_expand(&deletes_at_rev, true);
     let mut new_deletes = deletes.transform_expand(&deletes_at_rev);
