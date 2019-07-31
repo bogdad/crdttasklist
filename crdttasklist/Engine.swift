@@ -232,12 +232,13 @@ struct Engine {
         // validate delta
         if ins_delta.elem.base_len != deletes_at_rev.value.len_after_delete() {
             return .failure(CrdtError.MalformedDelta(
-                delta_len: ins_delta.base_len,
-                rev_len: deletes_at_rev.len_after_delete()))
+                rev_len: deletes_at_rev.value.len_after_delete(),
+                delta_len: ins_delta.base_len
+                ))
         }
 
-    let mut union_ins_delta = ins_delta.transform_expand(&deletes_at_rev, true);
-    let mut new_deletes = deletes.transform_expand(&deletes_at_rev);
+    var union_ins_delta = ins_delta.transform_expand(deletes_at_rev, true)
+    var new_deletes = deletes.transform_expand(deletes_at_rev)
 
     // rebase the delta to be on the head union instead of the base_rev union
     let new_full_priority = FullPriority { priority: new_priority, session_id: self.session };

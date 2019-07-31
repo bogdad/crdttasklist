@@ -116,8 +116,72 @@ struct Delta<N: NodeInfo> {
     }
 }
 
-struct InsertDelta<N: NodeInfo>{
+struct InsertDelta<N: NodeInfo> {
     var elem: Delta<N>
+    var base_len: UInt {
+        get {
+            return elem.base_len
+        }
+    }
+
+    /// Do a coordinate transformation on an insert-only delta. The `after` parameter
+    /// controls whether the insertions in `self` come after those specific in the
+    /// coordinate transform.
+    //
+    // TODO: write accurate equations
+    func transform_expand(_ xform: Cow<Subset>, _ after: Bool) -> InsertDelta<N> {
+        let cur_els = self.elem.els
+        var els = [DeltaElement<N>]()
+        var x: UInt = 0 // coordinate within self
+        var y: UInt = 0 // coordinate within xform
+        var i: UInt = 0 // index into self.els
+        var b1: UInt = 0
+        var xform_ranges = xform.value.complement_iter()
+        var last_xform = xform_ranges.next()
+        let l = xform.value.count(CountMatcher.All)
+        while y < l || i < cur_els.count {
+            let next_iv_beg = last_xform != nil ? last_xform!.0 : l
+            if after && y < next_iv_beg {
+                y = next_iv_beg
+            }
+            while i < cur_els.count {
+                switch cur_els[Int(i)] {
+                    case DeltaElement.Insert(let n):
+                        if y > b1 {
+                            els.append(DeltaElement.Copy(b1, y))
+                        }
+                        b1 = y
+                        els.append(DeltaElement.Insert(n))
+                        i += 1
+                    case DeltaElement.Copy(let b, let e):
+                        if y >= next_iv_beg {
+                            var next_y = e + y - x;
+                            if case let .some((_, xe)) = last_xform {
+                                next_y = min(next_y, xe)
+                            }
+                            x += next_y - y
+                            y = next_y
+                            if x == e {
+                                i += 1;
+                            }
+                            if case let .some((_, xe)) = last_xform {
+                                if y == xe {
+                                    last_xform = xform_ranges.next()
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            if !after && y < next_iv_beg {
+                y = next_iv_beg
+            }
+        }
+        if y > b1 {
+            els.append(DeltaElement.Copy(b1, y))
+        }
+        return InsertDelta(elem: Delta(els, l))
+    }
 }
 
 struct DeltaBuilder<N: NodeInfo> {

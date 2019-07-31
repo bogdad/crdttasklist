@@ -34,6 +34,9 @@ struct Segment {
         self.len = len
         self.count = count
     }
+    func clone() -> Segment {
+        return Segment(len, count)
+    }
 }
 
 /// Determines which elements of a `Subset` a method applies to
@@ -114,6 +117,58 @@ struct Subset {
                 .filter { matcher.matches(seg: $0)}
                 .map {$0.count}
                 .reduce(0, +)
+    }
+
+
+    /// Convenience alias for `self.range_iter(CountMatcher::Zero)`.
+    /// Semantically iterates the ranges of the complement of this `Subset`.
+    func complement_iter() -> RangeIter {
+        return self.range_iter(CountMatcher.Zero)
+    }
+
+    /// Transform through coordinate transform represented by other.
+    /// The equation satisfied is as follows:
+    ///
+    /// s1 = other.delete_from_string(s0)
+    ///
+    /// s2 = self.delete_from_string(s1)
+    ///
+    /// element in self.transform_expand(other).delete_from_string(s0) if (not in s1) or in s2
+    func transform_expand(_ other: Cow<Subset>) -> Subset {
+        return self.transform(other, false)
+    }
+
+    // Map the contents of `self` into the 0-regions of `other`.
+    /// Precondition: `self.count(CountMatcher::All) == other.count(CountMatcher::Zero)`
+    func transform(other: Cow<Subset>, union: Bool) -> Subset {
+        var sb = SubsetBuilder()
+        var seg_iter = self.segments.makeIterator()
+        var cur_seg = Segment(0, 0)
+        for oseg in other.value.segments {
+            if oseg.count > 0 {
+                sb.push_segment(oseg.len, union ? oseg.count : 0)
+            } else {
+                // fill 0-region with segments from self.
+                var to_be_consumed = oseg.len;
+                while to_be_consumed > 0 {
+                    if cur_seg.len == 0 {
+                        let seg_iter_next = seg_iter.next()
+                        if seg_iter_next == nil {
+                            fatalError("self must cover all 0-regions of other")
+                        }
+                        cur_seg = seg_iter_next!.clone()
+                    }
+                    // consume as much of the segment as possible and necessary
+                    let to_consume = min(cur_seg.len, to_be_consumed)
+                    sb.push_segment(to_consume, cur_seg.count)
+                    to_be_consumed -= to_consume
+                    cur_seg.len -= to_consume
+                }
+            }
+        }
+        assert(cur_seg.len == 0, "the 0-regions of other must be the size of self")
+        assert(seg_iter.next() == nil, "the 0-regions of other must be the size of self")
+        return sb.build()
     }
 
     func clone() -> Subset {
