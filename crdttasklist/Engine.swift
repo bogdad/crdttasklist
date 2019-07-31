@@ -40,20 +40,6 @@ enum CrdtError: Error {
     case MalformedDelta(rev_len: UInt, delta_len: UInt)
 }
 
-struct Edit {
-    var priority: UInt
-    /// Groups related edits together so that they are undone and re-done
-    /// together. For example, an auto-indent insertion would be un-done
-    /// along with the newline that triggered it.
-    var undo_group: UInt
-    /// The subset of the characters of the union string from after this
-    /// revision that were added by this revision.
-    var inserts: Subset
-    /// The subset of the characters of the union string from after this
-    /// revision that were deleted by this revision.
-    var deletes: Subset
-}
-
 struct Undo {
     var toggled_groups: SortedSet<UInt> // set of undo_group id's
     /// Used to store a reversible difference between the old
@@ -65,11 +51,34 @@ struct Undo {
     }
 }
 
-// FIXME: is it good in memory?
 enum Contents {
-    case Edit(edit: Edit)
+    case Edit(priority: UInt,
+    /// Groups related edits together so that they are undone and re-done
+    /// together. For example, an auto-indent insertion would be un-done
+    /// along with the newline that triggered it.
+    undo_group: UInt,
+    /// The subset of the characters of the union string from after this
+    /// revision that were added by this revision.
+    inserts: Subset,
+    /// The subset of the characters of the union string from after this
+    /// revision that were deleted by this revision.
+    deletes: Subset)
     case Undo(undo: Undo)
 }
+
+struct FullPriority {
+    static func >= (lhs: FullPriority, rhs: FullPriority) -> Bool {
+        return lhs.priority >= rhs.priority && lhs.session_id >= rhs.session_id
+    }
+
+    var priority: UInt
+    var session_id: SessionId
+    init(priority: UInt, session_id: SessionId) {
+        self.priority = priority
+        self.session_id = session_id
+    }
+}
+
 
 struct RevId: Hashable {
     // 96 bits has a 10^(-12) chance of collision with 400 million sessions and 10^(-6) with 100 billion.
@@ -96,6 +105,10 @@ struct RevId: Hashable {
         hasher.combine(session2)
         hasher.combine(num)
         return hasher.finalize()
+    }
+
+    func session_id() -> SessionId {
+        return (self.session1, self.session2)
     }
 }
 
@@ -227,7 +240,7 @@ struct Engine {
         let (ins_delta, deletes) = delta.factor()
 
         // rebase delta to be on the base_rev union instead of the text
-        let deletes_at_rev = self.deletes_from_union_for_index(rev_index: ix)
+        var deletes_at_rev = self.deletes_from_union_for_index(rev_index: ix)
 
         // validate delta
         if ins_delta.elem.base_len != deletes_at_rev.value.len_after_delete() {
@@ -237,41 +250,42 @@ struct Engine {
                 ))
         }
 
-    var union_ins_delta = ins_delta.transform_expand(deletes_at_rev, true)
-    var new_deletes = deletes.transform_expand(deletes_at_rev)
+        var union_ins_delta = ins_delta.transform_expand(deletes_at_rev, true)
+        var new_deletes = deletes.transform_expand(deletes_at_rev)
 
-    // rebase the delta to be on the head union instead of the base_rev union
-    let new_full_priority = FullPriority { priority: new_priority, session_id: self.session };
-    for r in &self.revs[ix + 1..] {
-    if let Edit { priority, ref inserts, .. } = r.edit {
-    if !inserts.is_empty() {
-    let full_priority =
-    FullPriority { priority, session_id: r.rev_id.session_id() };
-    let after = new_full_priority >= full_priority; // should never be ==
-    union_ins_delta = union_ins_delta.transform_expand(inserts, after);
-    new_deletes = new_deletes.transform_expand(inserts);
-    }
-    }
-    }
+        // rebase the delta to be on the head union instead of the base_rev union
+        // FIXME: Cow is a mess here!
+        let new_full_priority = FullPriority(priority: new_priority, session_id: self.session)
+        for r in self.revs[Int(ix + 1)...] {
+            if case let Contents.Edit(priority: priority, undo_group: undo_group, inserts: inserts, deletes: _) = r.edit {
+                if !inserts.is_empty() {
+                    let full_priority =
+                        FullPriority(priority: priority, session_id: r.rev_id.session_id())
+                    let after = new_full_priority >= full_priority // should never be ==
+                    union_ins_delta = union_ins_delta.transform_expand(Cow(inserts), after)
+                    new_deletes = new_deletes.transform_expand(Cow(inserts))
+                }
+            }
+        }
 
-    // rebase the deletion to be after the inserts instead of directly on the head union
-    let new_inserts = union_ins_delta.inserted_subset();
-    if !new_inserts.is_empty() {
-    new_deletes = new_deletes.transform_expand(&new_inserts);
-    }
+        // rebase the deletion to be after the inserts instead of directly on the head union
+        let new_inserts = union_ins_delta.inserted_subset()
+        if !new_inserts.is_empty() {
+            new_deletes = new_deletes.transform_expand(Cow(new_inserts))
+        }
 
-    // rebase insertions on text and apply
-    let cur_deletes_from_union = &self.deletes_from_union;
-    let text_ins_delta = union_ins_delta.transform_shrink(cur_deletes_from_union);
-    let text_with_inserts = text_ins_delta.apply(&self.text);
-    let rebased_deletes_from_union = cur_deletes_from_union.transform_expand(&new_inserts);
+        // rebase insertions on text and apply
+        let cur_deletes_from_union = self.deletes_from_union
+        let text_ins_delta = union_ins_delta.transform_shrink(cur_deletes_from_union)
+        let text_with_inserts = text_ins_delta.apply(&self.text);
+        let rebased_deletes_from_union = cur_deletes_from_union.transform_expand(&new_inserts);
 
-    // is the new edit in an undo group that was already undone due to concurrency?
-    let undone = self.undone_groups.contains(&undo_group);
-    let new_deletes_from_union = {
-    let to_delete = if undone { &new_inserts } else { &new_deletes };
-    rebased_deletes_from_union.union(to_delete)
-    };
+        // is the new edit in an undo group that was already undone due to concurrency?
+        let undone = self.undone_groups.contains(&undo_group);
+        let new_deletes_from_union = {
+            let to_delete = if undone { &new_inserts } else { &new_deletes };
+            rebased_deletes_from_union.union(to_delete)
+        };
 
     // move deleted or undone-inserted things from text to tombstones
     let (new_text, new_tombstones) = shuffle(

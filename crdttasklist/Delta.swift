@@ -146,33 +146,33 @@ struct InsertDelta<N: NodeInfo> {
             }
             while i < cur_els.count {
                 switch cur_els[Int(i)] {
-                    case DeltaElement.Insert(let n):
-                        if y > b1 {
-                            els.append(DeltaElement.Copy(b1, y))
-                        }
-                        b1 = y
-                        els.append(DeltaElement.Insert(n))
-                        i += 1
-                    case DeltaElement.Copy(let b, let e):
-                        if y >= next_iv_beg {
-                            var next_y = e + y - x;
-                            if case let .some((_, xe)) = last_xform {
-                                next_y = min(next_y, xe)
-                            }
-                            x += next_y - y
-                            y = next_y
-                            if x == e {
-                                i += 1;
-                            }
-                            if case let .some((_, xe)) = last_xform {
-                                if y == xe {
-                                    last_xform = xform_ranges.next()
-                                }
-                            }
-                        }
-                        break;
+                case DeltaElement.Insert(let n):
+                    if y > b1 {
+                        els.append(DeltaElement.Copy(b1, y))
                     }
+                    b1 = y
+                    els.append(DeltaElement.Insert(n))
+                    i += 1
+                case DeltaElement.Copy(let b, let e):
+                    if y >= next_iv_beg {
+                        var next_y = e + y - x;
+                        if case let .some((_, xe)) = last_xform {
+                            next_y = min(next_y, xe)
+                        }
+                        x += next_y - y
+                        y = next_y
+                        if x == e {
+                            i += 1;
+                        }
+                        if case let .some((_, xe)) = last_xform {
+                            if y == xe {
+                                last_xform = xform_ranges.next()
+                            }
+                        }
+                    }
+                    break;
                 }
+            }
             if !after && y < next_iv_beg {
                 y = next_iv_beg
             }
@@ -181,6 +181,22 @@ struct InsertDelta<N: NodeInfo> {
             els.append(DeltaElement.Copy(b1, y))
         }
         return InsertDelta(elem: Delta(els, l))
+    }
+
+    /// Return a Subset containing the inserted ranges.
+    ///
+    /// `d.inserted_subset().delete_from_string(d.apply_to_string(s)) == s`
+    func inserted_subset() -> Subset {
+        var sb = SubsetBuilder()
+        for elem in self.elem.els {
+            switch elem {
+            case .Copy(let b, let e):
+                sb.push_segment(e - b, 0)
+            case DeltaElement.Insert(let n):
+                sb.push_segment(n.len(), 1)
+            }
+        }
+        return sb.build()
     }
 }
 

@@ -137,10 +137,9 @@ struct Subset {
     func transform_expand(_ other: Cow<Subset>) -> Subset {
         return self.transform(other, false)
     }
-
     // Map the contents of `self` into the 0-regions of `other`.
     /// Precondition: `self.count(CountMatcher::All) == other.count(CountMatcher::Zero)`
-    func transform(other: Cow<Subset>, union: Bool) -> Subset {
+    func transform(_ other: Cow<Subset>, _ union: Bool) -> Subset {
         var sb = SubsetBuilder()
         var seg_iter = self.segments.makeIterator()
         var cur_seg = Segment(0, 0)
@@ -169,6 +168,12 @@ struct Subset {
         assert(cur_seg.len == 0, "the 0-regions of other must be the size of self")
         assert(seg_iter.next() == nil, "the 0-regions of other must be the size of self")
         return sb.build()
+    }
+
+    /// Determine whether the subset is empty.
+    /// In this case deleting it would do nothing.
+    func is_empty() -> Bool {
+        return (self.segments.isEmpty) || ((self.segments.count == 1) && (self.segments[0].count == 0))
     }
 
     func clone() -> Subset {
