@@ -183,6 +183,44 @@ struct InsertDelta<N: NodeInfo> {
         return InsertDelta(elem: Delta(els, l))
     }
 
+
+    // TODO: it is plausible this method also works on Deltas with deletes
+    /// Shrink a delta through a deletion of some of its copied regions with
+    /// the same base. For example, if `self` applies to a union string, and
+    /// `xform` is the deletions from that union, the resulting Delta will
+    /// apply to the text.
+    func transform_shrink(_ xform: Cow<Subset>) -> InsertDelta<N> {
+        var m = xform.value.mapper(CountMatcher.Zero)
+        let els = self
+            .elem
+            .els
+            .map({ elem -> DeltaElement<N> in
+                switch elem {
+                case DeltaElement.Copy(let b, let e):
+                    return DeltaElement.Copy(m.doc_index_to_subset(b), m.doc_index_to_subset(e))
+                case DeltaElement.Insert(let n):
+                    return DeltaElement.Insert(n.clone())
+                }
+            })
+        return InsertDelta(elem: Delta(els, xform.value.len_after_delete()))
+    }
+
+    /// Apply the delta to the given rope. May not work well if the length of the rope
+    /// is not compatible with the construction of the delta.
+    func apply(_ base: Node<N>) -> Node<N> {
+        assert(base.len() == self.base_len, "must apply Delta to Node of correct length")
+        var b = TreeBuilder<N>()
+        for elem in self.elem.els {
+            switch elem {
+            case let DeltaElement.Copy(beg, end):
+                base.push_subseq(b: &b, iv: Interval(beg, end))
+            case DeltaElement.Insert(let n):
+                b.push(n: n.clone())
+            }
+        }
+        return b.build()
+    }
+
     /// Return a Subset containing the inserted ranges.
     ///
     /// `d.inserted_subset().delete_from_string(d.apply_to_string(s)) == s`

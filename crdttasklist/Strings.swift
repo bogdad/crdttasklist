@@ -185,3 +185,4 @@ struct RangeFull: IntervalBounds {
         return Interval(0, upper_bound)
     }
 }
+

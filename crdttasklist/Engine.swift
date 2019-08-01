@@ -251,7 +251,7 @@ struct Engine {
         }
 
         var union_ins_delta = ins_delta.transform_expand(deletes_at_rev, true)
-        var new_deletes = deletes.transform_expand(deletes_at_rev)
+        var new_deletes = Cow(deletes.transform_expand(deletes_at_rev))
 
         // rebase the delta to be on the head union instead of the base_rev union
         // FIXME: Cow is a mess here!
@@ -263,54 +263,52 @@ struct Engine {
                         FullPriority(priority: priority, session_id: r.rev_id.session_id())
                     let after = new_full_priority >= full_priority // should never be ==
                     union_ins_delta = union_ins_delta.transform_expand(Cow(inserts), after)
-                    new_deletes = new_deletes.transform_expand(Cow(inserts))
+                    new_deletes.value = new_deletes.value.transform_expand(Cow(inserts))
                 }
             }
         }
 
         // rebase the deletion to be after the inserts instead of directly on the head union
-        let new_inserts = union_ins_delta.inserted_subset()
-        if !new_inserts.is_empty() {
-            new_deletes = new_deletes.transform_expand(Cow(new_inserts))
+        let new_inserts = Cow(union_ins_delta.inserted_subset())
+        if !new_inserts.value.is_empty() {
+            new_deletes.value = new_deletes.value.transform_expand(new_inserts)
         }
 
         // rebase insertions on text and apply
         let cur_deletes_from_union = self.deletes_from_union
         let text_ins_delta = union_ins_delta.transform_shrink(cur_deletes_from_union)
-        let text_with_inserts = text_ins_delta.apply(&self.text);
-        let rebased_deletes_from_union = cur_deletes_from_union.transform_expand(&new_inserts);
+        let text_with_inserts = text_ins_delta.apply(self.text)
+        let rebased_deletes_from_union = cur_deletes_from_union.value.transform_expand(new_inserts)
 
         // is the new edit in an undo group that was already undone due to concurrency?
-        let undone = self.undone_groups.contains(&undo_group);
-        let new_deletes_from_union = {
-            let to_delete = if undone { &new_inserts } else { &new_deletes };
-            rebased_deletes_from_union.union(to_delete)
-        };
+        let undone = self.undone_groups.value.contains(undo_group)
+        var to_delete = undone ? new_inserts : new_deletes
+        let new_deletes_from_union = rebased_deletes_from_union.union(&to_delete.value)
 
-    // move deleted or undone-inserted things from text to tombstones
-    let (new_text, new_tombstones) = shuffle(
-    &text_with_inserts,
-    &self.tombstones,
-    &rebased_deletes_from_union,
-    &new_deletes_from_union,
-    );
+        // move deleted or undone-inserted things from text to tombstones
+        let (new_text, new_tombstones) = shuffle(
+        &text_with_inserts,
+        &self.tombstones,
+        &rebased_deletes_from_union,
+        &new_deletes_from_union,
+        );
 
-    let head_rev = &self.revs.last().unwrap();
-    Ok((
-    Revision {
-    rev_id: self.next_rev_id(),
-    max_undo_so_far: std::cmp::max(undo_group, head_rev.max_undo_so_far),
-    edit: Edit {
-    priority: new_priority,
-    undo_group,
-    inserts: new_inserts,
-    deletes: new_deletes,
-    },
-    },
-    new_text,
-    new_tombstones,
-    new_deletes_from_union,
-    ))
+        let head_rev = &self.revs.last().unwrap();
+        Ok((
+        Revision {
+        rev_id: self.next_rev_id(),
+        max_undo_so_far: std::cmp::max(undo_group, head_rev.max_undo_so_far),
+        edit: Edit {
+        priority: new_priority,
+        undo_group,
+        inserts: new_inserts,
+        deletes: new_deletes,
+        },
+        },
+        new_text,
+        new_tombstones,
+        new_deletes_from_union,
+        ))
     }
 
     // TODO: does Cow really help much here? It certainly won't after making Subsets a rope.
@@ -353,5 +351,23 @@ struct Engine {
 
     static func default_session() -> (UInt64, UInt32) {
         return (1, 0)
+    }
+}
+
+struct GenericHelpers {
+    /// Move sections from text to tombstones and vice versa based on a new and old set of deletions.
+    /// Returns a tuple of a new text `Rope` and a new `Tombstones` rope described by `new_deletes_from_union`.
+    static func shuffle(
+                    text: inout Rope,
+                    tombstones: inout Rope,
+                    old_deletes_from_union: inout Subset,
+                    new_deletes_from_union: inout Subset
+    ) -> (Rope, Rope) {
+        // Delta that deletes the right bits from the text
+        let del_delta = Delta.synthesize(tombstones, old_deletes_from_union, new_deletes_from_union)
+        let new_text = del_delta.apply(text)
+        // println!("shuffle: old={:?} new={:?} old_text={:?} new_text={:?} old_tombstones={:?}",
+        //     old_deletes_from_union, new_deletes_from_union, text, new_text, tombstones);
+        return (new_text, shuffle_tombstones(text, tombstones, old_deletes_from_union, new_deletes_from_union))
     }
 }

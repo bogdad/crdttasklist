@@ -69,6 +69,131 @@ enum CountMatcher {
     }
 }
 
+struct Mapper {
+    var range_iter: RangeIter
+    // Not actually necessary for computation, just for dynamic checking of invariant
+    var last_i: UInt
+    var cur_range: (UInt, UInt)
+    var subset_amount_consumed: UInt
+    init(_ range_iter: RangeIter) {
+        self.range_iter = range_iter
+        self.last_i = 0
+        self.cur_range = (0, 0)
+        self.subset_amount_consumed = 0
+    }
+
+    /// Map a coordinate in the document this subset corresponds to, to a
+    /// coordinate in the subset matched by the `CountMatcher`. For example,
+    /// if the Subset is a set of deletions and the matcher is
+    /// `CountMatcher::NonZero`, this would map indices in the union string to
+    /// indices in the tombstones string.
+    ///
+    /// Will return the closest coordinate in the subset if the index is not
+    /// in the subset. If the coordinate is past the end of the subset it will
+    /// return one more than the largest index in the subset (i.e the length).
+    /// This behaviour is suitable for mapping closed-open intervals in a
+    /// string to intervals in a subset of the string.
+    ///
+    /// In order to guarantee good performance, this method must be called
+    /// with `i` values in non-decreasing order or it will panic. This allows
+    /// the total cost to be O(n) where `n = max(calls,ranges)` over all times
+    /// called on a single `Mapper`.
+    mutating func doc_index_to_subset(_ i: UInt) -> UInt {
+        assert(i >= self.last_i, "method must be called with i in non-decreasing order.")
+        self.last_i = i
+
+        while i >= self.cur_range.1 {
+            self.subset_amount_consumed += self.cur_range.1 - self.cur_range.0
+            let next = self.range_iter.next()
+            if next == nil {
+                self.cur_range = (UInt.max, UInt.max)
+                return self.subset_amount_consumed
+            }
+            self.cur_range = next!
+        }
+
+        if i >= self.cur_range.0 {
+            let dist_in_range = i - self.cur_range.0
+            return dist_in_range + self.subset_amount_consumed
+        } else {
+            // not in the subset
+            return self.subset_amount_consumed
+        }
+    }
+}
+
+/// See `Subset::zip`
+struct ZipIter: IteratorProtocol, Sequence {
+    typealias Element = ZipSegment
+
+    var a_segs: [Segment]
+    var b_segs: [Segment]
+    var a_i: UInt
+    var b_i: UInt
+    var a_consumed: UInt
+    var b_consumed: UInt
+    var consumed: UInt
+
+    init(a_segs: [Segment], b_segs: [Segment]) {
+        self.a_segs = a_segs
+        self.b_segs = b_segs
+        self.a_i = 0
+        self.b_i = 0
+        self.a_consumed = 0
+        self.b_consumed = 0
+        self.consumed = 0
+    }
+
+    /// Consume as far as possible from `self.consumed` until reaching a
+    /// segment boundary in either `Subset`, and return the resulting
+    /// `ZipSegment`. Will panic if it reaches the end of one `Subset` before
+    /// the other, that is when they have different total length.
+    mutating func next() -> ZipSegment? {
+        let aa = self.a_segs[safe: Int(self.a_i)]
+        let bb = self.b_segs[safe: Int(self.b_i)]
+        if aa == nil && bb == nil {
+            return .none
+        }
+        if (aa != nil && bb == nil) || (aa == nil && bb != nil) {
+            fatalError("can't zip Subsets of different base lengths.")
+        }
+        let a_len = aa!.len
+        let b_len = bb!.len
+        let a_count = aa!.count
+        let b_count = bb!.count
+
+        var len: UInt = 0
+        if a_len + self.a_consumed == b_len + self.b_consumed {
+            self.a_consumed += a_len
+            self.a_i += 1
+            self.b_consumed += b_len
+            self.b_i += 1
+            len = self.a_consumed - self.consumed
+        } else if a_len + self.a_consumed < b_len + self.b_consumed {
+            self.a_consumed += a_len
+            self.a_i += 1
+            len = self.a_consumed - self.consumed
+        } else {
+            self.b_consumed += b_len
+            self.b_i += 1
+            len = self.b_consumed - self.consumed
+        }
+        self.consumed += len
+        return .some(ZipSegment(len, a_count, b_count))
+    }
+}
+
+/// See `Subset::zip`
+struct ZipSegment {
+    var len: UInt
+    var a_count: UInt
+    var b_count: UInt
+    init(_ len: UInt, _ a_count: UInt, _ b_count: UInt) {
+        self.len = len
+        self.a_count = a_count
+        self.b_count = b_count
+    }
+}
 
 
 struct Subset {
@@ -168,6 +293,31 @@ struct Subset {
         assert(cur_seg.len == 0, "the 0-regions of other must be the size of self")
         assert(seg_iter.next() == nil, "the 0-regions of other must be the size of self")
         return sb.build()
+    }
+
+    /// Compute the union of two subsets. The count of an element in the
+    /// result is the sum of the counts in the inputs.
+    func union(_ other: inout Subset) -> Subset {
+        var sb = SubsetBuilder()
+        for zseg in self.zip(&other) {
+            sb.push_segment(zseg.len, zseg.a_count + zseg.b_count)
+        }
+        return sb.build()
+    }
+
+    /// Return an iterator over `ZipSegment`s where each `ZipSegment` contains
+    /// the count for both self and other in that range. The two `Subset`s
+    /// must have the same total length.
+    ///
+    /// Each returned `ZipSegment` will differ in at least one count.
+    func zip(_ other: inout Subset) -> ZipIter {
+        return ZipIter(
+            a_segs: self.segments,
+            b_segs: other.segments)
+    }
+
+    func mapper(_ matcher: CountMatcher) -> Mapper {
+        return Mapper(self.range_iter(matcher))
     }
 
     /// Determine whether the subset is empty.

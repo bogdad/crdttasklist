@@ -34,6 +34,7 @@
 		E7B05F1C2298231D00D2A094 /* NoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F1B2298231D00D2A094 /* NoteViewController.swift */; };
 		E7B05F1E2298259200D2A094 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F1D2298259200D2A094 /* Note.swift */; };
 		E7B05F202298284100D2A094 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F1F2298284100D2A094 /* Event.swift */; };
+		E7B5D57322F34EC90020AFAC /* Collections.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B5D57222F34EC90020AFAC /* Collections.swift */; };
 		E7B62C182299B8D1000143C6 /* Rope.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B62C172299B8D1000143C6 /* Rope.swift */; };
 		E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325D22BD261F00D0BF2D /* Tree.swift */; };
 		E7F0326022BD26F300D0BF2D /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325F22BD26F300D0BF2D /* Strings.swift */; };
@@ -94,6 +95,7 @@
 		E7B05F1B2298231D00D2A094 /* NoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewController.swift; sourceTree = "<group>"; };
 		E7B05F1D2298259200D2A094 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		E7B05F1F2298284100D2A094 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		E7B5D57222F34EC90020AFAC /* Collections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collections.swift; sourceTree = "<group>"; };
 		E7B62C172299B8D1000143C6 /* Rope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rope.swift; sourceTree = "<group>"; };
 		E7F0325D22BD261F00D0BF2D /* Tree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tree.swift; sourceTree = "<group>"; };
 		E7F0325F22BD26F300D0BF2D /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 				E74C3DC522D24086001B9CA7 /* Selection.swift */,
 				E763DF9922DA5DCE003572EC /* Hashes.swift */,
 				E763DF9D22E4CD2E003572EC /* Cow.swift */,
+				E7B5D57222F34EC90020AFAC /* Collections.swift */,
 			);
 			path = crdttasklist;
 			sourceTree = "<group>";
@@ -485,6 +488,7 @@
 				E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */,
 				E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */,
 				E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */,
+				E7B5D57322F34EC90020AFAC /* Collections.swift in Sources */,
 				E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */,
 				E7B05EF02298223300D2A094 /* ViewController.swift in Sources */,
 				E7F0326022BD26F300D0BF2D /* Strings.swift in Sources */,
