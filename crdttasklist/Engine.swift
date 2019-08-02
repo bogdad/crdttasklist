@@ -226,7 +226,7 @@ struct Engine {
             self.mk_new_rev(priority, undo_group, base_rev, delta)?
     }
 
-    func mk_new_rev(
+    mutating func mk_new_rev(
     _ new_priority: UInt,
     _ undo_group: UInt,
     _ base_rev: RevToken,
@@ -278,20 +278,16 @@ struct Engine {
         let cur_deletes_from_union = self.deletes_from_union
         let text_ins_delta = union_ins_delta.transform_shrink(cur_deletes_from_union)
         let text_with_inserts = text_ins_delta.apply(self.text)
-        let rebased_deletes_from_union = cur_deletes_from_union.value.transform_expand(new_inserts)
+        var rebased_deletes_from_union = cur_deletes_from_union.value.transform_expand(new_inserts)
 
         // is the new edit in an undo group that was already undone due to concurrency?
         let undone = self.undone_groups.value.contains(undo_group)
         var to_delete = undone ? new_inserts : new_deletes
-        let new_deletes_from_union = rebased_deletes_from_union.union(&to_delete.value)
+        var new_deletes_from_union = rebased_deletes_from_union.union(&to_delete.value)
 
         // move deleted or undone-inserted things from text to tombstones
-        let (new_text, new_tombstones) = shuffle(
-        &text_with_inserts,
-        &self.tombstones,
-        &rebased_deletes_from_union,
-        &new_deletes_from_union,
-        );
+        let (new_text, new_tombstones) = GenericHelpers.shuffle(
+        &text_with_inserts, &self.tombstones, &rebased_deletes_from_union, &new_deletes_from_union)
 
         let head_rev = &self.revs.last().unwrap();
         Ok((
@@ -355,17 +351,35 @@ struct Engine {
 }
 
 struct GenericHelpers {
+
+    /// Move sections from text to tombstones and out of tombstones based on a new and old set of deletions
+    static func shuffle_tombstones(
+    _ text: inout Rope,
+    _ tombstones: inout Rope,
+    _ old_deletes_from_union: inout Subset,
+    _ new_deletes_from_union: inout Subset
+    ) -> Rope {
+        // Taking the complement of deletes_from_union leads to an interleaving valid for swapped text and tombstones,
+        // allowing us to use the same method to insert the text into the tombstones.
+        var inverse_tombstones_map = old_deletes_from_union.complement()
+        var new_deletes_from_union_complement = new_deletes_from_union.complement()
+        let move_delta =
+            Delta.synthesize(&text, &inverse_tombstones_map, &new_deletes_from_union_complement)
+        return move_delta.apply(&tombstones)
+    }
+
+
     /// Move sections from text to tombstones and vice versa based on a new and old set of deletions.
     /// Returns a tuple of a new text `Rope` and a new `Tombstones` rope described by `new_deletes_from_union`.
     static func shuffle(
-                    text: inout Rope,
-                    tombstones: inout Rope,
-                    old_deletes_from_union: inout Subset,
-                    new_deletes_from_union: inout Subset
+                    _ text: inout Rope,
+                    _ tombstones: inout Rope,
+                    _ old_deletes_from_union: inout Subset,
+                    _ new_deletes_from_union: inout Subset
     ) -> (Rope, Rope) {
         // Delta that deletes the right bits from the text
-        let del_delta = Delta.synthesize(tombstones, old_deletes_from_union, new_deletes_from_union)
-        let new_text = del_delta.apply(text)
+        let del_delta = Delta.synthesize(&tombstones, &old_deletes_from_union, &new_deletes_from_union)
+        let new_text = del_delta.apply(&text)
         // println!("shuffle: old={:?} new={:?} old_text={:?} new_text={:?} old_tombstones={:?}",
         //     old_deletes_from_union, new_deletes_from_union, text, new_text, tombstones);
         return (new_text, shuffle_tombstones(text, tombstones, old_deletes_from_union, new_deletes_from_union))

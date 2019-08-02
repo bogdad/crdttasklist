@@ -142,7 +142,7 @@ struct Delta<N: NodeInfo> {
     ///     assert_eq!(String::from(d2.apply(r)), String::from(d.apply(r)));
     /// }
     /// ```
-    static func synthesize(tombstones: inout Node<N>, from_dels: inout Subset, to_dels: inout Subset) -> Delta<N> {
+    static func synthesize(_ tombstones: inout Node<N>, _ from_dels: inout Subset, _ to_dels: inout Subset) -> Delta<N> {
         let base_len = from_dels.len_after_delete()
         var els = [DeltaElement<N>]()
         var x: UInt = 0
@@ -252,7 +252,7 @@ struct InsertDelta<N: NodeInfo> {
                     b1 = y
                     els.append(DeltaElement.Insert(n))
                     i += 1
-                case DeltaElement.Copy(let b, let e):
+                case DeltaElement.Copy(let _, let e):
                     if y >= next_iv_beg {
                         var next_y = e + y - x;
                         if case let .some((_, xe)) = last_xform {

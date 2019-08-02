@@ -245,6 +245,20 @@ struct Subset {
     }
 
 
+    /// Find the complement of this Subset. Every 0-count element will have a
+    /// count of 1 and every non-zero element will have a count of 0.
+    func complement() -> Subset {
+        var sb = SubsetBuilder()
+        for seg in self.segments {
+            if seg.count == 0 {
+                sb.push_segment(seg.len, 1)
+            } else {
+                sb.push_segment(seg.len, 0)
+            }
+        }
+        return sb.build()
+    }
+
     /// Convenience alias for `self.range_iter(CountMatcher::Zero)`.
     /// Semantically iterates the ranges of the complement of this `Subset`.
     func complement_iter() -> RangeIter {
