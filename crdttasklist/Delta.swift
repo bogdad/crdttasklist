@@ -114,6 +114,105 @@ struct Delta<N: NodeInfo> {
         sb.pad_to_len(self.base_len);
         return (InsertDelta(elem: Delta(ins, self.base_len)), sb.build())
     }
+
+    /// Synthesize a delta from a "union string" and two subsets: an old set
+    /// of deletions and a new set of deletions from the union. The Delta is
+    /// from text to text, not union to union; anything in both subsets will
+    /// be assumed to be missing from the Delta base and the new text. You can
+    /// also think of these as a set of insertions and one of deletions, with
+    /// overlap doing nothing. This is basically the inverse of `factor`.
+    ///
+    /// Since only the deleted portions of the union string are necessary,
+    /// instead of requiring a union string the function takes a `tombstones`
+    /// rope which contains the deleted portions of the union string. The
+    /// `from_dels` subset must be the interleaving of `tombstones` into the
+    /// union string.
+    ///
+    /// ```no_run
+    /// # use xi_rope::rope::{Rope, RopeInfo};
+    /// # use xi_rope::delta::Delta;
+    /// # use std::str::FromStr;
+    /// fn test_synthesize(d : &Delta<RopeInfo>, r : &Rope) {
+    ///     let (ins_d, del) = d.clone().factor();
+    ///     let ins = ins_d.inserted_subset();
+    ///     let del2 = del.transform_expand(&ins);
+    ///     let r2 = ins_d.apply(&r);
+    ///     let tombstones = ins.complement().delete_from(&r2);
+    ///     let d2 = Delta::synthesize(&tombstones, &ins, &del);
+    ///     assert_eq!(String::from(d2.apply(r)), String::from(d.apply(r)));
+    /// }
+    /// ```
+    static func synthesize(tombstones: inout Node<N>, from_dels: inout Subset, to_dels: inout Subset) -> Delta<N> {
+        let base_len = from_dels.len_after_delete()
+        var els = [DeltaElement<N>]()
+        var x: UInt = 0
+        var old_ranges = from_dels.complement_iter()
+        var last_old = old_ranges.next()
+        var m = from_dels.mapper(CountMatcher.NonZero)
+        // For each segment of the new text
+        for (b, e) in to_dels.complement_iter() {
+            // Fill the whole segment
+            var beg = b
+            while beg < e {
+                // Skip over ranges in old text until one overlaps where we want to fill
+                while true {
+                    let ib = last_old!.0
+                    let ie = last_old!.1
+                    if ie > beg {
+                        break
+                    }
+                    x += ie - ib
+                    last_old = old_ranges.next()
+                }
+                // If we have a range in the old text with the character at beg, then we Copy
+                if last_old != nil && last_old!.0 <= beg {
+                    let (ib, ie) = last_old!
+                    let end = min(e, ie)
+                    // Try to merge contiguous Copys in the output
+                    let xbeg = beg + x - ib // "beg - ib + x" better for overflow?
+                    let xend = end + x - ib // ditto
+                    var merged = false
+                    var newlb:UInt = 0
+                    var newle:UInt = 0
+                    switch els.last {
+                    case .some(let elt):
+                        switch elt {
+                        case .Copy(let lb, let le):
+                            if le == xbeg {
+                                merged = true
+                                newlb = lb
+                                newle = xend
+                            }
+                        case .Insert(_): break
+                        }
+                    case .none: break
+                    }
+                    if merged {
+                        els[els.count-1] = .Copy(newlb, newle)
+                    }
+                    if !merged {
+                        els.append(DeltaElement.Copy(xbeg, xend))
+                    }
+                    beg = end;
+                } else {
+                    // if the character at beg isn't in the old text, then we Insert
+                    // Insert up until the next old range we could Copy from, or the end of this segment
+                    var end = e
+                    if case let .some((ib, _)) = last_old {
+                        end = min(end, ib)
+                    }
+                    // Note: could try to aggregate insertions, but not sure of the win.
+                    // Use the mapper to insert the corresponding section of the tombstones rope
+                    let interval =
+                        Interval(m.doc_index_to_subset(beg), m.doc_index_to_subset(end))
+                    els.append(.Insert(tombstones.subseq(interval)))
+                    beg = end
+                }
+            }
+        }
+        return Delta(els, base_len)
+    }
+
 }
 
 struct InsertDelta<N: NodeInfo> {

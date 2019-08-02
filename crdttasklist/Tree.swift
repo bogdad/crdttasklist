@@ -252,6 +252,13 @@ class Node<N: NodeInfo> : Equatable {
     //    return M.measure(body.info, len())
     // }
 
+    func subseq<T: IntervalBounds>(iv: T) -> Node<N> {
+        let iv = iv.into_interval(upper_bound: self.len())
+        var b = TreeBuilder<N>()
+        self.push_subseq(b: &b, iv: iv)
+        return b.build()
+    }
+
     func push_subseq(b: inout TreeBuilder<N>, iv: Interval) {
         if iv.is_empty() {
             return
