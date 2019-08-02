@@ -40,17 +40,6 @@ enum CrdtError: Error {
     case MalformedDelta(rev_len: UInt, delta_len: UInt)
 }
 
-struct Undo {
-    var toggled_groups: SortedSet<UInt> // set of undo_group id's
-    /// Used to store a reversible difference between the old
-    /// and new deletes_from_union
-    var deletes_bitxor: Subset
-    init(toggled_groups: SortedSet<UInt>, deletes_bitxor: Subset) {
-        self.toggled_groups = toggled_groups
-        self.deletes_bitxor = deletes_bitxor
-    }
-}
-
 enum Contents {
     case Edit(priority: UInt,
     /// Groups related edits together so that they are undone and re-done
@@ -63,7 +52,12 @@ enum Contents {
     /// The subset of the characters of the union string from after this
     /// revision that were deleted by this revision.
     deletes: Subset)
-    case Undo(undo: Undo)
+    case Undo(
+        toggled_groups: SortedSet<UInt>, // set of undo_group id's
+        /// Used to store a reversible difference between the old
+        /// and new deletes_from_union
+        deletes_bitxor: Subset
+    )
 }
 
 struct FullPriority {
@@ -162,10 +156,10 @@ struct Engine {
         let deletes_from_union = Subset.make_empty(0)
         let rev = Revision(
             rev_id: RevId(session1: 0, session2: 0, num: 0),
-            edit: Contents.Undo(undo: Undo(
+            edit: Contents.Undo(
                 toggled_groups: SortedSet(),
                 deletes_bitxor: deletes_from_union.clone()
-            )),
+            ),
             max_undo_so_far: 0)
         self.session = Engine.default_session()
         self.rev_id_counter = 1
@@ -195,6 +189,10 @@ struct Engine {
         return self.text
     }
 
+    func next_rev_id() -> RevId {
+        return RevId(session1: self.session.0, session2: self.session.1, num: self.rev_id_counter)
+    }
+
     func find_rev_token(_ rev_token: RevToken) -> UInt? {
         return self.revs
             .makeIterator()
@@ -221,12 +219,23 @@ struct Engine {
         }
     }
 
-    mutating func try_edit_rev(_ priority: UInt, _ undo_group: UInt, _ base_rev: RevToken, _ delta: Delta<RopeInfo>) -> Result<(), Error> {
-        let (new_rev, new_text, new_tombstones, new_deletes_from_union) =
-            self.mk_new_rev(priority, undo_group, base_rev, delta)?
+    mutating func try_edit_rev(_ priority: UInt, _ undo_group: UInt, _ base_rev: RevToken, _ delta: Delta<RopeInfo>) -> Result<(), CrdtError> {
+        let res = self.mk_new_rev(priority, undo_group, base_rev, delta)
+        if case let .failure(err) = res {
+            return .failure(err)
+        }
+        if case let .success(tpl) = res {
+            let (new_rev, new_text, new_tombstones, new_deletes_from_union) = tpl
+            self.rev_id_counter += 1
+            self.revs.append(new_rev)
+            self.text = new_text
+            self.tombstones = new_tombstones
+            self.deletes_from_union.value = new_deletes_from_union
+        }
+        return .success(())
     }
 
-    mutating func mk_new_rev(
+    func mk_new_rev(
     _ new_priority: UInt,
     _ undo_group: UInt,
     _ base_rev: RevToken,
@@ -257,7 +266,7 @@ struct Engine {
         // FIXME: Cow is a mess here!
         let new_full_priority = FullPriority(priority: new_priority, session_id: self.session)
         for r in self.revs[Int(ix + 1)...] {
-            if case let Contents.Edit(priority: priority, undo_group: undo_group, inserts: inserts, deletes: _) = r.edit {
+            if case let Contents.Edit(priority: priority, undo_group: _, inserts: inserts, deletes: _) = r.edit {
                 if !inserts.is_empty() {
                     let full_priority =
                         FullPriority(priority: priority, session_id: r.rev_id.session_id())
@@ -287,23 +296,23 @@ struct Engine {
 
         // move deleted or undone-inserted things from text to tombstones
         let (new_text, new_tombstones) = GenericHelpers.shuffle(
-        &text_with_inserts, &self.tombstones, &rebased_deletes_from_union, &new_deletes_from_union)
+        text_with_inserts, self.tombstones, &rebased_deletes_from_union, &new_deletes_from_union)
 
-        let head_rev = &self.revs.last().unwrap();
-        Ok((
-        Revision {
-        rev_id: self.next_rev_id(),
-        max_undo_so_far: std::cmp::max(undo_group, head_rev.max_undo_so_far),
-        edit: Edit {
-        priority: new_priority,
-        undo_group,
-        inserts: new_inserts,
-        deletes: new_deletes,
-        },
-        },
-        new_text,
-        new_tombstones,
-        new_deletes_from_union,
+        let head_rev = self.revs[revs.count - 1]
+        return .success((
+            Revision(
+                rev_id: self.next_rev_id(),
+                edit: .Edit(
+                    priority: new_priority,
+                    undo_group: undo_group,
+                    // FIXME: move instead of copy
+                    inserts: new_inserts.value,
+                    deletes: new_deletes.value
+                ),
+                max_undo_so_far: max(undo_group, head_rev.max_undo_so_far)),
+                new_text,
+                new_tombstones,
+                new_deletes_from_union
         ))
     }
 
@@ -314,31 +323,27 @@ struct Engine {
         return self.deletes_from_union_before_index(rev_index + 1, true)
     }
 
-    func deletes_from_union_before_index(rev_index: UInt, invert_undos: bool) -> Cow<Subset> {
+    func deletes_from_union_before_index(_ rev_index: UInt, _ invert_undos: Bool) -> Cow<Subset> {
         var deletes_from_union = self.deletes_from_union
         var undone_groups = self.undone_groups
 
         // invert the changes to deletes_from_union starting in the present and working backwards
         for rev in self.revs[Int(rev_index)...].makeIterator().reversed() {
-            deletes_from_union = match rev.edit {
-                Edit { ref inserts, ref deletes, ref undo_group, .. } => {
-                    if undone_groups.contains(undo_group) {
-                        // no need to un-delete undone inserts since we'll just shrink them out
-                        Cow::Owned(deletes_from_union.transform_shrink(inserts))
-                    } else {
-                        let un_deleted = deletes_from_union.subtract(deletes);
-                        Cow::Owned(un_deleted.transform_shrink(inserts))
-                    }
+            switch rev.edit {
+            case .Edit(_, let undo_group, var inserts, var deletes):
+                if undone_groups.value.contains(undo_group) {
+                    // no need to un-delete undone inserts since we'll just shrink them out
+                    deletes_from_union = Cow(deletes_from_union.value.transform_shrink(&inserts))
+                } else {
+                    let un_deleted = deletes_from_union.value.subtract(&deletes)
+                    deletes_from_union = Cow(un_deleted.transform_shrink(&inserts))
                 }
-                Undo { ref toggled_groups, ref deletes_bitxor } => {
-                    if invert_undos {
-                        let new_undone =
-                            undone_groups.symmetric_difference(toggled_groups).cloned().collect();
-                        undone_groups = Cow::Owned(new_undone);
-                        Cow::Owned(deletes_from_union.bitxor(deletes_bitxor))
-                    } else {
-                        deletes_from_union
-                    }
+            case .Undo(let toggled_groups, var deletes_bitxor):
+                if invert_undos {
+                    let new_undone =
+                        undone_groups.value.symmetricDifference(toggled_groups)
+                    undone_groups = Cow(new_undone)
+                    deletes_from_union = Cow(deletes_from_union.value.bitxor(&deletes_bitxor))
                 }
             }
         }
@@ -354,8 +359,8 @@ struct GenericHelpers {
 
     /// Move sections from text to tombstones and out of tombstones based on a new and old set of deletions
     static func shuffle_tombstones(
-    _ text: inout Rope,
-    _ tombstones: inout Rope,
+    _ text: Rope,
+    _ tombstones: Rope,
     _ old_deletes_from_union: inout Subset,
     _ new_deletes_from_union: inout Subset
     ) -> Rope {
@@ -364,24 +369,24 @@ struct GenericHelpers {
         var inverse_tombstones_map = old_deletes_from_union.complement()
         var new_deletes_from_union_complement = new_deletes_from_union.complement()
         let move_delta =
-            Delta.synthesize(&text, &inverse_tombstones_map, &new_deletes_from_union_complement)
-        return move_delta.apply(&tombstones)
+            Delta.synthesize(text, &inverse_tombstones_map, &new_deletes_from_union_complement)
+        return move_delta.apply(tombstones)
     }
 
 
     /// Move sections from text to tombstones and vice versa based on a new and old set of deletions.
     /// Returns a tuple of a new text `Rope` and a new `Tombstones` rope described by `new_deletes_from_union`.
     static func shuffle(
-                    _ text: inout Rope,
-                    _ tombstones: inout Rope,
+                    _ text: Rope,
+                    _ tombstones: Rope,
                     _ old_deletes_from_union: inout Subset,
                     _ new_deletes_from_union: inout Subset
     ) -> (Rope, Rope) {
         // Delta that deletes the right bits from the text
-        let del_delta = Delta.synthesize(&tombstones, &old_deletes_from_union, &new_deletes_from_union)
-        let new_text = del_delta.apply(&text)
+        let del_delta = Delta.synthesize(tombstones, &old_deletes_from_union, &new_deletes_from_union)
+        let new_text = del_delta.apply(text)
         // println!("shuffle: old={:?} new={:?} old_text={:?} new_text={:?} old_tombstones={:?}",
         //     old_deletes_from_union, new_deletes_from_union, text, new_text, tombstones);
-        return (new_text, shuffle_tombstones(text, tombstones, old_deletes_from_union, new_deletes_from_union))
+        return (new_text, shuffle_tombstones(text, tombstones, &old_deletes_from_union, &new_deletes_from_union))
     }
 }

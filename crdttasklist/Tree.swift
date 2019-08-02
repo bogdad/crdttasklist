@@ -68,13 +68,14 @@ struct NodeBody<N: NodeInfo> : Equatable {
 }
 
 class Node<N: NodeInfo> : Equatable {
-    static func == (lhs: Node<N>, rhs: Node<N>) -> Bool {
-        return lhs.body == rhs.body
-    }
-
     var body: NodeBody<N>
+
     init(body: NodeBody<N>) {
         self.body = body
+    }
+
+    static func == (lhs: Node<N>, rhs: Node<N>) -> Bool {
+        return lhs.body == rhs.body
     }
 
     static func from_leaf(l: inout N.L) -> Node<N> {

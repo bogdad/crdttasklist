@@ -265,6 +265,33 @@ struct Subset {
         return self.range_iter(CountMatcher.Zero)
     }
 
+    /// Compute the difference of two subsets. The count of an element in the
+    /// result is the subtraction of the counts of other from self.
+    func subtract(_ other: inout Subset) -> Subset {
+        var sb = SubsetBuilder()
+        for zseg in self.zip(&other) {
+            assert(
+                zseg.a_count >= zseg.b_count,
+                "can't subtract from")
+            sb.push_segment(zseg.len, zseg.a_count - zseg.b_count)
+        }
+        return sb.build()
+    }
+
+    /// Compute the bitwise xor of two subsets, useful as a reversible
+    /// difference. The count of an element in the result is the bitwise xor
+    /// of the counts of the inputs. Unchanged segments will be 0.
+    ///
+    /// This works like set symmetric difference when all counts are 0 or 1
+    /// but it extends nicely to the case of larger counts.
+    func bitxor(_ other: inout Subset) -> Subset {
+        var sb = SubsetBuilder()
+        for zseg in self.zip(&other) {
+            sb.push_segment(zseg.len, zseg.a_count ^ zseg.b_count)
+        }
+        return sb.build()
+    }
+
     /// Transform through coordinate transform represented by other.
     /// The equation satisfied is as follows:
     ///
@@ -276,6 +303,26 @@ struct Subset {
     func transform_expand(_ other: Cow<Subset>) -> Subset {
         return self.transform(other, false)
     }
+
+    /// Transform subset through other coordinate transform, shrinking.
+    /// The following equation is satisfied:
+    ///
+    /// C = A.transform_expand(B)
+    ///
+    /// B.transform_shrink(C).delete_from_string(C.delete_from_string(s)) =
+    ///   A.delete_from_string(B.delete_from_string(s))
+    func transform_shrink(_ other: inout Subset) -> Subset {
+        var sb = SubsetBuilder()
+        // discard ZipSegments where the shrinking set has positive count
+        for zseg in self.zip(&other) {
+            // TODO: should this actually do something like subtract counts?
+            if zseg.b_count == 0 {
+                sb.push_segment(zseg.len, zseg.a_count)
+            }
+        }
+        return sb.build()
+    }
+
     // Map the contents of `self` into the 0-regions of `other`.
     /// Precondition: `self.count(CountMatcher::All) == other.count(CountMatcher::Zero)`
     func transform(_ other: Cow<Subset>, _ union: Bool) -> Subset {

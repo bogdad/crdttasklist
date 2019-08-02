@@ -12,7 +12,7 @@ import XCTest
 extension Delta where N==RopeInfo {
     func apply_to_string(_ s: String) -> String {
         var incoming_rope = Rope.from_str(s[...])
-        let rope = self.apply(&incoming_rope)
+        let rope = self.apply(incoming_rope)
         return String.from(rope: rope)
     }
 }

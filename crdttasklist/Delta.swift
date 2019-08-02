@@ -52,7 +52,7 @@ struct Delta<N: NodeInfo> {
 
     /// Apply the delta to the given rope. May not work well if the length of the rope
     /// is not compatible with the construction of the delta.
-    func apply(_ base: inout Node<N>) -> Node<N> {
+    func apply(_ base: Node<N>) -> Node<N> {
         assert(base.len() == self.base_len, "must apply Delta to Node of correct length")
         var b = TreeBuilder<N>()
         for elem in self.els {
@@ -142,7 +142,7 @@ struct Delta<N: NodeInfo> {
     ///     assert_eq!(String::from(d2.apply(r)), String::from(d.apply(r)));
     /// }
     /// ```
-    static func synthesize(_ tombstones: inout Node<N>, _ from_dels: inout Subset, _ to_dels: inout Subset) -> Delta<N> {
+    static func synthesize(_ tombstones: Node<N>, _ from_dels: inout Subset, _ to_dels: inout Subset) -> Delta<N> {
         let base_len = from_dels.len_after_delete()
         var els = [DeltaElement<N>]()
         var x: UInt = 0
