@@ -156,6 +156,9 @@ struct Delta<N: NodeInfo> {
             while beg < e {
                 // Skip over ranges in old text until one overlaps where we want to fill
                 while true {
+                    if last_old == nil {
+                        break
+                    }
                     let ib = last_old!.0
                     let ie = last_old!.1
                     if ie > beg {
