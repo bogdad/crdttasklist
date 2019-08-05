@@ -219,6 +219,14 @@ struct Subset {
         return result
     }
 
+    func delete_from_string(_ s: String) -> String {
+        var result = String()
+        for (b, e) in self.range_iter(CountMatcher.Zero) {
+            result.append(contentsOf: s.uintO(b, e))
+        }
+        return result
+    }
+
     /// Return an iterator over the ranges with a count matching the `matcher`.
     /// These will often be easier to work with than raw segments.
     func range_iter(_ matcher: CountMatcher) -> RangeIter {
@@ -238,9 +246,9 @@ struct Subset {
     /// Count the total length of all the segments matching `matcher`.
     func count(_ matcher: CountMatcher) -> UInt {
         return
-            self.segments.makeIterator()
+            self.segments
                 .filter { matcher.matches(seg: $0)}
-                .map {$0.count}
+                .map {$0.len}
                 .reduce(0, +)
     }
 
