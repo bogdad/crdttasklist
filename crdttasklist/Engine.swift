@@ -350,6 +350,63 @@ struct Engine {
         return deletes_from_union
     }
 
+    /// Find the first revision that could be affected by toggling a set of undo groups
+    func find_first_undo_candidate_index(_ toggled_groups: SortedSet<UInt>) -> UInt {
+        // find the lowest toggled undo group number
+        if case let .some(lowest_group) = toggled_groups.first {
+            let reversed_revs = self.revs.makeIterator().enumerated()
+            for (i, rev) in reversed_revs {
+                if rev.max_undo_so_far < lowest_group {
+                    return UInt(i + 1) // +1 since we know the one we just found doesn't have it
+                }
+            }
+            return 0
+        } else {
+            // no toggled groups, return past end
+            return UInt(self.revs.count)
+        }
+    }
+
+    // This computes undo all the way from the beginning. An optimization would be to not
+    // recompute the prefix up to where the history diverges, but it's not clear that's
+    // even worth the code complexity.
+    func compute_undo(groups: inout SortedSet<UInt>) -> (Revision, Subset) {
+        let toggled_groups =
+            self.undone_groups.value.symmetricDifference(groups)
+        let first_candidate = self.find_first_undo_candidate_index(toggled_groups)
+        // the `false` below: don't invert undos since our first_candidate is based on the current undo set, not past
+        var deletes_from_union =
+            self.deletes_from_union_before_index(first_candidate, false)
+
+        for rev in self.revs[Int(first_candidate)...] {
+            if case .Edit(let priority, let undo_group, let inserts, var deletes) = rev.edit {
+                if groups.contains(undo_group) {
+                    if !inserts.is_empty() {
+                        deletes_from_union.value = deletes_from_union.value.transform_union(Cow(inserts))
+                    }
+                } else {
+                    if !inserts.is_empty() {
+                        deletes_from_union.value = deletes_from_union.value.transform_expand(Cow(inserts))
+                    }
+                    if !deletes.is_empty() {
+                        deletes_from_union.value = deletes_from_union.value.union(&deletes)
+                    }
+                }
+            }
+        }
+
+        let deletes_bitxor = self.deletes_from_union.value.bitxor(&deletes_from_union.value)
+        let max_undo_so_far = self.revs.last!.max_undo_so_far
+        return (
+            Revision(
+                rev_id: self.next_rev_id(),
+                edit: .Undo(toggled_groups: toggled_groups, deletes_bitxor: deletes_bitxor),
+                max_undo_so_far: max_undo_so_far
+            ),
+            deletes_from_union.value
+        )
+    }
+
     static func default_session() -> (UInt64, UInt32) {
         return (1, 0)
     }

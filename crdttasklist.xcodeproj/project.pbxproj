@@ -36,6 +36,8 @@
 		E7B05F202298284100D2A094 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F1F2298284100D2A094 /* Event.swift */; };
 		E7B5D57322F34EC90020AFAC /* Collections.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B5D57222F34EC90020AFAC /* Collections.swift */; };
 		E7B62C182299B8D1000143C6 /* Rope.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B62C172299B8D1000143C6 /* Rope.swift */; };
+		E7BD0E0822FC352D00B14710 /* MultisetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7BD0E0722FC352D00B14710 /* MultisetTests.swift */; };
+		E7BD0E0A22FC366300B14710 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7BD0E0922FC366300B14710 /* TestHelpers.swift */; };
 		E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325D22BD261F00D0BF2D /* Tree.swift */; };
 		E7F0326022BD26F300D0BF2D /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325F22BD26F300D0BF2D /* Strings.swift */; };
 /* End PBXBuildFile section */
@@ -97,6 +99,8 @@
 		E7B05F1F2298284100D2A094 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		E7B5D57222F34EC90020AFAC /* Collections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collections.swift; sourceTree = "<group>"; };
 		E7B62C172299B8D1000143C6 /* Rope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rope.swift; sourceTree = "<group>"; };
+		E7BD0E0722FC352D00B14710 /* MultisetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisetTests.swift; sourceTree = "<group>"; };
+		E7BD0E0922FC366300B14710 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
 		E7F0325D22BD261F00D0BF2D /* Tree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tree.swift; sourceTree = "<group>"; };
 		E7F0325F22BD26F300D0BF2D /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		F25EA82BD8892AE33DAF952B /* Pods-crdttasklist.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklist.release.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklist/Pods-crdttasklist.release.xcconfig"; sourceTree = "<group>"; };
@@ -203,6 +207,7 @@
 				E763DF9922DA5DCE003572EC /* Hashes.swift */,
 				E763DF9D22E4CD2E003572EC /* Cow.swift */,
 				E7B5D57222F34EC90020AFAC /* Collections.swift */,
+				E7BD0E0922FC366300B14710 /* TestHelpers.swift */,
 			);
 			path = crdttasklist;
 			sourceTree = "<group>";
@@ -215,6 +220,7 @@
 				E76E278522A0120C00E86AB2 /* RopeTests.swift */,
 				E79E1F8822C7F237007099E5 /* DeltaTests.swift */,
 				E763DF9B22DA6FF4003572EC /* EngineTests.swift */,
+				E7BD0E0722FC352D00B14710 /* MultisetTests.swift */,
 			);
 			path = crdttasklistTests;
 			sourceTree = "<group>";
@@ -498,6 +504,7 @@
 				E763DF9E22E4CD2E003572EC /* Cow.swift in Sources */,
 				E7B05F202298284100D2A094 /* Event.swift in Sources */,
 				E7B62C182299B8D1000143C6 /* Rope.swift in Sources */,
+				E7BD0E0A22FC366300B14710 /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -505,6 +512,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7BD0E0822FC352D00B14710 /* MultisetTests.swift in Sources */,
 				E7B05F032298223400D2A094 /* crdttasklistTests.swift in Sources */,
 				E763DF9C22DA6FF4003572EC /* EngineTests.swift in Sources */,
 				E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */,

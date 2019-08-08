@@ -364,6 +364,11 @@ struct Subset {
         return sb.build()
     }
 
+    /// The same as taking transform_expand and then unioning with `other`.
+    func transform_union(_ other: Cow<Subset>) -> Subset {
+        return self.transform(other, true)
+    }
+
     /// Compute the union of two subsets. The count of an element in the
     /// result is the sum of the counts in the inputs.
     func union(_ other: inout Subset) -> Subset {
