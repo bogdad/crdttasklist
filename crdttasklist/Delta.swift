@@ -255,7 +255,7 @@ struct InsertDelta<N: NodeInfo> {
                     b1 = y
                     els.append(DeltaElement.Insert(n))
                     i += 1
-                case DeltaElement.Copy(let _, let e):
+                case DeltaElement.Copy(_, let e):
                     if y >= next_iv_beg {
                         var next_y = e + y - x;
                         if case let .some((_, xe)) = last_xform {

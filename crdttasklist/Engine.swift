@@ -379,7 +379,7 @@ struct Engine {
             self.deletes_from_union_before_index(first_candidate, false)
 
         for rev in self.revs[Int(first_candidate)...] {
-            if case .Edit(let priority, let undo_group, let inserts, var deletes) = rev.edit {
+            if case .Edit(_, let undo_group, let inserts, var deletes) = rev.edit {
                 if groups.contains(undo_group) {
                     if !inserts.is_empty() {
                         deletes_from_union.value = deletes_from_union.value.transform_union(Cow(inserts))
