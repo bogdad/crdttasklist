@@ -15,7 +15,7 @@ class TestHelpers {
     static func find_deletions(_ substr: String, _ s: String) -> Subset {
         var sb = SubsetBuilder()
         var j: UInt = 0
-        for i: UInt in 0...UInt(s.count) {
+        for i: UInt in 0..<UInt(s.count) {
             if j < substr.count {
                 let substr_j = substr.index(substr.startIndex, offsetBy: Int(j))
                 let s_i = s.index(s.startIndex, offsetBy: Int(i))
