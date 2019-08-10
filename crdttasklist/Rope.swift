@@ -217,6 +217,12 @@ extension Rope {
         return b.build()
     }
 
+    static func from_str(_ s: String) -> Rope {
+        var b = TreeBuilder<RopeInfo>()
+        b.push_str(s: s[...])
+        return b.build()
+    }
+
     func iter_chunks<T: IntervalBounds>(range: T) -> ChunkIter {
         let interval = range.into_interval(upper_bound: self.body.len)
 

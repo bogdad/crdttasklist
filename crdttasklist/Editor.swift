@@ -91,6 +91,31 @@ struct Editor {
     // we dont have it yet
     //layers: Layers,
 
+    init(_ text: String) {
+        let engine = Engine.new(Rope.from_str(text[...]))
+        let buffer = engine.get_head()
+        let last_rev_id = engine.get_head_rev_id();
+        self.text = buffer
+        self.engine = engine
+        self.last_rev_id = last_rev_id
+        self.pristine_rev_id = last_rev_id
+        self.undo_group_id = 1
+        // GC only works on undone edits or prefixes of the visible edits,
+        // but initial file loading can create an edit with undo group 0,
+        // so we want to collect that as part of the prefix.
+        self.live_undos = [UInt]()
+        self.cur_undo = 1
+        self.undos = SortedSet()
+        self.gc_undos = SortedSet()
+        self.force_undo_group = false
+        self.last_edit_type = .Other
+        self.this_edit_type = .Other
+        // self.layers = Layers.default()
+        self.revs_in_flight = 0
+        // self.sync_store = nil
+        // self.last_synced_rev = last_rev_id,
+    }
+
     mutating func insert(view: inout View, rope: Rope) {
         var builder = DeltaBuilder<RopeInfo>(self.text.len())
         for region in view.sel_regions() {
@@ -115,8 +140,8 @@ struct Editor {
         let head_rev_id = self.engine.get_head_rev_id()
         let undo_group = self.calculate_undo_group()
         self.last_edit_type = self.this_edit_type
-        let priority = 0x10000;
-        //self.engine.edit_rev(priority, undo_group, head_rev_id.token(), delta)
+        let priority: UInt = 0x10000;
+        self.engine.edit_rev(priority, undo_group, head_rev_id.token(), delta)
         self.text = self.engine.get_head().clone()
     }
 
@@ -143,5 +168,13 @@ struct Editor {
             self.undo_group_id += 1
             return undo_group
         }
+    }
+
+    func get_head_rev_token() -> UInt64 {
+        return self.engine.get_head_rev_id().token()
+    }
+
+    func get_buffer() -> Rope {
+        return self.text
     }
 }

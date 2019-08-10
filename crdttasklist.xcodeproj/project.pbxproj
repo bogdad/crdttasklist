@@ -12,6 +12,7 @@
 		8F0B181F482B5C655D3AC851 /* Pods_crdttasklistUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F52338B186C24951445935E9 /* Pods_crdttasklistUITests.framework */; };
 		E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71F38AA22D231B8007FC0E8 /* Editor.swift */; };
 		E737A29322FEDB1600E5AAD8 /* TestHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */; };
+		E737A29522FEE1AE00E5AAD8 /* EditorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */; };
 		E74C3DC022D23620001B9CA7 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74C3DBF22D23620001B9CA7 /* Engine.swift */; };
 		E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74C3DC122D23E7F001B9CA7 /* View.swift */; };
 		E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74C3DC522D24086001B9CA7 /* Selection.swift */; };
@@ -70,6 +71,7 @@
 		E06E61FDE88080403324CEA5 /* Pods_crdttasklist.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_crdttasklist.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E71F38AA22D231B8007FC0E8 /* Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Editor.swift; sourceTree = "<group>"; };
 		E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpersTests.swift; sourceTree = "<group>"; };
+		E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTests.swift; sourceTree = "<group>"; };
 		E74C3DBF22D23620001B9CA7 /* Engine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 		E74C3DC122D23E7F001B9CA7 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		E74C3DC522D24086001B9CA7 /* Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
@@ -224,6 +226,7 @@
 				E763DF9B22DA6FF4003572EC /* EngineTests.swift */,
 				E7BD0E0722FC352D00B14710 /* MultisetTests.swift */,
 				E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */,
+				E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */,
 			);
 			path = crdttasklistTests;
 			sourceTree = "<group>";
@@ -517,6 +520,7 @@
 			files = (
 				E7BD0E0822FC352D00B14710 /* MultisetTests.swift in Sources */,
 				E737A29322FEDB1600E5AAD8 /* TestHelpersTests.swift in Sources */,
+				E737A29522FEE1AE00E5AAD8 /* EditorTests.swift in Sources */,
 				E7B05F032298223400D2A094 /* crdttasklistTests.swift in Sources */,
 				E763DF9C22DA6FF4003572EC /* EngineTests.swift in Sources */,
 				E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */,

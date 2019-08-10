@@ -170,6 +170,16 @@ struct Engine {
         self.revs = [rev]
     }
 
+    static func new(_ initial_contents: Rope) -> Engine {
+        var engine = Engine()
+        if !initial_contents.is_empty() {
+            let first_rev = engine.get_head_rev_id().token()
+            let delta = Delta.simple_edit(Interval(0, 0), initial_contents, 0)
+            engine.edit_rev(0, 0, first_rev, delta)
+        }
+        return engine
+    }
+
     static func make_from_rope(_ initial_contents: Rope) -> Engine {
         var engine = Engine()
         if !initial_contents.is_empty() {
