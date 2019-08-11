@@ -281,3 +281,66 @@ struct ChunkIter: IteratorProtocol, Sequence {
 }
 
 typealias RopeDelta = Delta<RopeInfo>
+
+
+// line iterators
+struct LinesRaw: IteratorProtocol, Sequence {
+    var inner: ChunkIter
+    var fragment: Substring
+
+    // FIXME: how are copies handled here?
+    mutating func next() -> String? {
+        var result:String = ""
+        while true {
+            if self.fragment.isEmpty {
+                let nxt = self.inner.next()
+                if nxt == nil {
+                    return result.isEmpty ? .none : .some(result)
+                }
+                let chunk = nxt!
+                self.fragment = chunk[...]
+                if self.fragment.isEmpty {
+                    // can only happen on empty input
+                    return .none
+                }
+            }
+
+            switch self.fragment.memchr("\n") {
+            case let .some(i):
+                result.append(String(self.fragment.uintC(0, i)))
+                self.fragment = self.fragment.uintO(i + 1, UInt(self.fragment.count))
+                return .some(result);
+            case .none:
+                result.append(String(self.fragment))
+                self.fragment = ""
+            }
+        }
+    }
+}
+
+struct Lines: IteratorProtocol, Sequence {
+    var inner: LinesRaw
+
+    mutating func next() -> String? {
+        switch self.inner.next() {
+        case .some(var s):
+            if s.hasSuffix("\n") {
+                s = String(s.prefix(s.count - 1))
+                if s.hasSuffix("\r") {
+                    s = String(s.prefix(s.count - 1))
+                }
+            }
+            return .some(s)
+        case .none:
+            return .none
+        }
+    }
+
+    static func def() -> Lines {
+        let rope = Rope.from_str("")
+        let cursor = Cursor.init(n: rope, position: 0)
+        let chunkiter = ChunkIter(cursor: cursor, end: 0)
+        let inner = LinesRaw(inner: chunkiter, fragment: "")
+        return Lines(inner: inner)
+    }
+}

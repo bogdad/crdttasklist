@@ -18,6 +18,8 @@
 		E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74C3DC522D24086001B9CA7 /* Selection.swift */; };
 		E755519B22A2FCBC004A111C /* .travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = E755519A22A2FCBC004A111C /* .travis.yml */; };
 		E755519D22A3E85F004A111C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E755519C22A3E85F004A111C /* README.md */; };
+		E75B38692300147B005013E0 /* Tabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75B38682300147B005013E0 /* Tabs.swift */; };
+		E75B386B230015CF005013E0 /* Find.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75B386A230015CF005013E0 /* Find.swift */; };
 		E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9922DA5DCE003572EC /* Hashes.swift */; };
 		E763DF9C22DA6FF4003572EC /* EngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9B22DA6FF4003572EC /* EngineTests.swift */; };
 		E763DF9E22E4CD2E003572EC /* Cow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9D22E4CD2E003572EC /* Cow.swift */; };
@@ -77,6 +79,8 @@
 		E74C3DC522D24086001B9CA7 /* Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
 		E755519A22A2FCBC004A111C /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		E755519C22A3E85F004A111C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		E75B38682300147B005013E0 /* Tabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tabs.swift; sourceTree = "<group>"; };
+		E75B386A230015CF005013E0 /* Find.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Find.swift; sourceTree = "<group>"; };
 		E763DF9922DA5DCE003572EC /* Hashes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hashes.swift; sourceTree = "<group>"; };
 		E763DF9B22DA6FF4003572EC /* EngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineTests.swift; sourceTree = "<group>"; };
 		E763DF9D22E4CD2E003572EC /* Cow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cow.swift; sourceTree = "<group>"; };
@@ -190,28 +194,30 @@
 		E7B05EEC2298223300D2A094 /* crdttasklist */ = {
 			isa = PBXGroup;
 			children = (
-				E7B05EED2298223300D2A094 /* AppDelegate.swift */,
-				E7B05EEF2298223300D2A094 /* ViewController.swift */,
-				E7B05EF12298223300D2A094 /* Main.storyboard */,
-				E7B05F1B2298231D00D2A094 /* NoteViewController.swift */,
 				E7B05EF42298223400D2A094 /* Assets.xcassets */,
 				E7B05EF62298223400D2A094 /* LaunchScreen.storyboard */,
+				E7B05EF12298223300D2A094 /* Main.storyboard */,
 				E7B05EF92298223400D2A094 /* Info.plist */,
-				E7B05F1D2298259200D2A094 /* Note.swift */,
-				E7B05F1F2298284100D2A094 /* Event.swift */,
-				E7B62C172299B8D1000143C6 /* Rope.swift */,
-				E7F0325D22BD261F00D0BF2D /* Tree.swift */,
-				E7F0325F22BD26F300D0BF2D /* Strings.swift */,
-				E79E1F8622C7ED06007099E5 /* Delta.swift */,
-				E79E1F8C22C7FA36007099E5 /* Multiset.swift */,
-				E71F38AA22D231B8007FC0E8 /* Editor.swift */,
-				E74C3DBF22D23620001B9CA7 /* Engine.swift */,
-				E74C3DC122D23E7F001B9CA7 /* View.swift */,
-				E74C3DC522D24086001B9CA7 /* Selection.swift */,
-				E763DF9922DA5DCE003572EC /* Hashes.swift */,
+				E7B05EED2298223300D2A094 /* AppDelegate.swift */,
 				E763DF9D22E4CD2E003572EC /* Cow.swift */,
+				E79E1F8622C7ED06007099E5 /* Delta.swift */,
 				E7B5D57222F34EC90020AFAC /* Collections.swift */,
+				E74C3DBF22D23620001B9CA7 /* Engine.swift */,
+				E71F38AA22D231B8007FC0E8 /* Editor.swift */,
+				E7B05F1F2298284100D2A094 /* Event.swift */,
+				E75B386A230015CF005013E0 /* Find.swift */,
+				E763DF9922DA5DCE003572EC /* Hashes.swift */,
+				E79E1F8C22C7FA36007099E5 /* Multiset.swift */,
+				E7B05F1D2298259200D2A094 /* Note.swift */,
+				E7B05F1B2298231D00D2A094 /* NoteViewController.swift */,
+				E7B62C172299B8D1000143C6 /* Rope.swift */,
 				E7BD0E0922FC366300B14710 /* TestHelpers.swift */,
+				E74C3DC522D24086001B9CA7 /* Selection.swift */,
+				E7F0325F22BD26F300D0BF2D /* Strings.swift */,
+				E75B38682300147B005013E0 /* Tabs.swift */,
+				E7F0325D22BD261F00D0BF2D /* Tree.swift */,
+				E74C3DC122D23E7F001B9CA7 /* View.swift */,
+				E7B05EEF2298223300D2A094 /* ViewController.swift */,
 			);
 			path = crdttasklist;
 			sourceTree = "<group>";
@@ -498,10 +504,12 @@
 				E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */,
 				E74C3DC022D23620001B9CA7 /* Engine.swift in Sources */,
 				E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */,
+				E75B38692300147B005013E0 /* Tabs.swift in Sources */,
 				E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */,
 				E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */,
 				E7B5D57322F34EC90020AFAC /* Collections.swift in Sources */,
 				E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */,
+				E75B386B230015CF005013E0 /* Find.swift in Sources */,
 				E7B05EF02298223300D2A094 /* ViewController.swift in Sources */,
 				E7F0326022BD26F300D0BF2D /* Strings.swift in Sources */,
 				E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */,

@@ -63,11 +63,11 @@ struct Utils {
         let s_ind = String.Index(utf16Offset: Int(minsplit - 1), in: s)
         let e_ind = String.Index(utf16Offset: Int(splitpoint), in: s)
         let substr = s[s_ind..<e_ind]
-        let res = substr.firstIndex(of: "\n")
+        let res = substr.memchr("\n")
         switch res {
-        case .some(let rng):
+        case .some(let i):
             // TODO: find out if utf16Offset is safe to be called on substr and not on substr.utf16
-            return minsplit + UInt(rng.utf16Offset(in: substr))
+            return minsplit + i
         case .none:
             while !s.is_char_boundary(index: splitpoint) {
                 splitpoint -= 1
@@ -102,9 +102,11 @@ extension String {
         let e_i = String.Index(utf16Offset: Int(end), in: self)
         return self[s_i...e_i]
     }
-
+    func memchr(_ char: Character) -> UInt? {
+        return self.firstIndex(of: char)
+            .map {UInt($0.utf16Offset(in: self))}
+    }
 }
-
 extension String: Leaf {
     static func def() -> String {
         return ""
@@ -157,6 +159,20 @@ extension String: Leaf {
 }
 
 extension Substring {
+    func uintO(_ start: UInt, _ end: UInt) -> Substring {
+        let s_i = String.Index(utf16Offset: Int(start), in: self)
+        let e_i = String.Index(utf16Offset: Int(end), in: self)
+        return self[s_i..<e_i]
+    }
+    func uintC(_ start: UInt, _ end: UInt) -> Substring {
+        let s_i = String.Index(utf16Offset: Int(start), in: self)
+        let e_i = String.Index(utf16Offset: Int(end), in: self)
+        return self[s_i...e_i]
+    }
+    func memchr(_ char: Character) -> UInt? {
+        return self.firstIndex(of: char)
+            .map {UInt($0.utf16Offset(in: self))}
+    }
     func is_char_boundary(index: UInt) -> Bool {
         // 0 and len are always ok.
         // Test for 0 explicitly so that it can optimize out the check

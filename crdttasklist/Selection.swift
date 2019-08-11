@@ -40,12 +40,24 @@ enum Affinity {
     /// example, if the buffer is "abcd", and the cursor is on a line break
     /// after "ab", it should be displayed on the previous line after "ab".
     case Upstream
+
+    static func def() -> Affinity {
+        return .Downstream
+    }
 }
 
 struct Selection {
     // An invariant: regions[i].max() <= regions[i+1].min()
     // and < if either is_caret()
     var regions: [SelRegion]
+
+    static func new_simple(_ region: SelRegion) -> Selection {
+        return Selection(regions: [region])
+    }
+
+    static func from(_ region: SelRegion) -> Selection {
+        return new_simple(region)
+    }
 }
 
 struct SelRegion {
@@ -68,5 +80,9 @@ struct SelRegion {
 
     func max() -> UInt {
         return Swift.max(self.start, self.end)
+    }
+
+    static func caret(_ pos: UInt) -> SelRegion {
+        return SelRegion(start: pos, end: pos, horiz: .none, affinity: Affinity.def())
     }
 }

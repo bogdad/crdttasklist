@@ -18,7 +18,7 @@ class EditorTests: XCTestCase {
         var editor = Editor(base_text)
         let rev = editor.get_head_rev_token()
 
-        let view = View()
+        var view = View(view_id: 1, buffer_id: 1)
 
         editor.insert(view: &view, rope: Rope.from_str("ss"))
 
