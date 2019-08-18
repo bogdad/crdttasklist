@@ -103,7 +103,7 @@ struct Editor {
         // GC only works on undone edits or prefixes of the visible edits,
         // but initial file loading can create an edit with undo group 0,
         // so we want to collect that as part of the prefix.
-        self.live_undos = [UInt]()
+        self.live_undos = [0]
         self.cur_undo = 1
         self.undos = SortedSet()
         self.gc_undos = SortedSet()
