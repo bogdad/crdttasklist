@@ -1,5 +1,5 @@
 //
-//  NoteViewController.swift
+//  NoteTableViewController.swift
 //  crdttasklist
 //
 //  Created by Vladimir Shakhov on 10/4/19.
@@ -9,6 +9,6 @@
 import Foundation
 import UIKit
 
-class NoteViewController: UIViewController {
+class NoteTableViewController: UITableViewController {
 
 }
