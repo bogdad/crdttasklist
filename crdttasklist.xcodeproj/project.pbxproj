@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -24,9 +24,9 @@
 		E763DF9C22DA6FF4003572EC /* EngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9B22DA6FF4003572EC /* EngineTests.swift */; };
 		E763DF9E22E4CD2E003572EC /* Cow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9D22E4CD2E003572EC /* Cow.swift */; };
 		E76A859A23478B070094EBBF /* NoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76A859923478B070094EBBF /* NoteViewController.swift */; };
-		E76A859C23478BD40094EBBF /* NoteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76A859B23478BD40094EBBF /* NoteTableViewController.swift */; };
 		E76A859E23478EDB0094EBBF /* NoteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */; };
 		E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76E278522A0120C00E86AB2 /* RopeTests.swift */; };
+		E778F217238C8A0E0036EB29 /* NoteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */; };
 		E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8622C7ED06007099E5 /* Delta.swift */; };
 		E79E1F8922C7F237007099E5 /* DeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8822C7F237007099E5 /* DeltaTests.swift */; };
 		E79E1F8B22C7F37B007099E5 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = E79E1F8A22C7F37B007099E5 /* .gitignore */; };
@@ -34,7 +34,6 @@
 		E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05EED2298223300D2A094 /* AppDelegate.swift */; };
 		E7B05EF32298223300D2A094 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7B05EF12298223300D2A094 /* Main.storyboard */; };
 		E7B05EF52298223400D2A094 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E7B05EF42298223400D2A094 /* Assets.xcassets */; };
-		E7B05EF82298223400D2A094 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7B05EF62298223400D2A094 /* LaunchScreen.storyboard */; };
 		E7B05F032298223400D2A094 /* crdttasklistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F022298223400D2A094 /* crdttasklistTests.swift */; };
 		E7B05F0E2298223400D2A094 /* crdttasklistUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F0D2298223400D2A094 /* crdttasklistUITests.swift */; };
 		E7B05F1E2298259200D2A094 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F1D2298259200D2A094 /* Note.swift */; };
@@ -87,9 +86,9 @@
 		E763DF9B22DA6FF4003572EC /* EngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineTests.swift; sourceTree = "<group>"; };
 		E763DF9D22E4CD2E003572EC /* Cow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cow.swift; sourceTree = "<group>"; };
 		E76A859923478B070094EBBF /* NoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewController.swift; sourceTree = "<group>"; };
-		E76A859B23478BD40094EBBF /* NoteTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewController.swift; sourceTree = "<group>"; };
 		E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewCell.swift; sourceTree = "<group>"; };
 		E76E278522A0120C00E86AB2 /* RopeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RopeTests.swift; sourceTree = "<group>"; };
+		E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewController.swift; sourceTree = "<group>"; };
 		E79E1F8622C7ED06007099E5 /* Delta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delta.swift; sourceTree = "<group>"; };
 		E79E1F8822C7F237007099E5 /* DeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeltaTests.swift; sourceTree = "<group>"; };
 		E79E1F8A22C7F37B007099E5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
@@ -98,7 +97,6 @@
 		E7B05EED2298223300D2A094 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E7B05EF22298223300D2A094 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E7B05EF42298223400D2A094 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		E7B05EF72298223400D2A094 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E7B05EF92298223400D2A094 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E7B05EFE2298223400D2A094 /* crdttasklistTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = crdttasklistTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B05F022298223400D2A094 /* crdttasklistTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = crdttasklistTests.swift; sourceTree = "<group>"; };
@@ -200,14 +198,13 @@
 			children = (
 				E7F465E92315AF5500030F3A /* crdt */,
 				E7B05EF42298223400D2A094 /* Assets.xcassets */,
-				E7B05EF62298223400D2A094 /* LaunchScreen.storyboard */,
 				E7B05EF12298223300D2A094 /* Main.storyboard */,
 				E7B05EF92298223400D2A094 /* Info.plist */,
 				E7B05EED2298223300D2A094 /* AppDelegate.swift */,
 				E7F465E72315AC4200030F3A /* CRDTTextView.swift */,
 				E76A859923478B070094EBBF /* NoteViewController.swift */,
-				E76A859B23478BD40094EBBF /* NoteTableViewController.swift */,
 				E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */,
+				E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */,
 			);
 			path = crdttasklist;
 			sourceTree = "<group>";
@@ -370,7 +367,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E7B05EF82298223400D2A094 /* LaunchScreen.storyboard in Resources */,
 				E7B05EF52298223400D2A094 /* Assets.xcassets in Resources */,
 				E755519D22A3E85F004A111C /* README.md in Resources */,
 				E755519B22A2FCBC004A111C /* .travis.yml in Resources */,
@@ -401,19 +397,16 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-crdttasklist/Pods-crdttasklist-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/BTree/BTree.framework",
-				"${BUILT_PRODUCTS_DIR}/IteratorTools/IteratorTools.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-crdttasklist/Pods-crdttasklist-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BTree.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IteratorTools.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-crdttasklist/Pods-crdttasklist-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-crdttasklist/Pods-crdttasklist-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-crdttasklist/Pods-crdttasklist-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		25C97F4E6BECC2DAC3B3C26F /* [CP] Check Pods Manifest.lock */ = {
@@ -439,17 +432,16 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-crdttasklistUITests/Pods-crdttasklistUITests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/IteratorTools/IteratorTools.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-crdttasklistUITests/Pods-crdttasklistUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IteratorTools.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-crdttasklistUITests/Pods-crdttasklistUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-crdttasklistUITests/Pods-crdttasklistUITests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-crdttasklistUITests/Pods-crdttasklistUITests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		4B481D15F8C7A35CC5617961 /* [CP] Check Pods Manifest.lock */ = {
@@ -493,17 +485,16 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/IteratorTools/IteratorTools.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IteratorTools.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -520,7 +511,7 @@
 				E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */,
 				E75B38692300147B005013E0 /* Tabs.swift in Sources */,
 				E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */,
-				E76A859C23478BD40094EBBF /* NoteTableViewController.swift in Sources */,
+				E778F217238C8A0E0036EB29 /* NoteTableViewController.swift in Sources */,
 				E76A859A23478B070094EBBF /* NoteViewController.swift in Sources */,
 				E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */,
 				E7B5D57322F34EC90020AFAC /* Collections.swift in Sources */,
@@ -582,14 +573,6 @@
 				E7B05EF22298223300D2A094 /* Base */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		E7B05EF62298223400D2A094 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				E7B05EF72298223400D2A094 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
