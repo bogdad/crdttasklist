@@ -10,4 +10,9 @@ import Foundation
 
 class Note {
 
+    var text: String
+
+    init(_ text: String) {
+        self.text = text
+    }
 }
