@@ -14,14 +14,7 @@ class NoteTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
-
-        loadSampleNotes()
+        loadNotes()
     }
 
     // MARK: - Table view data source
@@ -42,24 +35,71 @@ class NoteTableViewController: UITableViewController {
         }
 
         let note = notes[indexPath.row]
-        cell.nameLabel.text = note.text
+        cell.nameLabel!.text = String((note.name + " " + note.text).prefix(40))
 
         return cell
     }
 
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-       tableView.deselectRow(at: indexPath, animated: true)
-       let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-       if let dataPresentingViewController = storyBoard.instantiateViewController(withIdentifier: "NoteViewController") as? NoteViewController {
-           self.present(dataPresentingViewController, animated: true, completion: nil)
-           dataPresentingViewController.nameLabel.text = notes[indexPath.row].name
-           dataPresentingViewController.textView.text = notes[indexPath.row].text
-       }
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            // Delete the row from the data source
+            notes.remove(at: indexPath.row)
+            saveNotes()
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        } else if editingStyle == .insert {
+            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+            let note = Note("name?", "text?")
+            notes.append(note)
+        }
     }
 
-    private func loadSampleNotes() {
-        let note1 = Note("1", "some note 1")
-        let note2 = Note("2", "some note 2")
-        notes += [note1, note2]
+    @IBAction func unwindToNoteList(sender: UIStoryboardSegue) {
+        if let sourceViewController = sender.source as? NoteViewController, let note = sourceViewController.note {
+            if let selectedIndexPath = tableView.indexPathForSelectedRow {
+                // Update an existing meal.
+                notes[selectedIndexPath.row] = note
+                tableView.reloadRows(at: [selectedIndexPath], with: .none)
+            }
+            else {
+                // Add a new meal.
+                let newIndexPath = IndexPath(row: notes.count, section: 0)
+                notes.append(note)
+                tableView.insertRows(at: [newIndexPath], with: .automatic)
+            }
+        }
+        saveNotes()
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        switch(segue.identifier ?? "") {
+        case "AddItem":
+            break
+        case "ShowDetail":
+            guard let mealDetailViewController = segue.destination as? NoteViewController else {
+                fatalError("Unexpected destination: \(segue.destination)")
+            }
+            guard let selectedNoteCell = sender as? NoteTableViewCell else {
+                fatalError("Unexpected sender: \(sender)")
+            }
+            guard let indexPath = tableView.indexPath(for: selectedNoteCell) else {
+                fatalError("The selected cell is not being displayed by the table")
+            }
+            let selectedNote = notes[indexPath.row]
+            mealDetailViewController.note = selectedNote
+        default:
+            fatalError("Unexpected Segue Identifier; \(segue.identifier)")
+        }
+    }
+
+
+    private func loadNotes() {
+        let fileNotes = NSKeyedUnarchiver.unarchiveObject(withFile: Note.ArchiveURL.path) as? [Note]
+        notes = fileNotes ?? []
+    }
+
+    private func saveNotes() {
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(notes, toFile: Note.ArchiveURL.path)
+        print(isSuccessfulSave)
     }
 }
