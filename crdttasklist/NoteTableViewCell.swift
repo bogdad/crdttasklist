@@ -12,6 +12,7 @@ import UIKit
 class NoteTableViewCell: UITableViewCell {
 
     @IBOutlet weak var nameLabel: UILabel!
+
     override func awakeFromNib() {
         super.awakeFromNib()
     }

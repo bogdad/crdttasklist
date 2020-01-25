@@ -10,6 +10,8 @@
 		17AB4585AECE26613F877B5D /* Pods_crdttasklist.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E06E61FDE88080403324CEA5 /* Pods_crdttasklist.framework */; };
 		58CDACCE71946714C90E0D08 /* Pods_crdttasklistTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 774E340CE3DC7990C588D757 /* Pods_crdttasklistTests.framework */; };
 		8F0B181F482B5C655D3AC851 /* Pods_crdttasklistUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F52338B186C24951445935E9 /* Pods_crdttasklistUITests.framework */; };
+		E70B862A23DC9A3300C48E3C /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70B862923DC9A3300C48E3C /* Note.swift */; };
+		E70B862C23DCB3AF00C48E3C /* NoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70B862B23DCB3AF00C48E3C /* NoteViewController.swift */; };
 		E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71F38AA22D231B8007FC0E8 /* Editor.swift */; };
 		E737A29322FEDB1600E5AAD8 /* TestHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */; };
 		E737A29522FEE1AE00E5AAD8 /* EditorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */; };
@@ -23,7 +25,6 @@
 		E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9922DA5DCE003572EC /* Hashes.swift */; };
 		E763DF9C22DA6FF4003572EC /* EngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9B22DA6FF4003572EC /* EngineTests.swift */; };
 		E763DF9E22E4CD2E003572EC /* Cow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9D22E4CD2E003572EC /* Cow.swift */; };
-		E76A859A23478B070094EBBF /* NoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76A859923478B070094EBBF /* NoteViewController.swift */; };
 		E76A859E23478EDB0094EBBF /* NoteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */; };
 		E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76E278522A0120C00E86AB2 /* RopeTests.swift */; };
 		E778F217238C8A0E0036EB29 /* NoteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */; };
@@ -36,7 +37,6 @@
 		E7B05EF52298223400D2A094 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E7B05EF42298223400D2A094 /* Assets.xcassets */; };
 		E7B05F032298223400D2A094 /* crdttasklistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F022298223400D2A094 /* crdttasklistTests.swift */; };
 		E7B05F0E2298223400D2A094 /* crdttasklistUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F0D2298223400D2A094 /* crdttasklistUITests.swift */; };
-		E7B05F1E2298259200D2A094 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F1D2298259200D2A094 /* Note.swift */; };
 		E7B05F202298284100D2A094 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05F1F2298284100D2A094 /* Event.swift */; };
 		E7B5D57322F34EC90020AFAC /* Collections.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B5D57222F34EC90020AFAC /* Collections.swift */; };
 		E7B62C182299B8D1000143C6 /* Rope.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B62C172299B8D1000143C6 /* Rope.swift */; };
@@ -72,6 +72,8 @@
 		A8C17A7DCE3E0DA110C218A2 /* Pods-crdttasklist.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklist.debug.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklist/Pods-crdttasklist.debug.xcconfig"; sourceTree = "<group>"; };
 		CBC63A97996E075536225CAE /* Pods-crdttasklistTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklistTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests.release.xcconfig"; sourceTree = "<group>"; };
 		E06E61FDE88080403324CEA5 /* Pods_crdttasklist.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_crdttasklist.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E70B862923DC9A3300C48E3C /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
+		E70B862B23DCB3AF00C48E3C /* NoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewController.swift; sourceTree = "<group>"; };
 		E71F38AA22D231B8007FC0E8 /* Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Editor.swift; sourceTree = "<group>"; };
 		E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpersTests.swift; sourceTree = "<group>"; };
 		E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTests.swift; sourceTree = "<group>"; };
@@ -85,7 +87,6 @@
 		E763DF9922DA5DCE003572EC /* Hashes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hashes.swift; sourceTree = "<group>"; };
 		E763DF9B22DA6FF4003572EC /* EngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineTests.swift; sourceTree = "<group>"; };
 		E763DF9D22E4CD2E003572EC /* Cow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cow.swift; sourceTree = "<group>"; };
-		E76A859923478B070094EBBF /* NoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewController.swift; sourceTree = "<group>"; };
 		E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewCell.swift; sourceTree = "<group>"; };
 		E76E278522A0120C00E86AB2 /* RopeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RopeTests.swift; sourceTree = "<group>"; };
 		E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewController.swift; sourceTree = "<group>"; };
@@ -104,7 +105,6 @@
 		E7B05F092298223400D2A094 /* crdttasklistUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = crdttasklistUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B05F0D2298223400D2A094 /* crdttasklistUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = crdttasklistUITests.swift; sourceTree = "<group>"; };
 		E7B05F0F2298223400D2A094 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E7B05F1D2298259200D2A094 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		E7B05F1F2298284100D2A094 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		E7B5D57222F34EC90020AFAC /* Collections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collections.swift; sourceTree = "<group>"; };
 		E7B62C172299B8D1000143C6 /* Rope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rope.swift; sourceTree = "<group>"; };
@@ -202,9 +202,10 @@
 				E7B05EF92298223400D2A094 /* Info.plist */,
 				E7B05EED2298223300D2A094 /* AppDelegate.swift */,
 				E7F465E72315AC4200030F3A /* CRDTTextView.swift */,
-				E76A859923478B070094EBBF /* NoteViewController.swift */,
 				E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */,
 				E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */,
+				E70B862923DC9A3300C48E3C /* Note.swift */,
+				E70B862B23DCB3AF00C48E3C /* NoteViewController.swift */,
 			);
 			path = crdttasklist;
 			sourceTree = "<group>";
@@ -245,7 +246,6 @@
 				E75B386A230015CF005013E0 /* Find.swift */,
 				E763DF9922DA5DCE003572EC /* Hashes.swift */,
 				E79E1F8C22C7FA36007099E5 /* Multiset.swift */,
-				E7B05F1D2298259200D2A094 /* Note.swift */,
 				E7B62C172299B8D1000143C6 /* Rope.swift */,
 				E74C3DC522D24086001B9CA7 /* Selection.swift */,
 				E7F0325F22BD26F300D0BF2D /* Strings.swift */,
@@ -506,20 +506,20 @@
 			files = (
 				E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */,
 				E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */,
+				E70B862A23DC9A3300C48E3C /* Note.swift in Sources */,
 				E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */,
 				E74C3DC022D23620001B9CA7 /* Engine.swift in Sources */,
 				E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */,
 				E75B38692300147B005013E0 /* Tabs.swift in Sources */,
 				E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */,
 				E778F217238C8A0E0036EB29 /* NoteTableViewController.swift in Sources */,
-				E76A859A23478B070094EBBF /* NoteViewController.swift in Sources */,
 				E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */,
 				E7B5D57322F34EC90020AFAC /* Collections.swift in Sources */,
 				E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */,
 				E75B386B230015CF005013E0 /* Find.swift in Sources */,
 				E7F0326022BD26F300D0BF2D /* Strings.swift in Sources */,
+				E70B862C23DCB3AF00C48E3C /* NoteViewController.swift in Sources */,
 				E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */,
-				E7B05F1E2298259200D2A094 /* Note.swift in Sources */,
 				E763DF9E22E4CD2E003572EC /* Cow.swift in Sources */,
 				E7B05F202298284100D2A094 /* Event.swift in Sources */,
 				E7B62C182299B8D1000143C6 /* Rope.swift in Sources */,
