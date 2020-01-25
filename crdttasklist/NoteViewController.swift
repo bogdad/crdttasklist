@@ -18,13 +18,12 @@ class NoteViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        nameText.placeholder = "name?"
+
         if let note = note {
             navigationItem.title = note.name
             nameText.text = note.name
             textView.text = note.text
-        } else {
-            nameText.text = "name?"
-            textView.text = "text?"
         }
     }
 
