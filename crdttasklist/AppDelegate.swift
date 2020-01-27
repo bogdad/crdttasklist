@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyDropbox
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,6 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+        let dropboxAppKey = ProcessInfo.processInfo.environment["DROPBOX_APP_KEY"]!
+        DropboxClientsManager.setupWithAppKey(dropboxAppKey)
         // Override point for customization after application launch.
         return true
     }

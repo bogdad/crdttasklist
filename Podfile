@@ -4,6 +4,7 @@ platform :ios, '12.0'
 target 'crdttasklist' do
   pod 'IteratorTools', '~> 1.1.0'
   pod 'BTree', '~> 4.1.0'
+  pod 'SwiftyDropbox'
 
   target 'crdttasklistTests' do
       inherit! :search_paths

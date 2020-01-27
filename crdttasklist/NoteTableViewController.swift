@@ -14,6 +14,7 @@ class NoteTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.leftBarButtonItem = editButtonItem
         loadNotes()
     }
 
@@ -53,21 +54,19 @@ class NoteTableViewController: UITableViewController {
         }
     }
 
-    @IBAction func unwindToNoteList(sender: UIStoryboardSegue) {
-        if let sourceViewController = sender.source as? NoteViewController, let note = sourceViewController.note {
-            if let selectedIndexPath = tableView.indexPathForSelectedRow {
-                // Update an existing meal.
-                notes[selectedIndexPath.row] = note
-                tableView.reloadRows(at: [selectedIndexPath], with: .none)
-            }
-            else {
-                // Add a new meal.
-                let newIndexPath = IndexPath(row: notes.count, section: 0)
-                notes.append(note)
-                tableView.insertRows(at: [newIndexPath], with: .automatic)
-            }
-        }
-        saveNotes()
+    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        // Return false if you do not want the specified item to be editable.
+        return true
+    }
+
+    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        let itemToMove = notes[sourceIndexPath.row]
+        notes.remove(at: sourceIndexPath.row)
+        notes.insert(itemToMove, at: destinationIndexPath.row)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -89,6 +88,33 @@ class NoteTableViewController: UITableViewController {
             mealDetailViewController.note = selectedNote
         default:
             fatalError("Unexpected Segue Identifier; \(segue.identifier)")
+        }
+    }
+
+
+    @IBAction func unwindToNoteList(sender: UIStoryboardSegue) {
+        if let sourceViewController = sender.source as? NoteViewController, let note = sourceViewController.note {
+            if let selectedIndexPath = tableView.indexPathForSelectedRow {
+                // Update an existing meal.
+                notes[selectedIndexPath.row] = note
+                tableView.reloadRows(at: [selectedIndexPath], with: .none)
+            }
+            else {
+                // Add a new meal.
+                let newIndexPath = IndexPath(row: notes.count, section: 0)
+                notes.append(note)
+                tableView.insertRows(at: [newIndexPath], with: .automatic)
+            }
+        }
+        saveNotes()
+    }
+
+    @IBAction func startEditing(_ sender: UIBarButtonItem) {
+        if (!isEditing) {
+            isEditing = true
+        } else {
+            isEditing = false
+            saveNotes()
         }
     }
 
