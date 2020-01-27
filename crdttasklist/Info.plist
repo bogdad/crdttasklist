@@ -51,7 +51,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>db-${DROPBOX_APP_KEY}</string>
+				<string>db-yp4guugaz0yyawo</string>
 			</array>
 			<key>CFBundleURLName</key>
 			<string></string>

@@ -32,6 +32,7 @@
 		E79E1F8922C7F237007099E5 /* DeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8822C7F237007099E5 /* DeltaTests.swift */; };
 		E79E1F8B22C7F37B007099E5 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = E79E1F8A22C7F37B007099E5 /* .gitignore */; };
 		E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8C22C7FA36007099E5 /* Multiset.swift */; };
+		E7A2E23023DF3D1E00C65976 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A2E22F23DF3D1E00C65976 /* MainViewController.swift */; };
 		E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B05EED2298223300D2A094 /* AppDelegate.swift */; };
 		E7B05EF32298223300D2A094 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7B05EF12298223300D2A094 /* Main.storyboard */; };
 		E7B05EF52298223400D2A094 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E7B05EF42298223400D2A094 /* Assets.xcassets */; };
@@ -94,6 +95,7 @@
 		E79E1F8822C7F237007099E5 /* DeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeltaTests.swift; sourceTree = "<group>"; };
 		E79E1F8A22C7F37B007099E5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		E79E1F8C22C7FA36007099E5 /* Multiset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Multiset.swift; sourceTree = "<group>"; };
+		E7A2E22F23DF3D1E00C65976 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		E7B05EEA2298223300D2A094 /* crdttasklist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = crdttasklist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B05EED2298223300D2A094 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E7B05EF22298223300D2A094 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 				E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */,
 				E70B862923DC9A3300C48E3C /* Note.swift */,
 				E70B862B23DCB3AF00C48E3C /* NoteViewController.swift */,
+				E7A2E22F23DF3D1E00C65976 /* MainViewController.swift */,
 			);
 			path = crdttasklist;
 			sourceTree = "<group>";
@@ -505,6 +508,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */,
+				E7A2E23023DF3D1E00C65976 /* MainViewController.swift in Sources */,
 				E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */,
 				E70B862A23DC9A3300C48E3C /* Note.swift in Sources */,
 				E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */,

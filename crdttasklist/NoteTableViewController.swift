@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyDropbox
 
 class NoteTableViewController: UITableViewController {
 
@@ -45,7 +46,7 @@ class NoteTableViewController: UITableViewController {
         if editingStyle == .delete {
             // Delete the row from the data source
             notes.remove(at: indexPath.row)
-            saveNotes()
+            try! saveNotes()
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
@@ -106,7 +107,7 @@ class NoteTableViewController: UITableViewController {
                 tableView.insertRows(at: [newIndexPath], with: .automatic)
             }
         }
-        saveNotes()
+        try! saveNotes()
     }
 
     @IBAction func startEditing(_ sender: UIBarButtonItem) {
@@ -114,7 +115,7 @@ class NoteTableViewController: UITableViewController {
             isEditing = true
         } else {
             isEditing = false
-            saveNotes()
+            try! saveNotes()
         }
     }
 
@@ -124,8 +125,23 @@ class NoteTableViewController: UITableViewController {
         notes = fileNotes ?? []
     }
 
-    private func saveNotes() {
+    private func saveNotes() throws {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(notes, toFile: Note.ArchiveURL.path)
         print(isSuccessfulSave)
+        guard let client = DropboxClientsManager.authorizedClient
+        else {
+                fatalError("cant happen")
+        }
+        let request = client.files.upload(path: "/notes", input: try Note.ArchiveURL.asURL())
+            .response { response, error in
+                if let response = response {
+                    print(response)
+                } else if let error = error {
+                    print(error)
+                }
+            }
+            .progress { progressData in
+                print(progressData)
+        }
     }
 }
