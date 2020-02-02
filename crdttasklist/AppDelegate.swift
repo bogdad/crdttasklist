@@ -28,6 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             switch authResult {
             case .success:
                 print("Success! User is logged into Dropbox.")
+                NotificationCenter.default.post(name: NSNotification.Name("DropboxLogin"), object: nil)
             case .cancel:
                 print("Authorization flow was manually canceled by user!")
             case .error(_, let description):

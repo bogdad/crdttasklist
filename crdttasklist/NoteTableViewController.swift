@@ -11,12 +11,9 @@ import SwiftyDropbox
 
 class NoteTableViewController: UITableViewController {
 
-    var notes = [Note]()
-
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = editButtonItem
-        loadNotes()
     }
 
     // MARK: - Table view data source
@@ -26,7 +23,7 @@ class NoteTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return notes.count
+        return NoteStorage.shared.getNotes().count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -36,7 +33,7 @@ class NoteTableViewController: UITableViewController {
             fatalError("The dequeued cell is not an instance of NoteTableViewCell.")
         }
 
-        let note = notes[indexPath.row]
+        let note = getNotes()[indexPath.row]
         cell.nameLabel!.text = String((note.name + " " + note.text).prefix(40))
 
         return cell
@@ -45,13 +42,12 @@ class NoteTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
-            notes.remove(at: indexPath.row)
-            try! saveNotes()
+            NoteStorage.shared.remove(indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-            let note = Note("name?", "text?")
-            notes.append(note)
+            var note = Note("name?", "text?")
+            NoteStorage.shared.append(&note)
         }
     }
 
@@ -65,9 +61,7 @@ class NoteTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let itemToMove = notes[sourceIndexPath.row]
-        notes.remove(at: sourceIndexPath.row)
-        notes.insert(itemToMove, at: destinationIndexPath.row)
+        NoteStorage.shared.move(sourceIndexPath.row, destinationIndexPath.row)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -85,7 +79,7 @@ class NoteTableViewController: UITableViewController {
             guard let indexPath = tableView.indexPath(for: selectedNoteCell) else {
                 fatalError("The selected cell is not being displayed by the table")
             }
-            let selectedNote = notes[indexPath.row]
+            let selectedNote = getNotes()[indexPath.row]
             mealDetailViewController.note = selectedNote
         default:
             fatalError("Unexpected Segue Identifier; \(segue.identifier)")
@@ -94,20 +88,19 @@ class NoteTableViewController: UITableViewController {
 
 
     @IBAction func unwindToNoteList(sender: UIStoryboardSegue) {
-        if let sourceViewController = sender.source as? NoteViewController, let note = sourceViewController.note {
+        if let sourceViewController = sender.source as? NoteViewController, var note = sourceViewController.note {
             if let selectedIndexPath = tableView.indexPathForSelectedRow {
                 // Update an existing meal.
-                notes[selectedIndexPath.row] = note
+                NoteStorage.shared.setNote(selectedIndexPath.row, &note)
                 tableView.reloadRows(at: [selectedIndexPath], with: .none)
             }
             else {
                 // Add a new meal.
-                let newIndexPath = IndexPath(row: notes.count, section: 0)
-                notes.append(note)
+                let newIndexPath = IndexPath(row: getNotes().count, section: 0)
+                NoteStorage.shared.append(&note)
                 tableView.insertRows(at: [newIndexPath], with: .automatic)
             }
         }
-        try! saveNotes()
     }
 
     @IBAction func startEditing(_ sender: UIBarButtonItem) {
@@ -115,33 +108,11 @@ class NoteTableViewController: UITableViewController {
             isEditing = true
         } else {
             isEditing = false
-            try! saveNotes()
         }
     }
 
 
-    private func loadNotes() {
-        let fileNotes = NSKeyedUnarchiver.unarchiveObject(withFile: Note.ArchiveURL.path) as? [Note]
-        notes = fileNotes ?? []
-    }
-
-    private func saveNotes() throws {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(notes, toFile: Note.ArchiveURL.path)
-        print(isSuccessfulSave)
-        guard let client = DropboxClientsManager.authorizedClient
-        else {
-                fatalError("cant happen")
-        }
-        let request = client.files.upload(path: "/notes", input: try Note.ArchiveURL.asURL())
-            .response { response, error in
-                if let response = response {
-                    print(response)
-                } else if let error = error {
-                    print(error)
-                }
-            }
-            .progress { progressData in
-                print(progressData)
-        }
+    private func getNotes() -> [Note] {
+        return NoteStorage.shared.getNotes()
     }
 }

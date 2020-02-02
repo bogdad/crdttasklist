@@ -16,9 +16,19 @@ class MainViewController: UIViewController {
         super.viewDidAppear(animated)
         // Check if the user is logged in
         // If so, display photo view controller
-        if let _ = DropboxClientsManager.authorizedClient {
-            let navigationController = self.storyboard?.instantiateViewController(withIdentifier: "NavigationController")
-            self.present(navigationController!, animated: false, completion: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onDropboxAvailable), name: NSNotification.Name("DropboxLogin"), object: nil)
+        onDropboxAvailable()
+    }
+
+    @objc func onDropboxAvailable() {
+        if let client = DropboxClientsManager.authorizedClient {
+            //let navigationController = self.storyboard?.instantiateViewController(withIdentifier: "NavigationController")
+            let noteTableViewController = self.storyboard?.instantiateViewController(withIdentifier: "NoteTableViewController")
+
+            NoteStorage.shared.loadNotes(client)
+            DispatchQueue.main.async {
+                self.present(noteTableViewController!, animated: true, completion: nil)
+            }
         }
     }
 

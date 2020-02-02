@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pGY-bO-o13">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -11,9 +11,9 @@
         <!--Notes-->
         <scene sceneID="C2w-7r-fyB">
             <objects>
-                <tableViewController title="Notes" id="knq-3P-Pf0" customClass="NoteTableViewController" customModule="crdttasklist" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="NoteTableViewController" title="Notes" id="knq-3P-Pf0" customClass="NoteTableViewController" customModule="crdttasklist" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="EZS-te-W0k">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <prototypes>
@@ -67,7 +67,7 @@
             <objects>
                 <viewController storyboardIdentifier="NoteViewController" id="iZE-Um-twB" customClass="NoteViewController" customModule="crdttasklist" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="rfH-u1-zzO">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="lpZ-Pb-kQe">
@@ -112,10 +112,37 @@
             </objects>
             <point key="canvasLocation" x="2940.579710144928" y="276.5625"/>
         </scene>
+        <!--Main View Controller-->
+        <scene sceneID="OX3-RI-Uhn">
+            <objects>
+                <viewController id="kHR-nG-33j" customClass="MainViewController" customModule="crdttasklist" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="yTb-2Q-N3l">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f0c-VC-JHK">
+                                <rect key="frame" x="71" y="380" width="288" height="64"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="43"/>
+                                <state key="normal" title="Link to Dropbox"/>
+                                <connections>
+                                    <action selector="linkToDropboxPressed:" destination="kHR-nG-33j" eventType="touchUpInside" id="ltD-4M-z16"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="P2w-hF-Zea"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="Zs8-cX-A0D"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VuA-NO-jpT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-443" y="-416"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="CIC-Tq-e6x">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pGY-bO-o13" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NavigationController" automaticallyAdjustsScrollViewInsets="NO" id="pGY-bO-o13" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="kA6-sP-KCg">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -123,12 +150,12 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="knq-3P-Pf0" kind="relationship" relationship="rootViewController" id="Aw2-Q2-FCt"/>
+                        <segue destination="knq-3P-Pf0" kind="presentation" id="3Bs-eb-PF5"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HLq-Ng-WrG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="460.86956521739131" y="276.5625"/>
+            <point key="canvasLocation" x="36" y="277"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="zWY-xq-UE6">
