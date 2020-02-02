@@ -13,7 +13,13 @@ class NoteTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        if !NoteStorage.shared.loadNotes() {
+            let linkToSorageViewController = self.storyboard?.instantiateViewController(withIdentifier: "LinkToStorageViewController")
+            present(linkToSorageViewController!, animated: true, completion: nil)
+        }
         navigationItem.leftBarButtonItem = editButtonItem
+
+        NotificationCenter.default.addObserver(self, selector: #selector(notesChangedRemotely), name: NSNotification.Name("notesChangedRemotely"), object: nil)
     }
 
     // MARK: - Table view data source
@@ -46,7 +52,7 @@ class NoteTableViewController: UITableViewController {
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-            var note = Note("name?", "text?")
+            var note = Note.newNote()
             NoteStorage.shared.append(&note)
         }
     }
@@ -114,5 +120,9 @@ class NoteTableViewController: UITableViewController {
 
     private func getNotes() -> [Note] {
         return NoteStorage.shared.getNotes()
+    }
+
+    @objc func notesChangedRemotely() {
+        self.tableView.reloadData()
     }
 }

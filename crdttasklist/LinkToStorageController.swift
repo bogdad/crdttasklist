@@ -1,5 +1,5 @@
 //
-//  MainViewController.swift
+//  LinkToStorageViewController.swift
 //  crdttasklist
 //
 //  Created by Vladimir on 2020-01-27.
@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import SwiftyDropbox
 
-class MainViewController: UIViewController {
+class LinkToStorageViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -21,13 +21,12 @@ class MainViewController: UIViewController {
     }
 
     @objc func onDropboxAvailable() {
-        if let client = DropboxClientsManager.authorizedClient {
-            //let navigationController = self.storyboard?.instantiateViewController(withIdentifier: "NavigationController")
-            let noteTableViewController = self.storyboard?.instantiateViewController(withIdentifier: "NoteTableViewController")
+        if NoteStorage.shared.isStorageLinked() {
+            let navigationController = self.storyboard?.instantiateViewController(withIdentifier: "NavigationController")
 
-            NoteStorage.shared.loadNotes(client)
+            NoteStorage.shared.loadNotes()
             DispatchQueue.main.async {
-                self.present(noteTableViewController!, animated: true, completion: nil)
+                self.present(navigationController!, animated: true, completion: nil)
             }
         }
     }

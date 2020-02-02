@@ -42,9 +42,12 @@ class NoteViewController: UIViewController {
         guard let button = sender as? UIBarButtonItem, button === saveButton else {
             return
         }
+        if note == nil {
+            note = Note.newNote()
+        }
         let name = nameText.text ?? ""
         let text = textView.text ?? ""
-        note = Note(name, text)
+        note?.update(name, text)
     }
 
     @IBAction func cancel(_ sender: UIBarButtonItem) {
