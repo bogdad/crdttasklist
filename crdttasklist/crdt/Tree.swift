@@ -202,7 +202,7 @@ class Node<N: NodeInfo> : Equatable {
         let h2 = rope2.height()
 
         if h1 < h2 {
-            print("vvvvv concat <", h1, h2)
+            //print("vvvvv concat <", h1, h2)
             return rope2.get_children(f: { (rope2_children: inout [Node<N>]) -> Node<N> in
                 if h1 == h2 - 1 && rope1.is_ok_child() {
                     return merge_nodes(children1: [rope1], children2: rope2_children)
@@ -217,7 +217,7 @@ class Node<N: NodeInfo> : Equatable {
                 }
             })
         } else if h1 == h2 {
-            print("vvvvv concat ==", h1, h2)
+            //print("vvvvv concat ==", h1, h2)
             if rope1.is_ok_child() && rope2.is_ok_child() {
                 return from_nodes(nodes: [rope1, rope2])
             }
@@ -230,7 +230,7 @@ class Node<N: NodeInfo> : Equatable {
                 })
             })
         } else if h1 > h2 {
-            print("vvvvv concat >", h1, h2)
+            // print("vvvvv concat >", h1, h2)
             return rope1.get_children(f: { (rope1_children: inout [Node<N>]) -> Node<N> in
                 if h2 == h1 - 1 && rope2.is_ok_child() {
                     return merge_nodes(children1: rope1_children, children2: [rope2])
@@ -375,7 +375,7 @@ extension TreeBuilder where N == RopeInfo {
     /// Splits the provided string in chunks that fit in a leaf
     /// and pushes the leaves one by one onto the tree by calling.
     mutating func push_str(s: Substring) {
-        print("vvvvv push_str")
+        //print("vvvvv push_str")
         if s.len() <= RopeConstants.MAX_LEAF {
             if !s.isEmpty {
                 self.push_leaf(l: String(s))
@@ -393,7 +393,7 @@ extension TreeBuilder where N == RopeInfo {
     }
 
     mutating func push_str_stacked(s: inout String) {
-        print("vvvvv push_str_stacked")
+        // print("vvvvv push_str_stacked")
         let leaves = Utils.split_as_leaves(s: s)
         self.push_leaves(leaves: leaves)
     }

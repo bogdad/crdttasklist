@@ -11,6 +11,8 @@ import SwiftyDropbox
 
 class NoteTableViewController: UITableViewController {
 
+    var remoteTimer: Timer?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         if !NoteStorage.shared.loadNotes() {
@@ -20,6 +22,7 @@ class NoteTableViewController: UITableViewController {
         navigationItem.leftBarButtonItem = editButtonItem
 
         NotificationCenter.default.addObserver(self, selector: #selector(notesChangedRemotely), name: NSNotification.Name("notesChangedRemotely"), object: nil)
+        remoteTimer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(runTimedCode), userInfo: nil, repeats: true)
     }
 
     // MARK: - Table view data source
@@ -124,5 +127,11 @@ class NoteTableViewController: UITableViewController {
 
     @objc func notesChangedRemotely() {
         self.tableView.reloadData()
+    }
+
+    @objc func runTimedCode() {
+        DispatchQueue.main.async {
+            NoteStorage.shared.checkRemotes()
+        }
     }
 }

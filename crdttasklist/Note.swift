@@ -18,6 +18,7 @@ class Note: NSObject, NSCoding {
     var id: String?
     var name: String
     var text: String
+    var textEditor: Editor
 
     required convenience init?(coder: NSCoder) {
         guard let name = coder.decodeObject(forKey: PropertyKey.name) as? String,
@@ -26,19 +27,22 @@ class Note: NSObject, NSCoding {
         return nil
         }
         let id = coder.decodeObject(forKey: PropertyKey.id) as? String
-        self.init(id ?? IdGenerator.shared.generate(), name, text)
+        let textEditor = coder.decodeObject(forKey: PropertyKey.editor) as? Editor
+        self.init(id ?? IdGenerator.shared.generate(), name, text, textEditor ?? Editor(text))
     }
 
-    init(_ id: String, _ name: String, _ text: String) {
+    init(_ id: String, _ name: String, _ text: String, _ textEditor: Editor) {
         self.id = id
         self.name = name
         self.text = text
+        self.textEditor = textEditor
     }
 
     func encode(with coder: NSCoder) {
         coder.encode(id, forKey: PropertyKey.id)
         coder.encode(name, forKey: PropertyKey.name)
         coder.encode(text, forKey: PropertyKey.text)
+        coder.encode(textEditor, forKey: PropertyKey.editor)
     }
 
     func update(_ name: String, _ text: String) {
@@ -64,7 +68,7 @@ class Note: NSObject, NSCoding {
     }
 
     static func newNote(name: String = "name?", text: String = "text?") -> Note {
-        let note = Note(IdGenerator.shared.generate(), name, text)
+        let note = Note(IdGenerator.shared.generate(), name, text, Editor(text))
         return note
     }
 }
@@ -97,4 +101,5 @@ struct PropertyKey {
     static let id = "id"
     static let name = "name"
     static let text = "text"
+    static let editor = "editor"
 }

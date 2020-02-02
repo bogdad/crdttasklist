@@ -40,7 +40,7 @@ struct Utils {
     static func count_utf16_code_units(s: inout String) -> UInt {
         var utf16_count: UInt = 0
         for b in s.utf16 {
-            if Int8(b) >= -0x40 {
+            if Int16(b) >= -0x40 {
                 utf16_count += 1
             }
             if Int16(b) >= 0xf0 {

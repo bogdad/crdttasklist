@@ -10,5 +10,14 @@ import Foundation
 import UIKit
 
 class CRDTTextView: UITextView {
+    override init(frame: CGRect, textContainer: NSTextContainer?) {
+        super.init(frame: frame, textContainer: textContainer)
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+
 
 }
+

@@ -199,4 +199,10 @@ class NoteStorage {
     func notesChangedRemotely() {
         NotificationCenter.default.post(name: NSNotification.Name("notesChangedRemotely"), object: nil)
     }
+
+    func checkRemotes() {
+        if isStorageLinked() {
+            conflictDetected()
+        }
+    }
 }
