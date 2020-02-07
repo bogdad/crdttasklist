@@ -18,7 +18,7 @@ class Note: NSObject, NSCoding {
     var id: String?
     var name: String
     var text: String
-    var textEditor: Editor
+    var textEditor: EditorBox
 
     required convenience init?(coder: NSCoder) {
         guard let name = coder.decodeObject(forKey: PropertyKey.name) as? String,
@@ -27,11 +27,11 @@ class Note: NSObject, NSCoding {
         return nil
         }
         let id = coder.decodeObject(forKey: PropertyKey.id) as? String
-        let textEditor = coder.decodeObject(forKey: PropertyKey.editor) as? Editor
-        self.init(id ?? IdGenerator.shared.generate(), name, text, textEditor ?? Editor(text))
+        let textEditor = coder.decodeObject(forKey: PropertyKey.editor) as? EditorBox
+        self.init(id ?? IdGenerator.shared.generate(), name, text, textEditor ?? EditorBox(Editor(text)))
     }
 
-    init(_ id: String, _ name: String, _ text: String, _ textEditor: Editor) {
+    init(_ id: String, _ name: String, _ text: String, _ textEditor: EditorBox) {
         self.id = id
         self.name = name
         self.text = text
@@ -68,7 +68,7 @@ class Note: NSObject, NSCoding {
     }
 
     static func newNote(name: String = "name?", text: String = "text?") -> Note {
-        let note = Note(IdGenerator.shared.generate(), name, text, Editor(text))
+        let note = Note(IdGenerator.shared.generate(), name, text, EditorBox(Editor(text)))
         return note
     }
 }

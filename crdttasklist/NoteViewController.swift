@@ -31,14 +31,14 @@ class NoteViewController: UIViewController, UITextViewDelegate {
         if let note = note {
             navigationItem.title = note.name
             nameText.text = note.name
-            textView!.text = note.textEditor.get_buffer().to_string()
+            textView!.text = note.textEditor.editor.get_buffer().to_string()
         }
     }
 
     func createTextView() {
         // 1
         let attrs = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body)]
-        let attrString = NSAttributedString(string: note!.text, attributes: attrs)
+        let attrString = NSAttributedString(string: note?.text ?? "", attributes: attrs)
         textStorage = CRDTTextStorage()
         textStorage!.append(attrString)
 

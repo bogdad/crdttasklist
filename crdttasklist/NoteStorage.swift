@@ -54,7 +54,9 @@ class NoteStorage {
 
     func loadNotes() -> Bool {
         notes = loadFrom(toUrl: try! Note.ArchiveURL.asURL())
-        conflictDetected()
+        if isStorageLinked() {
+            conflictDetected()
+        }
         return true
     }
 

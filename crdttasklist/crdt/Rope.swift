@@ -136,6 +136,25 @@ struct RopeInfo: NodeInfo {
             lines: Utils.count_newlines(s: s[...]),
             utf16_size: Utils.count_utf16_code_units(s: &s))
     }
+
+    func encode(with coder: NSCoder, forKey: String) {
+        coder.encode(lines, forKey: "\(forKey).\(PropertyKey.lines)")
+        coder.encode(utf16_size, forKey: "\(forKey).\(PropertyKey.utf16_size)")
+    }
+
+    static func decode(coder: NSCoder, forKey: String) -> RopeInfo? {
+        guard let lines = coder.decodeObject(forKey: "\(forKey).\(PropertyKey.lines)") as? UInt,
+            let utf16_size = coder.decodeObject(forKey: "\(forKey).\(PropertyKey.utf16_size)") as? UInt
+        else {
+        return nil
+        }
+        return RopeInfo(lines: lines, utf16_size: utf16_size)
+    }
+
+    struct PropertyKey {
+        static let lines = "lines"
+        static let utf16_size = "utf16_size"
+    }
 }
 
 struct LinesMetric: Metric {

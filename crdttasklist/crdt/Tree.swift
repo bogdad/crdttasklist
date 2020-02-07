@@ -32,6 +32,13 @@ protocol NodeInfo: Equatable {
 
     mutating func accumulate(other: inout Self)
     static func compute_info(leaf: inout L) -> Self
+
+    func encode(with coder: NSCoder, forKey: String);
+    static func decode(coder: NSCoder, forKey: String) -> Self?;
+}
+
+protocol NodeInfoBox: NSCoding {
+    associatedtype NI: NodeInfo
 }
 
 extension NodeInfo {
@@ -67,7 +74,49 @@ struct NodeBody<N: NodeInfo> : Equatable {
     }
 }
 
-class Node<N: NodeInfo> : Equatable {
+struct PropertyKeyNode {
+    static let height = "height"
+    static let len = "len"
+    static let info = "info"
+    static let valLeaf = "valLeaf"
+    static let valNodes = "valNodes"
+}
+
+class Node<N: NodeInfo> : NSObject, NSCoding {
+    func encode(with coder: NSCoder) {
+        coder.encode(body.height, forKey: PropertyKeyNode.height)
+        coder.encode(body.len, forKey: PropertyKeyNode.len)
+        body.info.encode(with: coder, forKey: PropertyKeyNode.info)
+        switch body.val {
+        case .Leaf(let leaf):
+            coder.encode(leaf, forKey: PropertyKeyNode.valLeaf)
+        case .Internal(let nodes):
+            coder.encode(nodes, forKey: PropertyKeyNode.valNodes)
+        }
+    }
+
+    required convenience init?(coder: NSCoder) {
+        guard let height = coder.decodeObject(forKey: PropertyKeyNode.height) as? UInt,
+            let len = coder.decodeObject(forKey: PropertyKeyNode.len) as? UInt,
+            let info = N.decode(coder: coder, forKey: PropertyKeyNode.info)
+            else {
+                return nil
+            }
+        let valLeaf = coder.decodeObject(forKey: PropertyKeyNode.valLeaf) as? N.L
+        let valNodes = coder.decodeObject(forKey: PropertyKeyNode.valNodes) as? [Node<N>]
+        if (valLeaf == nil &&  valNodes == nil) {
+            return nil
+        }
+        if (valLeaf != nil && valNodes != nil) {
+            fatalError("bad data")
+        }
+        if (valLeaf != nil) {
+            self.init(body: NodeBody<N>(height: height, len: len, info: info, val: .Leaf(valLeaf!)))
+        } else {
+            self.init(body: NodeBody<N>(height: height, len: len, info: info, val: .Internal(valNodes!)))
+        }
+    }
+
     var body: NodeBody<N>
 
     init(body: NodeBody<N>) {
