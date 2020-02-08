@@ -127,6 +127,38 @@ class RopeTests: XCTestCase {
         XCTAssertEqual(tree_default.to_string(), tree_stacked.to_string())
     }
 
+    func testCodingDecoding() {
+        let fileManager = FileManager.default
+        let dir =  fileManager.temporaryDirectory
+        let filename = UUID().uuidString
+        let fileURL = dir.appendingPathComponent(filename)
+
+        addTeardownBlock {
+            do {
+                if fileManager.fileExists(atPath: fileURL.path) {
+                    try fileManager.removeItem(at: fileURL)
+                    XCTAssertFalse(fileManager.fileExists(atPath: fileURL.path))
+                }
+            } catch {
+                XCTFail("Error while deleting temporary file: \(error)")
+            }
+        }
+
+        let s = build_triangle(n: 100)
+        var rope = Rope.from_str(s)
+
+
+        let data = try! PropertyListEncoder().encode(rope)
+
+        let success = NSKeyedArchiver.archiveRootObject(data, toFile: fileURL.path)
+        XCTAssertTrue(success)
+
+        let loadData = NSKeyedUnarchiver.unarchiveObject(withFile: fileURL.path) as? Data
+        let fileRope = try! PropertyListDecoder().decode(Rope.self, from: loadData!)
+
+        XCTAssertEqual(rope.to_string(), fileRope.to_string())
+    }
+
     func build_triangle(n: UInt) -> String {
         var s = String()
         var line = String()

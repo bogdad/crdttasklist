@@ -52,51 +52,6 @@ enum EditType: Int, Codable {
     }
 }
 
-
-class EditorBox: NSObject, NSCoding {
-    func encode(with coder: NSCoder) {
-        NSKeyedArchiver.setClassName("Rope", for: type(of: editor.text))
-        coder.encode(editor.text, forKey: PropertyKey.text)
-        coder.encode(editor.last_rev_id, forKey: PropertyKey.lastRevId)
-        coder.encode(editor.pristine_rev_id, forKey: PropertyKey.pristineRevId)
-        coder.encode(editor.undo_group_id, forKey: PropertyKey.undoGroupId)
-        coder.encode(editor.live_undos, forKey: PropertyKey.liveUndos)
-        coder.encode(editor.cur_undo, forKey: PropertyKey.curUndo)
-        coder.encode(editor.gc_undos, forKey: PropertyKey.gcUndos)
-        coder.encode(editor.force_undo_group, forKey: PropertyKey.forceUndoGroup)
-        coder.encode(editor.this_edit_type, forKey: PropertyKey.thisEditType)
-        coder.encode(editor.last_edit_type, forKey: PropertyKey.lastEditType)
-        coder.encode(editor.revs_in_flight, forKey: PropertyKey.revsInFlight)
-    }
-
-    required convenience init?(coder: NSCoder) {
-        guard let text = coder.decodeObject(forKey: PropertyKey.text) as? String
-        else {
-        return nil
-        }
-        self.init(Editor(text))
-    }
-
-    var editor: Editor
-    init(_ editor: Editor) {
-        self.editor = editor
-    }
-
-    struct PropertyKey {
-        static let text = "text"
-        static let lastRevId = "last_rev_id"
-        static let pristineRevId = "pristine_rev_id"
-        static let undoGroupId = "undo_group_id"
-        static let liveUndos = "live_undo"
-        static let curUndo = "cur_undo"
-        static let gcUndos = "gc_undos"
-        static let forceUndoGroup = "force_undo_group"
-        static let thisEditType = "this_edit_type"
-        static let lastEditType = "last_edit_type"
-        static let revsInFlight = "revs_in_flight"
-    }
-}
-
 struct Editor: Codable {
     /// The contents of the buffer.
     var text: Rope

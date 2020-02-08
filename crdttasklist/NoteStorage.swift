@@ -61,16 +61,27 @@ class NoteStorage {
     }
 
     func saveNotes() {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self.notes, toFile: Note.ArchiveURL.path)
-        print(isSuccessfulSave)
+        do {
+            let data = try PropertyListEncoder().encode(self.notes)
+            let success = NSKeyedArchiver.archiveRootObject(data, toFile: Note.ArchiveURL.path)
+            print(success ? "Successful save" : "Save Failed")
+        } catch {
+            print("Save Failed")
+        }
         conflictDetected()
     }
 
     private func loadFrom(toUrl: URL) -> [Note] {
-        let fileNotes = NSKeyedUnarchiver.unarchiveObject(withFile: toUrl.path) as? [Note]
-        let n = fileNotes ?? []
-        let byId: [Note] = Array(Dictionary(grouping: n, by: { $0.id!} ).mapValues({ $0[0] }).values)
-        return Array(Dictionary(grouping: byId, by: { $0.dedupHash() }).mapValues({ $0[0] }).values.sortedById())
+        guard let data = NSKeyedUnarchiver.unarchiveObject(withFile: toUrl.path) as? Data else { return [] }
+        do {
+            let fileNotes = try PropertyListDecoder().decode([Note].self, from: data)
+            let n = fileNotes
+            let byId: [Note] = Array(Dictionary(grouping: n, by: { $0.id!} ).mapValues({ $0[0] }).values)
+            return Array(Dictionary(grouping: byId, by: { $0.dedupHash() }).mapValues({ $0[0] }).values.sortedById())
+        } catch {
+            print("Retrieve Failed")
+            return []
+        }
     }
 
     private func downloadFromDropbox(toUrl: URL, closure: @escaping ([Note]?, String?) -> Void) {
@@ -122,13 +133,13 @@ class NoteStorage {
         }
         self.downloadFromDropbox(toUrl: Note.TempArchiveURL, closure: { (otherNotes, rev) in
 
-            if otherNotes != nil {
+            if otherNotes != nil && otherNotes!.count > 0 {
                 let (mergedNotes, wasChange) = self.mergeNotes(self.notes, otherNotes!)
                 self.notes = mergedNotes
                 if wasChange {
                     print("conflictDetected: was a change, uploading \(self.notes.count)")
                     self.notesChangedRemotely()
-                    let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self.notes, toFile: Note.ArchiveURL.path)
+                    self.saveNotes()
                     let request = client.files.upload(path: "/notes", mode: .update(rev!), strictConflict: true, input: try! Note.ArchiveURL.asURL())
                         .response { response, error in
                             self.handleUpload(response, error)
@@ -138,7 +149,7 @@ class NoteStorage {
                     }
                 }
             } else {
-                let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self.notes, toFile: Note.ArchiveURL.path)
+                self.saveNotes()
                 let request = client.files.upload(path: "/notes", mode: .add, strictConflict: true, input: try! Note.ArchiveURL.asURL())
                     .response { response, error in
                         self.handleUpload(response, error)

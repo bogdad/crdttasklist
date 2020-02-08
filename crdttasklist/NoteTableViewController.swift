@@ -15,10 +15,11 @@ class NoteTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if !NoteStorage.shared.loadNotes() {
+        if !NoteStorage.shared.isStorageLinked() {
             let linkToSorageViewController = self.storyboard?.instantiateViewController(withIdentifier: "LinkToStorageViewController")
             present(linkToSorageViewController!, animated: true, completion: nil)
         }
+        NoteStorage.shared.loadNotes()
         navigationItem.leftBarButtonItem = editButtonItem
 
         NotificationCenter.default.addObserver(self, selector: #selector(notesChangedRemotely), name: NSNotification.Name("notesChangedRemotely"), object: nil)
@@ -131,7 +132,7 @@ class NoteTableViewController: UITableViewController {
 
     @objc func runTimedCode() {
         DispatchQueue.main.async {
-            NoteStorage.shared.checkRemotes()
+            //NoteStorage.shared.checkRemotes()
         }
     }
 }
