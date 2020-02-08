@@ -31,7 +31,7 @@ struct EditorConstants {
     static let MAX_UNDOS: UInt = 20
 }
 
-enum EditType {
+enum EditType: Int, Codable {
     /// A catchall for edits that don't fit elsewhere, and which should
     /// always have their own undo groups; used for things like cut/copy/paste.
     case Other
@@ -52,8 +52,10 @@ enum EditType {
     }
 }
 
+
 class EditorBox: NSObject, NSCoding {
     func encode(with coder: NSCoder) {
+        NSKeyedArchiver.setClassName("Rope", for: type(of: editor.text))
         coder.encode(editor.text, forKey: PropertyKey.text)
         coder.encode(editor.last_rev_id, forKey: PropertyKey.lastRevId)
         coder.encode(editor.pristine_rev_id, forKey: PropertyKey.pristineRevId)
@@ -95,7 +97,7 @@ class EditorBox: NSObject, NSCoding {
     }
 }
 
-struct Editor {
+struct Editor: Codable {
     /// The contents of the buffer.
     var text: Rope
     /// The CRDT engine, which tracks edit history and manages concurrent edits.
@@ -113,9 +115,9 @@ struct Editor {
     /// (but may be redone)
     var cur_undo: UInt
     /// undo groups that are undone
-    var undos: SortedSet<UInt>
+    var undos: CodableSortedSet<UInt>
     /// undo groups that are no longer live and should be gc'ed
-    var gc_undos: SortedSet<UInt>
+    var gc_undos: CodableSortedSet<UInt>
     var force_undo_group: Bool
 
     var this_edit_type: EditType
@@ -146,8 +148,8 @@ struct Editor {
         // so we want to collect that as part of the prefix.
         self.live_undos = [0]
         self.cur_undo = 1
-        self.undos = SortedSet()
-        self.gc_undos = SortedSet()
+        self.undos = CodableSortedSet()
+        self.gc_undos = CodableSortedSet()
         self.force_undo_group = false
         self.last_edit_type = .Other
         self.this_edit_type = .Other
@@ -197,14 +199,14 @@ struct Editor {
             let undo_group = self.undo_group_id;
             // FIXME: can it be made faster?
             for elem in self.live_undos[Int(self.cur_undo)...] {
-                self.gc_undos.insert(elem)
+                self.gc_undos.set.insert(elem)
             }
             self.live_undos.removeFirst(Int(self.cur_undo))
             self.live_undos.append(undo_group)
             if self.live_undos.count <= EditorConstants.MAX_UNDOS {
                 self.cur_undo += 1
             } else {
-                self.gc_undos.insert(self.live_undos.remove(at: 0))
+                self.gc_undos.set.insert(self.live_undos.remove(at: 0))
             }
             self.undo_group_id += 1
             return undo_group

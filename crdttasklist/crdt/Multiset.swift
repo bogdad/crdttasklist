@@ -27,7 +27,7 @@
 
 import Foundation
 
-struct Segment {
+struct Segment: Codable {
     var len: UInt
     var count: UInt
     init(_ len: UInt, _ count: UInt) {
@@ -183,6 +183,8 @@ struct ZipIter: IteratorProtocol, Sequence {
     }
 }
 
+
+
 /// See `Subset::zip`
 struct ZipSegment {
     var len: UInt
@@ -196,7 +198,7 @@ struct ZipSegment {
 }
 
 
-struct Subset {
+struct Subset: Codable {
     /// Invariant, maintained by `SubsetBuilder`: all `Segment`s have non-zero
     /// length, and no `Segment` has the same count as the one before it.
     let segments: [Segment]

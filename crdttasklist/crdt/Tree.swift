@@ -27,18 +27,11 @@
 
 import IteratorTools
 
-protocol NodeInfo: Equatable {
+protocol NodeInfo: Equatable, Codable {
     associatedtype L: Leaf
 
     mutating func accumulate(other: inout Self)
     static func compute_info(leaf: inout L) -> Self
-
-    func encode(with coder: NSCoder, forKey: String);
-    static func decode(coder: NSCoder, forKey: String) -> Self?;
-}
-
-protocol NodeInfoBox: NSCoding {
-    associatedtype NI: NodeInfo
 }
 
 extension NodeInfo {
@@ -56,7 +49,7 @@ protocol DefaultMetric: NodeInfo {
     associatedtype DefaultMetric: Metric
 }
 
-struct NodeBody<N: NodeInfo> : Equatable {
+struct NodeBody<N: NodeInfo> : Equatable, Codable {
     var height: UInt
     var len: UInt
     var info: N
@@ -82,41 +75,7 @@ struct PropertyKeyNode {
     static let valNodes = "valNodes"
 }
 
-class Node<N: NodeInfo> : NSObject, NSCoding {
-    func encode(with coder: NSCoder) {
-        coder.encode(body.height, forKey: PropertyKeyNode.height)
-        coder.encode(body.len, forKey: PropertyKeyNode.len)
-        body.info.encode(with: coder, forKey: PropertyKeyNode.info)
-        switch body.val {
-        case .Leaf(let leaf):
-            coder.encode(leaf, forKey: PropertyKeyNode.valLeaf)
-        case .Internal(let nodes):
-            coder.encode(nodes, forKey: PropertyKeyNode.valNodes)
-        }
-    }
-
-    required convenience init?(coder: NSCoder) {
-        guard let height = coder.decodeObject(forKey: PropertyKeyNode.height) as? UInt,
-            let len = coder.decodeObject(forKey: PropertyKeyNode.len) as? UInt,
-            let info = N.decode(coder: coder, forKey: PropertyKeyNode.info)
-            else {
-                return nil
-            }
-        let valLeaf = coder.decodeObject(forKey: PropertyKeyNode.valLeaf) as? N.L
-        let valNodes = coder.decodeObject(forKey: PropertyKeyNode.valNodes) as? [Node<N>]
-        if (valLeaf == nil &&  valNodes == nil) {
-            return nil
-        }
-        if (valLeaf != nil && valNodes != nil) {
-            fatalError("bad data")
-        }
-        if (valLeaf != nil) {
-            self.init(body: NodeBody<N>(height: height, len: len, info: info, val: .Leaf(valLeaf!)))
-        } else {
-            self.init(body: NodeBody<N>(height: height, len: len, info: info, val: .Internal(valNodes!)))
-        }
-    }
-
+class Node<N: NodeInfo> : Equatable, Codable {
     var body: NodeBody<N>
 
     init(body: NodeBody<N>) {
@@ -347,9 +306,42 @@ class Node<N: NodeInfo> : NSObject, NSCoding {
     }
 }
 
-enum NodeVal<N: NodeInfo> : Equatable {
+enum NodeVal<N: NodeInfo> : Codable, Equatable {
     case Leaf(N.L)
     case Internal([Node<N>])
+}
+
+extension NodeVal {
+    enum BadDataError: Error {
+        case error
+    }
+    enum CodingKeys: String, CodingKey {
+        case ifLeaf
+        case ifNode
+    }
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let ifLeaf = try container.decodeIfPresent(N.L.self, forKey: CodingKeys.ifLeaf)
+        let ifNodes = try container.decodeIfPresent([Node<N>].self, forKey: CodingKeys.ifNode)
+        if (ifLeaf == nil && ifNodes == nil) || (ifLeaf != nil && ifNodes != nil) {
+            throw BadDataError.error
+        }
+        if (ifLeaf != nil) {
+            self = .Leaf(ifLeaf!)
+        } else {
+            self = .Internal(ifNodes!)
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .Leaf(let leaf):
+            try container.encode(leaf, forKey: CodingKeys.ifLeaf)
+        case .Internal(let nodes):
+            try container.encode(nodes, forKey: CodingKeys.ifNode)
+        }
+    }
 }
 
 struct TreeBuilder<N: NodeInfo> {

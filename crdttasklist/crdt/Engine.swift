@@ -27,7 +27,26 @@
 import Foundation
 import BTree
 
-typealias SessionId = (UInt64, UInt32)
+struct SessionId: Codable, Comparable {
+    static func < (lhs: SessionId, rhs: SessionId) -> Bool {
+        if lhs.f < rhs.f {
+            return true
+        }
+        if lhs.f > rhs.f {
+            return false
+        }
+        return lhs.s < rhs.s
+    }
+
+    var f: UInt64
+    var s: UInt32
+
+    init(_ f: UInt64, _ s: UInt32) {
+        self.f = f
+        self.s = s
+    }
+}
+
 typealias RevToken = UInt64
 
 /// Type for errors that occur during CRDT operations.
@@ -40,24 +59,76 @@ enum CrdtError: Error {
     case MalformedDelta(rev_len: UInt, delta_len: UInt)
 }
 
-enum Contents {
-    case Edit(priority: UInt,
+enum Contents: Codable {
+    case Edit(
+        priority: UInt,
     /// Groups related edits together so that they are undone and re-done
     /// together. For example, an auto-indent insertion would be un-done
     /// along with the newline that triggered it.
-    undo_group: UInt,
+        undo_group: UInt,
     /// The subset of the characters of the union string from after this
     /// revision that were added by this revision.
-    inserts: Subset,
+        inserts: Subset,
     /// The subset of the characters of the union string from after this
     /// revision that were deleted by this revision.
-    deletes: Subset)
-    case Undo(
-        toggled_groups: SortedSet<UInt>, // set of undo_group id's
+        deletes: Subset)
+    case Undo(// set of undo_group id's
+        toggled_groups: SortedSet<UInt>,
         /// Used to store a reversible difference between the old
         /// and new deletes_from_union
-        deletes_bitxor: Subset
-    )
+        deletes_bitxor: Subset)
+}
+
+extension Contents {
+    enum CodingKeys: String, CodingKey {
+        case type
+        // edit
+        case priority
+        case undo_group
+        case inserts
+        case deletes
+        // undo
+        case toggled_groups
+        case deletes_bitxor
+    }
+    enum BadDataError: Error {
+        case error
+    }
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let type = try container.decode(Int.self, forKey: CodingKeys.type)
+        let priority = try container.decodeIfPresent(UInt.self, forKey: CodingKeys.priority)
+        let undo_group = try container.decodeIfPresent(UInt.self, forKey: CodingKeys.undo_group)
+        let inserts = try container.decodeIfPresent(Subset.self, forKey: CodingKeys.inserts)
+        let deletes = try container.decodeIfPresent(Subset.self, forKey: CodingKeys.deletes)
+
+        let toggled_groups = try container.decode(CodableSortedSet<UInt>.self, forKey: .toggled_groups)
+        let deletes_bitxor = try container.decode(Subset.self, forKey: .deletes_bitxor)
+
+        switch type {
+        case 0:
+            self = .Edit(priority: priority!, undo_group: undo_group!, inserts: inserts!, deletes: deletes!)
+        case 1:
+            self = .Undo(toggled_groups: toggled_groups.set, deletes_bitxor: deletes_bitxor)
+        default:
+            throw BadDataError.error
+        }
+    }
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .Edit(let edit):
+            try container.encode(0, forKey: .type)
+            try container.encode(edit.priority, forKey: .priority)
+            try container.encode(edit.undo_group, forKey: .undo_group)
+            try container.encode(edit.inserts, forKey: .inserts)
+            try container.encode(edit.deletes, forKey: .deletes)
+        case .Undo(let undo):
+            try container.encode(1, forKey: .type)
+            try container.encode(CodableSortedSet(undo.toggled_groups), forKey: .toggled_groups)
+            try container.encode(undo.deletes_bitxor, forKey: .deletes_bitxor)
+        }
+    }
 }
 
 struct FullPriority {
@@ -73,8 +144,7 @@ struct FullPriority {
     }
 }
 
-
-struct RevId: Hashable {
+struct RevId: Hashable, Codable {
     // 96 bits has a 10^(-12) chance of collision with 400 million sessions and 10^(-6) with 100 billion.
     // `session1==session2==0` is reserved for initialization which is the same on all sessions.
     // A colliding session will break merge invariants and the document will start crashing Xi.
@@ -102,11 +172,11 @@ struct RevId: Hashable {
     }
 
     func session_id() -> SessionId {
-        return (self.session1, self.session2)
+        return SessionId(self.session1, self.session2)
     }
 }
 
-struct Revision {
+struct Revision: Codable {
     /// This uniquely represents the identity of this revision and it stays
     /// the same even if it is rebased or merged between devices.
     var rev_id: RevId
@@ -122,7 +192,7 @@ struct Revision {
     }
 }
 
-struct Engine {
+struct Engine: Codable {
     /// The session ID used to create new `RevId`s for edits made on this device
     var session: SessionId
     /// The incrementing revision number counter for this session used for `RevId`s
@@ -148,7 +218,7 @@ struct Engine {
     /// wherever there's a non-zero-count segment in `deletes_from_union`.
     var deletes_from_union: Cow<Subset>
     // TODO: switch to a persistent Set representation to avoid O(n) copying
-    var undone_groups: Cow<SortedSet<UInt>> // set of undo_group id's
+    var undone_groups: CowSortedSet<UInt> // set of undo_group id's
     /// The revision history of the document
     var revs: [Revision]
 
@@ -166,7 +236,7 @@ struct Engine {
         self.text = Rope.def()
         self.tombstones = Rope.def()
         self.deletes_from_union = Cow(deletes_from_union)
-        self.undone_groups = Cow(SortedSet())
+        self.undone_groups = CowSortedSet<UInt>()
         self.revs = [rev]
     }
 
@@ -200,7 +270,7 @@ struct Engine {
     }
 
     func next_rev_id() -> RevId {
-        return RevId(session1: self.session.0, session2: self.session.1, num: self.rev_id_counter)
+        return RevId(session1: self.session.f, session2: self.session.s, num: self.rev_id_counter)
     }
 
     func find_rev_token(_ rev_token: RevToken) -> UInt? {
@@ -352,7 +422,7 @@ struct Engine {
                 if invert_undos {
                     let new_undone =
                         undone_groups.value.symmetricDifference(toggled_groups)
-                    undone_groups = Cow(new_undone)
+                    undone_groups = CowSortedSet(new_undone)
                     deletes_from_union = Cow(deletes_from_union.value.bitxor(&deletes_bitxor))
                 }
             }
@@ -417,8 +487,8 @@ struct Engine {
         )
     }
 
-    static func default_session() -> (UInt64, UInt32) {
-        return (1, 0)
+    static func default_session() -> SessionId {
+        return SessionId(1, 0)
     }
 }
 

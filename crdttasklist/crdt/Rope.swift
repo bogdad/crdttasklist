@@ -85,7 +85,7 @@ struct Interval: Equatable, IntervalBounds {
     }
 }
 
-protocol Leaf : Equatable {
+protocol Leaf : Equatable, Codable {
     static func def() -> Self
     func len() -> UInt
     func is_ok_child() -> Bool

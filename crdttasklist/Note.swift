@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import os.log
 
-class Note: NSObject, NSCoding {
+class Note: Codable {
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     static let ArchiveURL = DocumentsDirectory.appendingPathComponent("notes")
     static let TempArchiveURL = DocumentsDirectory.appendingPathComponent("temp-notes")
@@ -18,31 +18,13 @@ class Note: NSObject, NSCoding {
     var id: String?
     var name: String
     var text: String
-    var textEditor: EditorBox
+    var editor: Editor
 
-    required convenience init?(coder: NSCoder) {
-        guard let name = coder.decodeObject(forKey: PropertyKey.name) as? String,
-            let text = coder.decodeObject(forKey: PropertyKey.text) as? String
-        else {
-        return nil
-        }
-        let id = coder.decodeObject(forKey: PropertyKey.id) as? String
-        let textEditor = coder.decodeObject(forKey: PropertyKey.editor) as? EditorBox
-        self.init(id ?? IdGenerator.shared.generate(), name, text, textEditor ?? EditorBox(Editor(text)))
-    }
-
-    init(_ id: String, _ name: String, _ text: String, _ textEditor: EditorBox) {
+    init(_ id: String, _ name: String, _ text: String, _ editor: Editor) {
         self.id = id
         self.name = name
         self.text = text
-        self.textEditor = textEditor
-    }
-
-    func encode(with coder: NSCoder) {
-        coder.encode(id, forKey: PropertyKey.id)
-        coder.encode(name, forKey: PropertyKey.name)
-        coder.encode(text, forKey: PropertyKey.text)
-        coder.encode(textEditor, forKey: PropertyKey.editor)
+        self.editor = editor
     }
 
     func update(_ name: String, _ text: String) {
@@ -68,7 +50,7 @@ class Note: NSObject, NSCoding {
     }
 
     static func newNote(name: String = "name?", text: String = "text?") -> Note {
-        let note = Note(IdGenerator.shared.generate(), name, text, EditorBox(Editor(text)))
+        let note = Note(IdGenerator.shared.generate(), name, text, Editor(text))
         return note
     }
 }
