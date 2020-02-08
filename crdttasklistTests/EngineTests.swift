@@ -29,4 +29,10 @@ class EngineTests: XCTestCase {
         XCTAssertEqual("0123456789abcDEEFghijklmnopqr999stuvz", String.from(rope: engine.get_head()))
     }
 
+    func testCodeingDecoding() {
+        let engine = Engine.make_from_rope(Rope.from_str(TEST_STR[...]))
+        let fileEngine = saveThenLoad(obj: engine)
+        XCTAssertEqual(engine, fileEngine)
+
+    }
 }

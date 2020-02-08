@@ -49,6 +49,7 @@
 		E7F0326022BD26F300D0BF2D /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325F22BD26F300D0BF2D /* Strings.swift */; };
 		E7F465E82315AC4200030F3A /* CRDTTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F465E72315AC4200030F3A /* CRDTTextView.swift */; };
 		E7F88FD123EEDEBE005EE3FD /* CodableSortedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD023EEDEBE005EE3FD /* CodableSortedSet.swift */; };
+		E7F88FD323EF203B005EE3FD /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD223EF203B005EE3FD /* Utils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -121,6 +122,7 @@
 		E7F0325F22BD26F300D0BF2D /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		E7F465E72315AC4200030F3A /* CRDTTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTTextView.swift; sourceTree = "<group>"; };
 		E7F88FD023EEDEBE005EE3FD /* CodableSortedSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableSortedSet.swift; sourceTree = "<group>"; };
+		E7F88FD223EF203B005EE3FD /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		F25EA82BD8892AE33DAF952B /* Pods-crdttasklist.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklist.release.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklist/Pods-crdttasklist.release.xcconfig"; sourceTree = "<group>"; };
 		F52338B186C24951445935E9 /* Pods_crdttasklistUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_crdttasklistUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -232,6 +234,7 @@
 				E7BD0E0722FC352D00B14710 /* MultisetTests.swift */,
 				E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */,
 				E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */,
+				E7F88FD223EF203B005EE3FD /* Utils.swift */,
 			);
 			path = crdttasklistTests;
 			sourceTree = "<group>";
@@ -556,6 +559,7 @@
 				E763DF9C22DA6FF4003572EC /* EngineTests.swift in Sources */,
 				E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */,
 				E79E1F8922C7F237007099E5 /* DeltaTests.swift in Sources */,
+				E7F88FD323EF203B005EE3FD /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

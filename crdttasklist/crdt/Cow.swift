@@ -10,12 +10,16 @@
 import Foundation
 import BTree
 
-final class Ref<T: Codable>: Codable {
+final class Ref<T: Codable&Equatable>: Codable, Equatable {
+    static func == (lhs: Ref<T>, rhs: Ref<T>) -> Bool {
+        return lhs.val == rhs.val
+    }
+
     var val : T
     init(_ v : T) {val = v}
 }
 
-struct Cow<T: Codable>: Codable {
+struct Cow<T: Codable&Equatable>: Codable, Equatable {
     var ref : Ref<T>
     init(_ x : T) { ref = Ref(x) }
 
@@ -31,12 +35,16 @@ struct Cow<T: Codable>: Codable {
     }
 }
 
-final class RefRaw<T> {
+final class RefRaw<T: Equatable>: Equatable {
+    static func == (lhs: RefRaw<T>, rhs: RefRaw<T>) -> Bool {
+        return lhs.val == rhs.val
+    }
+
     var val : T
     init(_ v : T) {val = v}
 }
 
-struct CowSortedSet<T: Codable & Comparable>: Codable {
+struct CowSortedSet<T: Codable & Comparable>: Codable, Equatable {
     var ref : RefRaw<SortedSet<T>>
 
     init() {

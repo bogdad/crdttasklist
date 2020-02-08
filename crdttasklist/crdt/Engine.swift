@@ -27,7 +27,7 @@
 import Foundation
 import BTree
 
-struct SessionId: Codable, Comparable {
+struct SessionId: Codable, Comparable, Equatable {
     static func < (lhs: SessionId, rhs: SessionId) -> Bool {
         if lhs.f < rhs.f {
             return true
@@ -59,7 +59,22 @@ enum CrdtError: Error {
     case MalformedDelta(rev_len: UInt, delta_len: UInt)
 }
 
-enum Contents: Codable {
+enum Contents: Codable, Equatable {
+    static func == (lhs: Contents, rhs: Contents) -> Bool {
+        switch (lhs, rhs) {
+        case (
+            .Edit(let priority1, let undo_group1, let inserts1, let deletes1),
+            .Edit(let priority2, let undo_group2, let inserts2, let deletes2)):
+            return priority1==priority2 && undo_group1==undo_group2 && inserts1==inserts2 && deletes1==deletes2
+        case (.Undo(let toggled_groups1, let deleted_bixor1),
+              .Undo(let toggled_groups2, let deleted_bixor2)
+            ):
+            return toggled_groups1==toggled_groups2 && deleted_bixor1==deleted_bixor2
+        default:
+            return false
+        }
+    }
+
     case Edit(
         priority: UInt,
     /// Groups related edits together so that they are undone and re-done
@@ -102,14 +117,14 @@ extension Contents {
         let inserts = try container.decodeIfPresent(Subset.self, forKey: CodingKeys.inserts)
         let deletes = try container.decodeIfPresent(Subset.self, forKey: CodingKeys.deletes)
 
-        let toggled_groups = try container.decode(CodableSortedSet<UInt>.self, forKey: .toggled_groups)
-        let deletes_bitxor = try container.decode(Subset.self, forKey: .deletes_bitxor)
+        let toggled_groups = try container.decodeIfPresent(CodableSortedSet<UInt>.self, forKey: .toggled_groups)
+        let deletes_bitxor = try container.decodeIfPresent(Subset.self, forKey: .deletes_bitxor)
 
         switch type {
         case 0:
             self = .Edit(priority: priority!, undo_group: undo_group!, inserts: inserts!, deletes: deletes!)
         case 1:
-            self = .Undo(toggled_groups: toggled_groups.set, deletes_bitxor: deletes_bitxor)
+            self = .Undo(toggled_groups: toggled_groups!.set, deletes_bitxor: deletes_bitxor!)
         default:
             throw BadDataError.error
         }
@@ -144,7 +159,7 @@ struct FullPriority {
     }
 }
 
-struct RevId: Hashable, Codable {
+struct RevId: Hashable, Codable, Equatable {
     // 96 bits has a 10^(-12) chance of collision with 400 million sessions and 10^(-6) with 100 billion.
     // `session1==session2==0` is reserved for initialization which is the same on all sessions.
     // A colliding session will break merge invariants and the document will start crashing Xi.
@@ -176,7 +191,7 @@ struct RevId: Hashable, Codable {
     }
 }
 
-struct Revision: Codable {
+struct Revision: Codable, Equatable {
     /// This uniquely represents the identity of this revision and it stays
     /// the same even if it is rebased or merged between devices.
     var rev_id: RevId
@@ -192,7 +207,7 @@ struct Revision: Codable {
     }
 }
 
-struct Engine: Codable {
+struct Engine: Codable, Equatable {
     /// The session ID used to create new `RevId`s for edits made on this device
     var session: SessionId
     /// The incrementing revision number counter for this session used for `RevId`s
@@ -210,7 +225,7 @@ struct Engine: Codable {
     /// that are currently deleted, and thus in `tombstones` rather than
     /// `text`. The count of a character in `deletes_from_union` represents
     /// how many times it has been deleted, so if a character is deleted twice
-    /// concurrently it will have count `2` so that undoing one delete but not
+    /// concurrently it will have csount `2` so that undoing one delete but not
     /// the other doesn't make it re-appear.
     ///
     /// You could construct the "union string" from `text`, `tombstones` and
