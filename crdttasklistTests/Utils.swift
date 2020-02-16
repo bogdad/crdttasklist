@@ -8,6 +8,7 @@
 
 import Foundation
 import XCTest
+@testable import crdttasklist
 
 class Utils {
     static func getTempFile() -> (URL, ()->Void) {
@@ -25,18 +26,6 @@ class Utils {
             }
         })
     }
-
-    static func saveToFile<T: Codable>(obj: T, url: URL) {
-        let data = try! PropertyListEncoder().encode(obj)
-        let dataWriter = try! NSKeyedArchiver.archivedData(withRootObject: data, requiringSecureCoding: false)
-        try! dataWriter.write(to: url)
-    }
-
-    static func loadFromFile<T: Codable>(type: T.Type, url: URL) -> T {
-        let loadData = NSKeyedUnarchiver.unarchiveObject(withFile: url.path) as? Data
-        let fileObj = try! PropertyListDecoder().decode(type, from: loadData!)
-        return fileObj
-    }
 }
 
 extension XCTestCase {
@@ -48,7 +37,7 @@ extension XCTestCase {
 
     func saveThenLoad<T: Codable>(obj: T) -> T {
         let url = getTempFile()
-        Utils.saveToFile(obj: obj, url: url)
-        return Utils.loadFromFile(type: T.self, url: url)
+        FileUtils.saveToFile(obj: obj, url: url)
+        return FileUtils.loadFromFile(type: T.self, url: url)!
     }
 }

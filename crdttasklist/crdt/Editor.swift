@@ -31,7 +31,7 @@ struct EditorConstants {
     static let MAX_UNDOS: UInt = 20
 }
 
-enum EditType: Int, Codable {
+enum EditType: Int, Codable, Equatable {
     /// A catchall for edits that don't fit elsewhere, and which should
     /// always have their own undo groups; used for things like cut/copy/paste.
     case Other
@@ -52,7 +52,7 @@ enum EditType: Int, Codable {
     }
 }
 
-struct Editor: Codable {
+struct Editor: Codable, Equatable {
     /// The contents of the buffer.
     var text: Rope
     /// The CRDT engine, which tracks edit history and manages concurrent edits.

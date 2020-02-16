@@ -10,7 +10,11 @@ import Foundation
 import UIKit
 import os.log
 
-class Note: Codable {
+class Note: Codable, Equatable {
+    static func == (lhs: Note, rhs: Note) -> Bool {
+        return lhs.id == rhs.id && lhs.name == rhs.name && lhs.text == rhs.text && lhs.editor == rhs.editor
+    }
+
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     static let ArchiveURL = DocumentsDirectory.appendingPathComponent("notes")
     static let TempArchiveURL = DocumentsDirectory.appendingPathComponent("temp-notes")

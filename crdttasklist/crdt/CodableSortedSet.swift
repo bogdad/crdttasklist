@@ -9,7 +9,11 @@
 import Foundation
 import BTree
 
-class CodableSortedSet<T: Comparable&Codable>: Codable {
+class CodableSortedSet<T: Comparable&Codable>: Codable, Equatable {
+    static func == (lhs: CodableSortedSet<T>, rhs: CodableSortedSet<T>) -> Bool {
+        return Array(lhs.set) == Array(rhs.set)
+    }
+
     var set: SortedSet<T>
 
     convenience init() {

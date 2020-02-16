@@ -50,6 +50,8 @@
 		E7F465E82315AC4200030F3A /* CRDTTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F465E72315AC4200030F3A /* CRDTTextView.swift */; };
 		E7F88FD123EEDEBE005EE3FD /* CodableSortedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD023EEDEBE005EE3FD /* CodableSortedSet.swift */; };
 		E7F88FD323EF203B005EE3FD /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD223EF203B005EE3FD /* Utils.swift */; };
+		E7F88FD523EF2CC8005EE3FD /* NoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD423EF2CC8005EE3FD /* NoteTests.swift */; };
+		E7F88FD723EF2F77005EE3FD /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD623EF2F77005EE3FD /* FileUtils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +125,8 @@
 		E7F465E72315AC4200030F3A /* CRDTTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTTextView.swift; sourceTree = "<group>"; };
 		E7F88FD023EEDEBE005EE3FD /* CodableSortedSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableSortedSet.swift; sourceTree = "<group>"; };
 		E7F88FD223EF203B005EE3FD /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		E7F88FD423EF2CC8005EE3FD /* NoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTests.swift; sourceTree = "<group>"; };
+		E7F88FD623EF2F77005EE3FD /* FileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUtils.swift; sourceTree = "<group>"; };
 		F25EA82BD8892AE33DAF952B /* Pods-crdttasklist.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklist.release.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklist/Pods-crdttasklist.release.xcconfig"; sourceTree = "<group>"; };
 		F52338B186C24951445935E9 /* Pods_crdttasklistUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_crdttasklistUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -219,6 +223,7 @@
 				E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */,
 				E70B862923DC9A3300C48E3C /* Note.swift */,
 				E7A895D323DF807D008626EA /* NoteStorage.swift */,
+				E7F88FD623EF2F77005EE3FD /* FileUtils.swift */,
 			);
 			path = crdttasklist;
 			sourceTree = "<group>";
@@ -235,6 +240,7 @@
 				E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */,
 				E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */,
 				E7F88FD223EF203B005EE3FD /* Utils.swift */,
+				E7F88FD423EF2CC8005EE3FD /* NoteTests.swift */,
 			);
 			path = crdttasklistTests;
 			sourceTree = "<group>";
@@ -521,6 +527,7 @@
 			files = (
 				E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */,
 				E7A2E23023DF3D1E00C65976 /* LinkToStorageController.swift in Sources */,
+				E7F88FD723EF2F77005EE3FD /* FileUtils.swift in Sources */,
 				E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */,
 				E70B862A23DC9A3300C48E3C /* Note.swift in Sources */,
 				E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */,
@@ -552,6 +559,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7F88FD523EF2CC8005EE3FD /* NoteTests.swift in Sources */,
 				E7BD0E0822FC352D00B14710 /* MultisetTests.swift in Sources */,
 				E737A29322FEDB1600E5AAD8 /* TestHelpersTests.swift in Sources */,
 				E737A29522FEE1AE00E5AAD8 /* EditorTests.swift in Sources */,

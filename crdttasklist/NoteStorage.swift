@@ -61,27 +61,15 @@ class NoteStorage {
     }
 
     func saveNotes() {
-        do {
-            let data = try PropertyListEncoder().encode(self.notes)
-            let success = NSKeyedArchiver.archiveRootObject(data, toFile: Note.ArchiveURL.path)
-            print(success ? "Successful save" : "Save Failed")
-        } catch {
-            print("Save Failed")
-        }
+        FileUtils.saveToFile(obj: self.notes, url: Note.ArchiveURL)
         conflictDetected()
     }
 
     private func loadFrom(toUrl: URL) -> [Note] {
-        guard let data = NSKeyedUnarchiver.unarchiveObject(withFile: toUrl.path) as? Data else { return [] }
-        do {
-            let fileNotes = try PropertyListDecoder().decode([Note].self, from: data)
-            let n = fileNotes
-            let byId: [Note] = Array(Dictionary(grouping: n, by: { $0.id!} ).mapValues({ $0[0] }).values)
-            return Array(Dictionary(grouping: byId, by: { $0.dedupHash() }).mapValues({ $0[0] }).values.sortedById())
-        } catch {
-            print("Retrieve Failed")
-            return []
-        }
+        let fileNotes = FileUtils.loadFromFile(type: [Note].self, url: toUrl)
+        let n = fileNotes ?? []
+        let byId: [Note] = Array(Dictionary(grouping: n, by: { $0.id!} ).mapValues({ $0[0] }).values)
+        return Array(Dictionary(grouping: byId, by: { $0.dedupHash() }).mapValues({ $0[0] }).values.sortedById())
     }
 
     private func downloadFromDropbox(toUrl: URL, closure: @escaping ([Note]?, String?) -> Void) {
@@ -140,7 +128,10 @@ class NoteStorage {
                     print("conflictDetected: was a change, uploading \(self.notes.count)")
                     self.notesChangedRemotely()
                     self.saveNotes()
-                    let request = client.files.upload(path: "/notes", mode: .update(rev!), strictConflict: true, input: try! Note.ArchiveURL.asURL())
+                    let _ = client.files.upload(path: "/notes",
+                                                mode: .update(rev!),
+                                                strictConflict: true,
+                                                input: try! Note.ArchiveURL.asURL())
                         .response { response, error in
                             self.handleUpload(response, error)
                         }
@@ -150,7 +141,10 @@ class NoteStorage {
                 }
             } else {
                 self.saveNotes()
-                let request = client.files.upload(path: "/notes", mode: .add, strictConflict: true, input: try! Note.ArchiveURL.asURL())
+                _ = client.files.upload(path: "/notes",
+                                        mode: .add,
+                                        strictConflict: true,
+                                        input: try! Note.ArchiveURL.asURL())
                     .response { response, error in
                         self.handleUpload(response, error)
                     }
