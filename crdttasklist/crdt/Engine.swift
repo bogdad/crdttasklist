@@ -275,6 +275,11 @@ struct Engine: Codable, Equatable {
         return engine
     }
 
+    /// Get text of a given revision, if it can be found.
+    mutating func get_rev(_ rev: RevToken) -> Rope? {
+        self.find_rev_token(rev).map { rev_index in self.rev_content_for_index(rev_index) }
+    }
+
     func get_head_rev_id() -> RevId {
         return self.revs.last!.rev_id
     }
@@ -314,6 +319,27 @@ struct Engine: Codable, Equatable {
         }
     }
 
+
+
+    /// A delta that, when applied to `base_rev`, results in the current head. Returns
+    /// an error if there is not at least one edit.
+    mutating func try_delta_rev_head(_ base_rev: RevToken) -> Result<Delta<RopeInfo>, Error> {
+        guard let ix = self.find_rev_token(base_rev) else {
+            return .failure(CrdtError.MissingRevision(base_rev))
+        }
+
+        var prev_from_union = self.deletes_from_cur_union_for_index(ix)
+        // TODO: this does 2 calls to Delta::synthesize and 1 to apply, this probably could be better.
+        let old_tombstones = GenericHelpers.shuffle_tombstones(
+            self.text,
+            self.tombstones,
+            &self.deletes_from_union.value,
+            &prev_from_union.value
+        );
+        return .success(Delta.synthesize(old_tombstones, &prev_from_union.value, &self.deletes_from_union.value))
+    }
+
+
     mutating func try_edit_rev(_ priority: UInt, _ undo_group: UInt, _ base_rev: RevToken, _ delta: Delta<RopeInfo>) -> Result<(), CrdtError> {
         let res = self.mk_new_rev(priority, undo_group, base_rev, delta)
         if case let .failure(err) = res {
@@ -344,7 +370,7 @@ struct Engine: Codable, Equatable {
         let (ins_delta, deletes) = delta.factor()
 
         // rebase delta to be on the base_rev union instead of the text
-        var deletes_at_rev = self.deletes_from_union_for_index(rev_index: ix)
+        let deletes_at_rev = self.deletes_from_union_for_index(ix)
 
         // validate delta
         if ins_delta.elem.base_len != deletes_at_rev.value.len_after_delete() {
@@ -411,10 +437,18 @@ struct Engine: Codable, Equatable {
         ))
     }
 
+    /// Get the contents of the document at a given revision number
+    mutating func rev_content_for_index(_ rev_index: UInt) -> Rope {
+        var old_deletes_from_union = self.deletes_from_cur_union_for_index(rev_index)
+        let delta =
+            Delta.synthesize(self.tombstones, &self.deletes_from_union.value, &old_deletes_from_union.value)
+        return delta.apply(self.text)
+    }
+
     // TODO: does Cow really help much here? It certainly won't after making Subsets a rope.
     /// Find what the `deletes_from_union` field in Engine would have been at the time
     /// of a certain `rev_index`. In other words, the deletes from the union string at that time.
-    func deletes_from_union_for_index(rev_index: UInt) -> Cow<Subset> {
+    func deletes_from_union_for_index(_ rev_index: UInt) -> Cow<Subset> {
         return self.deletes_from_union_before_index(rev_index + 1, true)
     }
 
@@ -440,6 +474,21 @@ struct Engine: Codable, Equatable {
                     undone_groups = CowSortedSet(new_undone)
                     deletes_from_union = Cow(deletes_from_union.value.bitxor(&deletes_bitxor))
                 }
+            }
+        }
+        return deletes_from_union
+    }
+
+    /// Get the Subset to delete from the current union string in order to obtain a revision's content
+    func deletes_from_cur_union_for_index(_ rev_index: UInt) -> Cow<Subset> {
+        var deletes_from_union = self.deletes_from_union_for_index(rev_index)
+        for rev in self.revs.suffix(Int(rev_index) + 1) {
+            switch rev.edit {
+            case .Edit(_, _, let inserts, _):
+                if !inserts.is_empty() {
+                    deletes_from_union.value = deletes_from_union.value.transform_union(Cow(inserts))
+                }
+            default: break
             }
         }
         return deletes_from_union

@@ -86,3 +86,12 @@ struct SelRegion {
         return SelRegion(start: pos, end: pos, horiz: .none, affinity: Affinity.def())
     }
 }
+
+enum InsertDrift {
+    /// Indicates to do whatever the `after` bool says to do
+    case Default
+    /// Indicates this edit should happen within any (non-caret) selections if possible.
+    case Inside
+    /// Indicates this edit should happen outside any selections if possible.
+    case Outside
+}

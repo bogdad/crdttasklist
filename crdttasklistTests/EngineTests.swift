@@ -29,6 +29,18 @@ class EngineTests: XCTestCase {
         XCTAssertEqual("0123456789abcDEEFghijklmnopqr999stuvz", String.from(rope: engine.get_head()))
     }
 
+    func test_try_delta_rev_head() {
+        var engine = Engine.make_from_rope(Rope.from_str(TEST_STR))
+        let first_rev = engine.get_head_rev_id().token()
+        engine.edit_rev(1, 1, first_rev, build_delta_1())
+        do {
+            let d = try engine.try_delta_rev_head(first_rev).get()
+            XCTAssertEqual(String.from(rope: engine.get_head()), d.apply_to_string(TEST_STR))
+        } catch {
+            fatalError("should not happen")
+        }
+    }
+
     func testCodeingDecoding() {
         let engine = Engine.make_from_rope(Rope.from_str(TEST_STR[...]))
         let fileEngine = saveThenLoad(obj: engine)

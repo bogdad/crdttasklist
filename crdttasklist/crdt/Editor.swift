@@ -138,7 +138,7 @@ struct Editor: Codable, Equatable {
         let head_rev_id = self.engine.get_head_rev_id()
         let undo_group = self.calculate_undo_group()
         self.last_edit_type = self.this_edit_type
-        let priority: UInt = 0x10000;
+        let priority: UInt = 0x10000
         self.engine.edit_rev(priority, undo_group, head_rev_id.token(), delta)
         self.text = self.engine.get_head().clone()
     }
@@ -174,5 +174,52 @@ struct Editor: Codable, Equatable {
 
     func get_buffer() -> Rope {
         return self.text
+    }
+
+    /// Commits the current delta. If the buffer has changed, returns
+    /// a 3-tuple containing the delta representing the changes, the previous
+    /// buffer, and an `InsertDrift` enum describing the correct selection update
+    /// behaviour.
+    mutating func commit_delta() -> (RopeDelta, Rope, InsertDrift)? {
+
+        if self.engine.get_head_rev_id() == self.last_rev_id {
+            return nil
+        }
+
+        let last_token = self.last_rev_id.token()
+        var delta: Delta<RopeInfo>
+        do {
+             delta = try self.engine.try_delta_rev_head(last_token).get()
+        } catch {
+            fatalError("last_rev not found")
+        }
+        // TODO (performance): it's probably quicker to stash last_text
+        // rather than resynthesize it.
+        guard let last_text = self.engine.get_rev(last_token) else {
+            fatalError("last_rev not found")
+        }
+
+        // Transpose can rotate characters inside of a selection; this is why it's an Inside edit.
+        // Surround adds characters on either side of a selection, that's why it's an Outside edit.
+        var drift: InsertDrift
+        switch self.this_edit_type {
+        case .Transpose:
+            drift = .Inside
+        case .Surround:
+            drift = .Outside
+        default:
+            drift = .Default
+        }
+
+        // TODO: what is this for?
+        //self.layers.update_all(delta)
+
+        self.last_rev_id = self.engine.get_head_rev_id()
+        self.sync_state_changed()
+        return (delta, last_text, drift)
+    }
+
+    func sync_state_changed() {
+        // TODO: what is this for?
     }
 }
