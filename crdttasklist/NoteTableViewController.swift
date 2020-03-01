@@ -44,7 +44,7 @@ class NoteTableViewController: UITableViewController {
         }
 
         let note = getNotes()[indexPath.row]
-        cell.nameLabel!.text = String((note.name + " " + note.text).prefix(40))
+        cell.nameLabel!.text = String((note.name + " " + note.editor.text.to_string()).prefix(40))
 
         return cell
     }

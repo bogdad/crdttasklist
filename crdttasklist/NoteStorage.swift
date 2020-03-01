@@ -53,21 +53,27 @@ class NoteStorage {
     }
 
     func loadNotes() -> Bool {
-        notes = loadFrom(toUrl: try! Note.ArchiveURL.asURL())
+        guard let notes = loadFrom(toUrl: try! Note.ArchiveURL.asURL()) else {
+            return false
+        }
+        self.notes = notes
         if isStorageLinked() {
-            conflictDetected()
+            //conflictDetected()
         }
         return true
     }
 
     func saveNotes() {
         FileUtils.saveToFile(obj: self.notes, url: Note.ArchiveURL)
-        conflictDetected()
+
+        //conflictDetected()
     }
 
-    private func loadFrom(toUrl: URL) -> [Note] {
+    private func loadFrom(toUrl: URL) -> [Note]? {
         let fileNotes = FileUtils.loadFromFile(type: [Note].self, url: toUrl)
-        let n = fileNotes ?? []
+        guard let n = fileNotes else {
+            return nil
+        }
         let byId: [Note] = Array(Dictionary(grouping: n, by: { $0.id!} ).mapValues({ $0[0] }).values)
         return Array(Dictionary(grouping: byId, by: { $0.dedupHash() }).mapValues({ $0[0] }).values.sortedById())
     }
@@ -82,7 +88,10 @@ class NoteStorage {
         client.files.download(path: "/notes", overwrite: true, destination: destination)
         .response { response, error in
             if let response = response {
-                let fileNotes = self.loadFrom(toUrl: toUrl)
+                guard let fileNotes = self.loadFrom(toUrl: toUrl) else {
+                    // TODO: what are we doing if we consistently cant download/parse from dropbox
+                    return
+                }
                 print("downloadFromDropBox: downoladed \(fileNotes.count) with revision \(response.0.rev)")
                 DispatchQueue.main.async {
                     closure(fileNotes, response.0.rev)
@@ -101,6 +110,8 @@ class NoteStorage {
                         default:
                             fatalError("handle it!")
                         }
+                    case .other:
+                        fatalError(fileDownloadError.unboxed.description)
                     default:
                         fatalError("handle it!")
                     }
@@ -121,7 +132,7 @@ class NoteStorage {
         }
         self.downloadFromDropbox(toUrl: Note.TempArchiveURL, closure: { (otherNotes, rev) in
 
-            if otherNotes != nil && otherNotes!.count > 0 {
+            if otherNotes != nil {
                 let (mergedNotes, wasChange) = self.mergeNotes(self.notes, otherNotes!)
                 self.notes = mergedNotes
                 if wasChange {
@@ -157,7 +168,7 @@ class NoteStorage {
     }
 
     func handleUpload(_ response: Files.FileMetadata?, _ error: CallError<Files.UploadError>?) {
-        if let response = response {
+        if response != nil {
             print("handleUpload: successfuly uploaded")
         } else if let error = error {
             switch (error) {

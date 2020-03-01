@@ -135,6 +135,15 @@ class Node<N: NodeInfo> : Equatable, Codable {
         }
     }
 
+    func get_clidren_copy() -> [Node<N>] {
+        switch body.val {
+        case .Internal(let nodes):
+            return nodes
+        default:
+            fatalError("get_children called on leaf node")
+        }
+    }
+
     func get_leaf<R>(f: (inout N.L) -> R) -> R {
         if case var NodeVal.Leaf(leaf) = body.val {
             return f(&leaf)
@@ -303,6 +312,34 @@ class Node<N: NodeInfo> : Equatable, Codable {
     static func def() -> Node<N> {
         var def = N.L.def()
         return Node.from_leaf(l: &def)
+    }
+
+    // doesn't deal with endpoint, handle that specially if you need it
+    func convert_metrics<M1: Metric, M2: Metric>(m1: UInt) -> UInt {
+        if m1 == 0 {
+            return 0;
+        }
+        // If M1 can fragment, then we must land on the leaf containing
+        // the m1 boundary. Otherwise, we can land on the beginning of
+        // the leaf immediately following the M1 boundary, which may be
+        // more efficient.
+        let m1_fudge = M1.can_fragment() ? 1 : 0
+        var m2 = 0
+        var node = self
+        while node.height() > 0 {
+            for child in node.get_children_copy() {
+                let child_m1 = child.measure<M1>()
+                if m1 < child_m1 + m1_fudge {
+                    node = child;
+                    break;
+                }
+                m2 += child.measure<M2>()
+                m1 -= child_m1;
+            }
+        }
+        let l = node.get_leaf_copy()
+        let base = M1.to_base_units(l, m1)
+        return m2 + M2.from_base_units(l, base)
     }
 }
 

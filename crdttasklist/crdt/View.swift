@@ -105,4 +105,24 @@ struct View {
     func sel_regions() -> [SelRegion] {
         return self.selection.regions
     }
+
+    // How should we count "column"? Valid choices include:
+    // * Unicode codepoints
+    // * grapheme clusters
+    // * Unicode width (so CJK counts as 2)
+    // * Actual measurement in text layout
+    // * Code units in some encoding
+    //
+    // Of course, all these are identical for ASCII. For now we use UTF-8 code units
+    // for simplicity.
+
+    func offset_to_line_col(text: Rope, offset: UInt) -> (UInt, UInt) {
+        let line = self.line_of_offset(text, offset);
+        (line, offset - self.offset_of_line(text, line))
+    }
+
+    /// Returns the visible line number containing the given offset.
+    func line_of_offset(text: Rope, offset: UInt) -> UInt {
+        self.lines.visual_line_of_offset(text, offset)
+    }
 }

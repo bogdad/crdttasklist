@@ -31,6 +31,10 @@ class Note: Codable, Equatable {
         self.editor = editor
     }
 
+    func text_snapshot() -> String {
+        return editor.get_buffer().to_string()
+    }
+
     func update(_ name: String, _ text: String) {
         self.name = name
         self.text = text

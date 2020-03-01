@@ -13,6 +13,8 @@
 		E70B862A23DC9A3300C48E3C /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70B862923DC9A3300C48E3C /* Note.swift */; };
 		E70B862C23DCB3AF00C48E3C /* NoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70B862B23DCB3AF00C48E3C /* NoteViewController.swift */; };
 		E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71F38AA22D231B8007FC0E8 /* Editor.swift */; };
+		E72FC386240BFF4F00611A75 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FC385240BFF4F00611A75 /* Config.swift */; };
+		E72FC388240C00C600611A75 /* Backspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FC387240C00C600611A75 /* Backspace.swift */; };
 		E737A29322FEDB1600E5AAD8 /* TestHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */; };
 		E737A29522FEE1AE00E5AAD8 /* EditorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */; };
 		E74C3DC022D23620001B9CA7 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74C3DBF22D23620001B9CA7 /* Engine.swift */; };
@@ -82,6 +84,8 @@
 		E70B862923DC9A3300C48E3C /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		E70B862B23DCB3AF00C48E3C /* NoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewController.swift; sourceTree = "<group>"; };
 		E71F38AA22D231B8007FC0E8 /* Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Editor.swift; sourceTree = "<group>"; };
+		E72FC385240BFF4F00611A75 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		E72FC387240C00C600611A75 /* Backspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backspace.swift; sourceTree = "<group>"; };
 		E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpersTests.swift; sourceTree = "<group>"; };
 		E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTests.swift; sourceTree = "<group>"; };
 		E74C3DBF22D23620001B9CA7 /* Engine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
@@ -257,9 +261,12 @@
 		E7F465E92315AF5500030F3A /* crdt */ = {
 			isa = PBXGroup;
 			children = (
+				E72FC387240C00C600611A75 /* Backspace.swift */,
+				E7F88FD023EEDEBE005EE3FD /* CodableSortedSet.swift */,
+				E72FC385240BFF4F00611A75 /* Config.swift */,
+				E7B5D57222F34EC90020AFAC /* Collections.swift */,
 				E763DF9D22E4CD2E003572EC /* Cow.swift */,
 				E79E1F8622C7ED06007099E5 /* Delta.swift */,
-				E7B5D57222F34EC90020AFAC /* Collections.swift */,
 				E71F38AA22D231B8007FC0E8 /* Editor.swift */,
 				E74C3DBF22D23620001B9CA7 /* Engine.swift */,
 				E7B05F1F2298284100D2A094 /* Event.swift */,
@@ -273,7 +280,6 @@
 				E7BD0E0922FC366300B14710 /* TestHelpers.swift */,
 				E7F0325D22BD261F00D0BF2D /* Tree.swift */,
 				E74C3DC122D23E7F001B9CA7 /* View.swift */,
-				E7F88FD023EEDEBE005EE3FD /* CodableSortedSet.swift */,
 			);
 			path = crdt;
 			sourceTree = "<group>";
@@ -535,6 +541,7 @@
 				E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */,
 				E75B38692300147B005013E0 /* Tabs.swift in Sources */,
 				E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */,
+				E72FC388240C00C600611A75 /* Backspace.swift in Sources */,
 				E778F217238C8A0E0036EB29 /* NoteTableViewController.swift in Sources */,
 				E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */,
 				E7B5D57322F34EC90020AFAC /* Collections.swift in Sources */,
@@ -550,6 +557,7 @@
 				E7F465E82315AC4200030F3A /* CRDTTextView.swift in Sources */,
 				E7BD0E0A22FC366300B14710 /* TestHelpers.swift in Sources */,
 				E76A859E23478EDB0094EBBF /* NoteTableViewCell.swift in Sources */,
+				E72FC386240BFF4F00611A75 /* Config.swift in Sources */,
 				E7F88FD123EEDEBE005EE3FD /* CodableSortedSet.swift in Sources */,
 				E7A895D423DF807D008626EA /* NoteStorage.swift in Sources */,
 			);

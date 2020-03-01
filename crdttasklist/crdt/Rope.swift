@@ -274,6 +274,40 @@ extension Rope {
     func to_string() -> String {
         return slice_to_cow(range: RangeFull())
     }
+
+
+    /// Return the line number corresponding to the byte index `offset`.
+    ///
+    /// The line number is 0-based, thus this is equivalent to the count of newlines
+    /// in the slice up to `offset`.
+    ///
+    /// Time complexity: O(log n)
+    ///
+    /// # Panics
+    ///
+    /// This function will panic if `offset > self.len()`. Callers are expected to
+    /// validate their input.
+    func line_of_offset(offset: UInt) -> UInt {
+        self.count<LinesMetric>(offset)
+    }
+
+    /// Measures the length of the text bounded by ``DefaultMetric::measure(offset)`` with another metric.
+    ///
+    /// # Examples
+    /// ```
+    /// use crate::xi_rope::{Rope, LinesMetric};
+    ///
+    /// // the default metric of Rope is BaseMetric (aka number of bytes)
+    /// let my_rope = Rope::from("first line \n second line \n");
+    ///
+    /// // count the number of lines in my_rope
+    /// let num_lines = my_rope.count::<LinesMetric>(my_rope.len());
+    /// assert_eq!(2, num_lines);
+    /// ```
+    func count<M: Metric>(offset: UInt) -> UInt {
+        self.convert_metrics::<N::DefaultMetric, M>(offset)
+    }
+
 }
 
 struct ChunkIter: IteratorProtocol, Sequence {
@@ -361,5 +395,14 @@ struct Lines: IteratorProtocol, Sequence {
         let chunkiter = ChunkIter(cursor: cursor, end: 0)
         let inner = LinesRaw(inner: chunkiter, fragment: "")
         return Lines(inner: inner)
+    }
+
+
+    func visual_line_of_offset(text: Rope, offset: UInt) -> UInt {
+        var line = text.line_of_offset(offset)
+        if self.wrap != WrapWidth::None {
+            line += self.breaks.count::<BreaksMetric>(offset)
+        }
+        return line
     }
 }

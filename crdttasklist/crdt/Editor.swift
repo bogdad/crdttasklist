@@ -172,6 +172,24 @@ struct Editor: Codable, Equatable {
         return self.engine.get_head_rev_id().token()
     }
 
+    mutating func delete_backward(_ view: inout View, _ config: BufferItems) {
+        // TODO: this function is workable but probably overall code complexity
+        // could be improved by implementing a "backspace" movement instead.
+        var builder = DeltaBuilder<RopeInfo>(self.text.len())
+        for region in view.sel_regions() {
+            let start = offset_for_delete_backwards(&view, &region, &self.text, &config);
+            let iv = Interval::new(start, region.max());
+            if !iv.is_empty() {
+                builder.delete(iv);
+            }
+        }
+
+        if !builder.is_empty() {
+            self.this_edit_type = EditType::Delete;
+            self.add_delta(builder.build());
+        }
+    }
+
     func get_buffer() -> Rope {
         return self.text
     }
