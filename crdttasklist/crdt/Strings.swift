@@ -50,6 +50,28 @@ struct Utils {
         return utf16_count
     }
 
+    /// Given the inital byte of a UTF-8 codepoint, returns the number of
+    /// bytes required to represent the codepoint.
+    /// RFC reference : https://tools.ietf.org/html/rfc3629#section-4
+    static func len_utf8_from_first_byte(_ s: Substring) -> UInt {
+        if s.len() != 1 {
+            fatalError("can only call on non empty strings")
+        }
+        return s.withCString({ body -> UInt in
+            let b = body.pointee
+            if b < 0x80 {
+                return 1
+            }
+            if b < 0xe0 {
+                return 2
+            }
+            if b < 0xf0 {
+                return 3
+            }
+            return 4
+        })
+    }
+
     static func find_leaf_split_for_merge(s: Substring) -> UInt {
         return find_leaf_split(s: s, minsplit: max(RopeConstants.MIN_LEAF, s.len() - RopeConstants.MAX_LEAF))
     }
@@ -92,6 +114,16 @@ struct Utils {
 }
 
 extension String {
+
+    func byte_at(_ offset: UInt)  -> UInt8 {
+        if self.utf8CString.endIndex >= offset {
+            fatalError("read past end index")
+        }
+        return withCString({ body -> UInt8 in
+            return UInt8(body.advanced(by: Int(offset)).pointee)
+        })
+    }
+
     func uintO(_ start: UInt, _ end: UInt) -> Substring {
         let s_i = String.Index(utf16Offset: Int(start), in: self)
         let e_i = String.Index(utf16Offset: Int(end), in: self)
@@ -135,7 +167,7 @@ extension String: Leaf {
         return UInt(self.count)
     }
 
-    func is_char_boundary(index: UInt) -> Bool {
+    func is_char_boundary(_ index: UInt) -> Bool {
         // 0 and len are always ok.
         // Test for 0 explicitly so that it can optimize out the check
         // easily and skip reading string data for that case.

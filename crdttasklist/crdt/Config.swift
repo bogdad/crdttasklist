@@ -26,5 +26,5 @@
 import Foundation
 
 class BufferItems {
-
+    var tab_size: UInt = 4
 }

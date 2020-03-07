@@ -44,7 +44,7 @@ struct View {
     let first_line: UInt
     /// height of visible portion
     let height: UInt
-    let lines: Lines
+    let lines: LinesW
 
     /// Front end's line cache state for this view. See the `LineCacheShadow`
     /// description for the invariant.
@@ -90,7 +90,7 @@ struct View {
         //drag_state: None,
         self.first_line = 0
         self.height = 10
-        self.lines = Lines.def()
+        self.lines = LinesW.def()
         //lc_shadow: LineCacheShadow::default(),
         //find: Vec::new(),
         //find_id_counter: Counter::default(),
@@ -116,13 +116,13 @@ struct View {
     // Of course, all these are identical for ASCII. For now we use UTF-8 code units
     // for simplicity.
 
-    func offset_to_line_col(text: Rope, offset: UInt) -> (UInt, UInt) {
-        let line = self.line_of_offset(text, offset);
-        (line, offset - self.offset_of_line(text, line))
+    func offset_to_line_col(_ text: Rope, _ offset: UInt) -> (UInt, UInt) {
+        let line = self.line_of_offset(text, offset)
+        return (line, offset - self.offset_of_line(text, line))
     }
 
     /// Returns the visible line number containing the given offset.
-    func line_of_offset(text: Rope, offset: UInt) -> UInt {
-        self.lines.visual_line_of_offset(text, offset)
+    func line_of_offset(_ text: Rope, _ offset: UInt) -> UInt {
+        return self.lines.visual_line_of_offset(text, offset)
     }
 }

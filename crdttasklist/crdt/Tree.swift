@@ -29,6 +29,7 @@ import IteratorTools
 
 protocol NodeInfo: Equatable, Codable {
     associatedtype L: Leaf
+    associatedtype DefaultMetric: Metric
 
     mutating func accumulate(other: inout Self)
     static func compute_info(leaf: inout L) -> Self
@@ -43,10 +44,6 @@ extension NodeInfo {
     func interval(len: UInt) -> Interval {
         return Interval(0, len)
     }
-}
-
-protocol DefaultMetric: NodeInfo {
-    associatedtype DefaultMetric: Metric
 }
 
 struct NodeBody<N: NodeInfo> : Equatable, Codable {
@@ -315,7 +312,7 @@ class Node<N: NodeInfo> : Equatable, Codable {
     }
 
     // doesn't deal with endpoint, handle that specially if you need it
-    func convert_metrics<M1: Metric, M2: Metric>(m1: UInt) -> UInt {
+    func convert_metrics<M1: Metric, M2: Metric>(m1Type: M1.Type, m2Type: M2.Type, m1: UInt) -> UInt {
         if m1 == 0 {
             return 0;
         }

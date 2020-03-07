@@ -36,14 +36,20 @@ func offset_for_delete_backwards(
         return region.min()
     } else {
         // backspace deletes max(1, tab_size) contiguous spaces
-        let (_, c) = view.offset_to_line_col(&text, region.start);
+        let (_, c) = view.offset_to_line_col(text, region.start)
 
-        let tab_off = c % config.tab_size;
-        let tab_size = config.tab_size;
-        let tab_size = if tab_off == 0 { tab_size } else { tab_off };
-        let tab_start = region.start.saturating_sub(tab_size);
+        let tab_off = c % config.tab_size
+        var tab_size = config.tab_size
+        if tab_off != 0 {
+            tab_size = tab_off
+        }
+
+        var tab_start = region.start - tab_size
+        if tab_start < 0 {
+            tab_start = 0
+        }
         let preceded_by_spaces =
-            region.start > 0 && (tab_start..region.start).all(|i| text.byte_at(i) == b' ');
+            region.start > 0 && (tab_start..<region.start).allSatisfy({ text.byte_at($0) == " "})
         if preceded_by_spaces && config.translate_tabs_to_spaces && config.use_tab_stops {
             tab_start
         } else {

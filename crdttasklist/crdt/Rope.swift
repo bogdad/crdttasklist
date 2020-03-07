@@ -121,6 +121,8 @@ protocol Metric {
 }
 
 struct RopeInfo: NodeInfo {
+    typealias DefaultMetric = LinesMetric
+
     typealias L = String
 
     var lines: UInt
@@ -230,6 +232,13 @@ typealias Rope = Node<RopeInfo>
 
 extension Rope {
 
+    // callers should be encouraged to use cursor instead
+    func byte_at(_ offset: UInt) -> UInt8 {
+        let cursor = Cursor(n: self, position: offset)
+        let (leaf, pos) = cursor.get_leaf()!
+        return leaf.byte_at(pos)
+    }
+
     static func from_str(_ s: Substring) -> Rope {
         var b = TreeBuilder<RopeInfo>()
         b.push_str(s: s)
@@ -287,8 +296,8 @@ extension Rope {
     ///
     /// This function will panic if `offset > self.len()`. Callers are expected to
     /// validate their input.
-    func line_of_offset(offset: UInt) -> UInt {
-        self.count<LinesMetric>(offset)
+    func line_of_offset(_ offset: UInt) -> UInt {
+        return self.count(LinesMetric.self, offset)
     }
 
     /// Measures the length of the text bounded by ``DefaultMetric::measure(offset)`` with another metric.
@@ -304,8 +313,8 @@ extension Rope {
     /// let num_lines = my_rope.count::<LinesMetric>(my_rope.len());
     /// assert_eq!(2, num_lines);
     /// ```
-    func count<M: Metric>(offset: UInt) -> UInt {
-        self.convert_metrics::<N::DefaultMetric, M>(offset)
+    func count<M: Metric>(_ mType: M.Type, _ offset: UInt) -> UInt {
+        return self.convert_metrics(N.DefaultMetric, mType, offset)
     }
 
 }
@@ -396,13 +405,71 @@ struct Lines: IteratorProtocol, Sequence {
         let inner = LinesRaw(inner: chunkiter, fragment: "")
         return Lines(inner: inner)
     }
+}
 
 
-    func visual_line_of_offset(text: Rope, offset: UInt) -> UInt {
-        var line = text.line_of_offset(offset)
-        if self.wrap != WrapWidth::None {
-            line += self.breaks.count::<BreaksMetric>(offset)
+//TODO: document metrics, based on https://github.com/google/xi-editor/issues/456
+//See ../docs/MetricsAndBoundaries.md for more information.
+/// This metric let us walk utf8 text by code point.
+///
+/// `BaseMetric` implements the trait [Metric].  Both its _measured unit_ and
+/// its _base unit_ are utf8 code unit.
+///
+/// Offsets that do not correspond to codepoint boundaries are _invalid_, and
+/// calling functions that assume valid offsets with invalid offets will panic
+/// in debug mode.
+///
+/// Boundary is atomic and determined by codepoint boundary.  Atomicity is
+/// implicit, because offsets between two utf8 code units that form a code
+/// point is considered invalid. For example, if a string starts with a
+/// 0xC2 byte, then `offset=1` is invalid.
+struct BaseMetric: Metric {
+    typealias N = RopeInfo
+
+    static func measure(info: inout RopeInfo, len: UInt) -> UInt {
+        return len
+    }
+
+    static func to_base_units(l: inout String, in_measured_units: UInt) -> UInt {
+        assert(l.is_char_boundary(in_measured_units))
+        return in_measured_units
+    }
+
+    static func from_base_units(l: inout String, in_base_units: UInt) -> UInt {
+        assert(l.is_char_boundary(in_base_units))
+        return in_base_units
+    }
+
+    static func is_boundary(l: inout String, offset: UInt) -> Bool {
+        return l.is_char_boundary(offset)
+    }
+
+    static func prev(l: inout String, offset: UInt) -> UInt? {
+        if offset == 0 {
+            // I think it's a precondition that this will never be called
+            // with offset == 0, but be defensive.
+            return nil
+        } else {
+            var len: UInt = 1
+            while !l.is_char_boundary(offset - len) {
+                len += 1
+            }
+            return offset - len
         }
-        return line
+    }
+
+    static func next(l: inout String, offset: UInt) -> UInt? {
+        if offset == l.len() {
+            // I think it's a precondition that this will never be called
+            // with offset == s.len(), but be defensive.
+            return nil
+        } else {
+            let b = l.uintO(offset, offset) //l.as_bytes()[offset]
+            return offset + Utils.len_utf8_from_first_byte(b)
+        }
+    }
+
+    static func can_fragment() -> Bool {
+        return false
     }
 }
