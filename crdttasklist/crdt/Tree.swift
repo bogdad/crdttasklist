@@ -347,24 +347,17 @@ extension NodeVal {
         }
     }
 }
-
+struct MetricMeasurable<N: NodeInfo, M: Metric> {}
+extension MetricMeasurable where N == M.N {
+    static func measure(_ n: Node<N>) -> UInt{
+        return M.measure(info: &n.body.info, len: n.len())
+    }
+}
 struct NodeMeasurable2<M1: Metric, M2: Metric, N: NodeInfo> {
 }
-extension NodeMeasurable2 where M1.N == N, M2.N == N, N.L == M1.N.L {
-    static func m1_to_base(_ l: inout N.L, _ m1: UInt) -> UInt {
-        return M1.to_base_units(l: &l, in_measured_units: m1)
-    }
-    static func m2_from_base(_ l: inout N.L, _ m2: UInt) -> UInt {
-        return M2.from_base_units(l: &l, in_base_units: m2)
-    }
-    static func measure1(_ n: Node<N>) -> UInt{
-        return M1.measure(info: &n.body.info, len: n.len())
-    }
-    static func measure2(_ n: Node<N>) -> UInt{
-        return M2.measure(info: &n.body.info, len: n.len())
-    }
+extension NodeMeasurable2 where M1.N == N, M2.N == N {
     // doesn't deal with endpoint, handle that specially if you need it
-    static func convert_metrics<M1: Metric, M2: Metric>(_ selv: Node<N>, _ m1Type: M1.Type, _ m2Type: M2.Type, _ mm1: UInt) -> UInt {
+    static func convert_metrics(_ selv: Node<N>,_ mm1: UInt) -> UInt {
         var m1 = mm1
         if m1 == 0 {
             return 0;
@@ -378,25 +371,28 @@ extension NodeMeasurable2 where M1.N == N, M2.N == N, N.L == M1.N.L {
         var node = selv
         while node.height() > 0 {
             for child in node.get_children_copy() {
-                let child_m1 = measure1(child)
+                let child_m1 = MetricMeasurable<N, M1>.measure(child)
                 if m1 < child_m1 + m1_fudge {
                     node = child
                     break;
                 }
-                m2 += measure2(child)
+                m2 += MetricMeasurable<N, M2>.measure(child)
                 m1 -= child_m1
             }
         }
         var l = node.get_leaf_copy()
-        let base = m1_to_base(&l, m1)
-        return m2 + m2_from_base(&l, base)
+        let base = M1.to_base_units(l: &l, in_measured_units: m1)
+        return m2 + M2.from_base_units(l: &l, in_base_units: base)
     }
 }
 struct NodeMeasurable<N: NodeInfo, M: Metric> {
 }
 extension NodeMeasurable where N == M.N, N.DefaultMetric.N == N {
-    static func count(_ selv: Node<N>, _ mType: M.Type, _ offset: UInt) -> UInt {
-        return NodeMeasurable2<N.DefaultMetric, M, N>.convert_metrics(selv, N.DefaultMetric.self, M.self, offset)
+    static func count(_ selv: Node<N>, _ offset: UInt) -> UInt {
+        return NodeMeasurable2<N.DefaultMetric, M, N>.convert_metrics(selv, offset)
+    }
+    static func count_base_units(_ selv: Node<N>, _ offset: UInt) -> UInt {
+        return NodeMeasurable2<M, N.DefaultMetric, N>.convert_metrics(selv, offset)
     }
 }
 

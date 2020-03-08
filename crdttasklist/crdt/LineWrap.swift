@@ -50,6 +50,19 @@ struct LinesW {
         return line
     }
 
+    /// Returns the byte offset corresponding to the line `line`.
+    func offset_of_visual_line(_ text: Rope, _ line: UInt) -> UInt {
+        switch self.wrap {
+        case .None:
+            // sanitize input
+            let line2 = min(MetricMeasurable<RopeInfo, LinesMetric>.measure(text) + 1, line)
+            return text.offset_of_line(line2)
+        default:
+                let mut cursor = MergedBreaks::new(text, &self.breaks);
+                cursor.offset_of_line(line)
+        }
+    }
+
     static func def() -> LinesW {
         return LinesW(wrap: WrapWidth.None, breaks: Breaks.def())
     }

@@ -58,7 +58,7 @@ struct Utils {
             fatalError("can only call on non empty strings")
         }
         return s.withCString({ body -> UInt in
-            let b = body.pointee
+            let b: UInt8 = UInt8(body.pointee)
             if b < 0x80 {
                 return 1
             }

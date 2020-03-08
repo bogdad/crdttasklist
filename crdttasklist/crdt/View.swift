@@ -125,4 +125,8 @@ struct View {
     func line_of_offset(_ text: Rope, _ offset: UInt) -> UInt {
         return self.lines.visual_line_of_offset(text, offset)
     }
+
+    func offset_of_line(_ text: Rope, _ line: UInt) -> UInt {
+        return self.lines.offset_of_visual_line(text, line)
+    }
 }

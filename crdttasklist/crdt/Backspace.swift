@@ -32,7 +32,8 @@ func offset_for_delete_backwards(
     text: Rope,
     config: BufferItems
 ) -> UInt {
-    if !region.is_caret() {
+}
+    /*if !region.is_caret() {
         return region.min()
     } else {
         // backspace deletes max(1, tab_size) contiguous spaces
@@ -226,5 +227,4 @@ func offset_for_delete_backwards(
             }
             start
         }
-    }
-}
+    }*/

@@ -297,10 +297,30 @@ extension Rope {
     /// This function will panic if `offset > self.len()`. Callers are expected to
     /// validate their input.
     func line_of_offset(_ offset: UInt) -> UInt {
-        return NodeMeasurable2<LinesMetric, LinesMetric, RopeInfo>.convert_metrics(self,
-                                                                                      LinesMetric.self,
-                                                                                      LinesMetric.self,
-                                                                                      offset)
+        return NodeMeasurable2<LinesMetric, LinesMetric, RopeInfo>.convert_metrics(self, offset)
+    }
+
+    /// Return the byte offset corresponding to the line number `line`.
+    /// If `line` is equal to one plus the current number of lines,
+    /// this returns the offset of the end of the rope. Arguments higher
+    /// than this will panic.
+    ///
+    /// The line number is 0-based.
+    ///
+    /// Time complexity: O(log n)
+    ///
+    /// # Panics
+    ///
+    /// This function will panic if `line > self.measure::<LinesMetric>() + 1`.
+    /// Callers are expected to validate their input.
+    func offset_of_line(_ line: UInt) -> UInt {
+        let max_line = MetricMeasurable<RopeInfo, LinesMetric>.measure(self) + 1
+        if line > max_line {
+            fatalError("line number \(line) beyond last line \(max_line)")
+        } else if line == max_line {
+            return self.len()
+        }
+        return NodeMeasurable<RopeInfo, LinesMetric>.count_base_units(self, line)
     }
 }
 
