@@ -45,13 +45,13 @@ struct LinesW {
     func visual_line_of_offset(_ text: Rope, _ offset: UInt) -> UInt {
         var line = text.line_of_offset(offset)
         if self.wrap != WrapWidth.None {
-            line += self.breaks.count(BreaksMetric.self, offset)
+            line += NodeMeasurable.count(self.breaks, BreaksMetric.self, offset)
         }
         return line
     }
 
     static func def() -> LinesW {
-        return LinesW(wrap: WrapWidth.None)
+        return LinesW(wrap: WrapWidth.None, breaks: Breaks.def())
     }
 
 }

@@ -348,9 +348,9 @@ extension NodeVal {
     }
 }
 
-struct NodeMeasurableWith<M1: Metric, M2: Metric, N: NodeInfo> {
+struct NodeMeasurable2<M1: Metric, M2: Metric, N: NodeInfo> {
 }
-extension NodeMeasurableWith where M1.N == N, M2.N == N, N.L == M1.N.L {
+extension NodeMeasurable2 where M1.N == N, M2.N == N, N.L == M1.N.L {
     static func m1_to_base(_ l: inout N.L, _ m1: UInt) -> UInt {
         return M1.to_base_units(l: &l, in_measured_units: m1)
     }
@@ -392,6 +392,14 @@ extension NodeMeasurableWith where M1.N == N, M2.N == N, N.L == M1.N.L {
         return m2 + m2_from_base(&l, base)
     }
 }
+struct NodeMeasurable<N: NodeInfo, M: Metric> {
+}
+extension NodeMeasurable where N == M.N, N.DefaultMetric.N == N {
+    static func count(_ selv: Node<N>, _ mType: M.Type, _ offset: UInt) -> UInt {
+        return NodeMeasurable2<N.DefaultMetric, M, N>.convert_metrics(selv, N.DefaultMetric.self, M.self, offset)
+    }
+}
+
 
 struct TreeBuilder<N: NodeInfo> {
     var node: Node<N>?

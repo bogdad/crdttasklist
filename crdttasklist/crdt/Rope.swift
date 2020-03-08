@@ -297,27 +297,13 @@ extension Rope {
     /// This function will panic if `offset > self.len()`. Callers are expected to
     /// validate their input.
     func line_of_offset(_ offset: UInt) -> UInt {
-        return self.count(LinesMetric.self, offset)
+        return NodeMeasurable2<LinesMetric, LinesMetric, RopeInfo>.convert_metrics(self,
+                                                                                      LinesMetric.self,
+                                                                                      LinesMetric.self,
+                                                                                      offset)
     }
-
-    /// Measures the length of the text bounded by ``DefaultMetric::measure(offset)`` with another metric.
-    ///
-    /// # Examples
-    /// ```
-    /// use crate::xi_rope::{Rope, LinesMetric};
-    ///
-    /// // the default metric of Rope is BaseMetric (aka number of bytes)
-    /// let my_rope = Rope::from("first line \n second line \n");
-    ///
-    /// // count the number of lines in my_rope
-    /// let num_lines = my_rope.count::<LinesMetric>(my_rope.len());
-    /// assert_eq!(2, num_lines);
-    /// ```
-    func count<M: Metric>(_ mType: M.Type, _ offset: UInt) -> UInt {
-        return self.convert_metrics(m1Type: N.DefaultMetric.self, m2Type: mType, m1: offset)
-    }
-
 }
+
 
 struct ChunkIter: IteratorProtocol, Sequence {
     typealias Element = String
