@@ -132,7 +132,7 @@ class Node<N: NodeInfo> : Equatable, Codable {
         }
     }
 
-    func get_clidren_copy() -> [Node<N>] {
+    func get_children_copy() -> [Node<N>] {
         switch body.val {
         case .Internal(let nodes):
             return nodes
@@ -263,10 +263,6 @@ class Node<N: NodeInfo> : Equatable, Codable {
         }
     }
 
-    // func measure<M: Metric>() -> UInt{
-    //    return M.measure(body.info, len())
-    // }
-
     func subseq<T: IntervalBounds>(_ iv: T) -> Node<N> {
         let iv = iv.into_interval(upper_bound: self.len())
         var b = TreeBuilder<N>()
@@ -311,33 +307,7 @@ class Node<N: NodeInfo> : Equatable, Codable {
         return Node.from_leaf(l: &def)
     }
 
-    // doesn't deal with endpoint, handle that specially if you need it
-    func convert_metrics<M1: Metric, M2: Metric>(m1Type: M1.Type, m2Type: M2.Type, m1: UInt) -> UInt {
-        if m1 == 0 {
-            return 0;
-        }
-        // If M1 can fragment, then we must land on the leaf containing
-        // the m1 boundary. Otherwise, we can land on the beginning of
-        // the leaf immediately following the M1 boundary, which may be
-        // more efficient.
-        let m1_fudge = M1.can_fragment() ? 1 : 0
-        var m2 = 0
-        var node = self
-        while node.height() > 0 {
-            for child in node.get_children_copy() {
-                let child_m1 = child.measure<M1>()
-                if m1 < child_m1 + m1_fudge {
-                    node = child;
-                    break;
-                }
-                m2 += child.measure<M2>()
-                m1 -= child_m1;
-            }
-        }
-        let l = node.get_leaf_copy()
-        let base = M1.to_base_units(l, m1)
-        return m2 + M2.from_base_units(l, base)
-    }
+
 }
 
 enum NodeVal<N: NodeInfo> : Codable, Equatable {
@@ -375,6 +345,51 @@ extension NodeVal {
         case .Internal(let nodes):
             try container.encode(nodes, forKey: CodingKeys.ifNode)
         }
+    }
+}
+
+struct NodeMeasurableWith<M1: Metric, M2: Metric, N: NodeInfo> {
+}
+extension NodeMeasurableWith where M1.N == N, M2.N == N, N.L == M1.N.L {
+    static func m1_to_base(_ l: inout N.L, _ m1: UInt) -> UInt {
+        return M1.to_base_units(l: &l, in_measured_units: m1)
+    }
+    static func m2_from_base(_ l: inout N.L, _ m2: UInt) -> UInt {
+        return M2.from_base_units(l: &l, in_base_units: m2)
+    }
+    static func measure1(_ n: Node<N>) -> UInt{
+        return M1.measure(info: &n.body.info, len: n.len())
+    }
+    static func measure2(_ n: Node<N>) -> UInt{
+        return M2.measure(info: &n.body.info, len: n.len())
+    }
+    // doesn't deal with endpoint, handle that specially if you need it
+    static func convert_metrics<M1: Metric, M2: Metric>(_ selv: Node<N>, _ m1Type: M1.Type, _ m2Type: M2.Type, _ mm1: UInt) -> UInt {
+        var m1 = mm1
+        if m1 == 0 {
+            return 0;
+        }
+        // If M1 can fragment, then we must land on the leaf containing
+        // the m1 boundary. Otherwise, we can land on the beginning of
+        // the leaf immediately following the M1 boundary, which may be
+        // more efficient.
+        let m1_fudge: UInt = M1.can_fragment() ? 1 : 0
+        var m2: UInt = 0
+        var node = selv
+        while node.height() > 0 {
+            for child in node.get_children_copy() {
+                let child_m1 = measure1(child)
+                if m1 < child_m1 + m1_fudge {
+                    node = child
+                    break;
+                }
+                m2 += measure2(child)
+                m1 -= child_m1
+            }
+        }
+        var l = node.get_leaf_copy()
+        let base = m1_to_base(&l, m1)
+        return m2 + m2_from_base(&l, base)
     }
 }
 

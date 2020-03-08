@@ -314,7 +314,7 @@ extension Rope {
     /// assert_eq!(2, num_lines);
     /// ```
     func count<M: Metric>(_ mType: M.Type, _ offset: UInt) -> UInt {
-        return self.convert_metrics(N.DefaultMetric, mType, offset)
+        return self.convert_metrics(m1Type: N.DefaultMetric.self, m2Type: mType, m1: offset)
     }
 
 }

@@ -40,6 +40,7 @@ enum WrapWidth: Equatable {
 
 struct LinesW {
     var wrap: WrapWidth
+    var breaks: Breaks
 
     func visual_line_of_offset(_ text: Rope, _ offset: UInt) -> UInt {
         var line = text.line_of_offset(offset)
