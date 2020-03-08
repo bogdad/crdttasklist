@@ -13,6 +13,8 @@
 		E70B862A23DC9A3300C48E3C /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70B862923DC9A3300C48E3C /* Note.swift */; };
 		E70B862C23DCB3AF00C48E3C /* NoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70B862B23DCB3AF00C48E3C /* NoteViewController.swift */; };
 		E716D56A2413F6FE002F7652 /* LineWrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E716D5692413F6FE002F7652 /* LineWrap.swift */; };
+		E716D56C24156885002F7652 /* Breaks.swift in Sources */ = {isa = PBXBuildFile; fileRef = E716D56B24156885002F7652 /* Breaks.swift */; };
+		E716D56E24156C04002F7652 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = E716D56D24156C04002F7652 /* Array.swift */; };
 		E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71F38AA22D231B8007FC0E8 /* Editor.swift */; };
 		E72FC386240BFF4F00611A75 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FC385240BFF4F00611A75 /* Config.swift */; };
 		E72FC388240C00C600611A75 /* Backspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FC387240C00C600611A75 /* Backspace.swift */; };
@@ -85,6 +87,8 @@
 		E70B862923DC9A3300C48E3C /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		E70B862B23DCB3AF00C48E3C /* NoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewController.swift; sourceTree = "<group>"; };
 		E716D5692413F6FE002F7652 /* LineWrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrap.swift; sourceTree = "<group>"; };
+		E716D56B24156885002F7652 /* Breaks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Breaks.swift; sourceTree = "<group>"; };
+		E716D56D24156C04002F7652 /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		E71F38AA22D231B8007FC0E8 /* Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Editor.swift; sourceTree = "<group>"; };
 		E72FC385240BFF4F00611A75 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		E72FC387240C00C600611A75 /* Backspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backspace.swift; sourceTree = "<group>"; };
@@ -263,7 +267,9 @@
 		E7F465E92315AF5500030F3A /* crdt */ = {
 			isa = PBXGroup;
 			children = (
+				E716D56D24156C04002F7652 /* Array.swift */,
 				E72FC387240C00C600611A75 /* Backspace.swift */,
+				E716D56B24156885002F7652 /* Breaks.swift */,
 				E7F88FD023EEDEBE005EE3FD /* CodableSortedSet.swift */,
 				E72FC385240BFF4F00611A75 /* Config.swift */,
 				E7B5D57222F34EC90020AFAC /* Collections.swift */,
@@ -535,9 +541,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */,
+				E716D56C24156885002F7652 /* Breaks.swift in Sources */,
 				E7A2E23023DF3D1E00C65976 /* LinkToStorageController.swift in Sources */,
 				E7F88FD723EF2F77005EE3FD /* FileUtils.swift in Sources */,
 				E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */,
+				E716D56E24156C04002F7652 /* Array.swift in Sources */,
 				E70B862A23DC9A3300C48E3C /* Note.swift in Sources */,
 				E716D56A2413F6FE002F7652 /* LineWrap.swift in Sources */,
 				E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */,

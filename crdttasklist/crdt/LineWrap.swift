@@ -25,7 +25,7 @@
 
 import Foundation
 
-enum WrapWidth {
+enum WrapWidth: Equatable {
     /// No wrapping in effect.
     case None
 
@@ -44,7 +44,7 @@ struct LinesW {
     func visual_line_of_offset(_ text: Rope, _ offset: UInt) -> UInt {
         var line = text.line_of_offset(offset)
         if self.wrap != WrapWidth.None {
-            line += self.breaks.count::<BreaksMetric>(offset)
+            line += self.breaks.count(BreaksMetric.self, offset)
         }
         return line
     }
