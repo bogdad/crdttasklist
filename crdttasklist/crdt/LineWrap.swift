@@ -113,10 +113,10 @@ extension MergedBreaks: IteratorProtocol, Sequence {
 
         let eof_without_newline = self.offset > 0 && self.at_eof() && self.eof_without_newline()
         if self.offset == prev_off || eof_without_newline {
-            None
+            return nil
         } else {
-            self.cur_line += 1;
-            Some(self.offset)
+            self.cur_line += 1
+            return self.offset
         }
     }
 
