@@ -94,27 +94,27 @@ struct BreaksInfo: NodeInfo {
 struct BreaksBaseMetric: Metric {
     typealias N = BreaksInfo
 
-    static func measure(info: inout BreaksInfo, len: UInt) -> UInt {
+    static func measure(_ info: inout BreaksInfo, _ len: UInt) -> UInt {
         len
     }
 
-    static func to_base_units(l: inout BreaksInfo.L, in_measured_units: UInt) -> UInt {
+    static func to_base_units(_ l: inout BreaksInfo.L, _ in_measured_units: UInt) -> UInt {
         in_measured_units
     }
 
-    static func from_base_units(l: inout BreaksInfo.L, in_base_units: UInt) -> UInt {
+    static func from_base_units(_ l: inout BreaksInfo.L, _ in_base_units: UInt) -> UInt {
         in_base_units
     }
 
-    static func is_boundary(l: inout BreaksInfo.L, offset: UInt) -> Bool {
-        return BreaksMetric.is_boundary(l: &l, offset: offset)
+    static func is_boundary(_ l: inout BreaksInfo.L, _ offset: UInt) -> Bool {
+        return BreaksMetric.is_boundary(&l, offset)
     }
 
-    static func prev(l: inout BreaksInfo.L, offset: UInt) -> UInt? {
+    static func prev(_ l: inout BreaksInfo.L, _ offset: UInt) -> UInt? {
         return BreaksMetric.prev(l: &l, offset: offset)
     }
 
-    static func next(l: inout BreaksInfo.L, offset: UInt) -> UInt? {
+    static func next(_ l: inout BreaksInfo.L, _ offset: UInt) -> UInt? {
         return BreaksMetric.next(l: &l, offset: offset)
     }
 
@@ -128,11 +128,11 @@ typealias Breaks = Node<BreaksInfo>
 
 struct BreaksMetric: Metric {
     typealias N = BreaksInfo
-    static func measure(info: inout BreaksInfo, len: UInt) -> UInt {
+    static func measure(_ info: inout BreaksInfo, _ len: UInt) -> UInt {
         info._0
     }
 
-    static func to_base_units(l: inout BreaksInfo.L, in_measured_units: UInt) -> UInt {
+    static func to_base_units(_ l: inout BreaksInfo.L, _ in_measured_units: UInt) -> UInt {
         if in_measured_units > l.data.count {
             return l._len + 1
         } else if in_measured_units == 0 {
@@ -142,7 +142,7 @@ struct BreaksMetric: Metric {
         }
     }
 
-    static func from_base_units(l: inout BreaksInfo.L, in_base_units: UInt) -> UInt {
+    static func from_base_units(_ l: inout BreaksInfo.L, _ in_base_units: UInt) -> UInt {
         let (pos, found) = l.data.binary_search(in_base_units)
         if found {
             return UInt(pos + 1)
@@ -151,11 +151,11 @@ struct BreaksMetric: Metric {
         }
     }
 
-    static func is_boundary(l: inout BreaksInfo.L, offset: UInt) -> Bool {
+    static func is_boundary(_ l: inout BreaksInfo.L, _ offset: UInt) -> Bool {
         l.data.binary_search(offset).1
     }
 
-    static func prev(l: inout BreaksInfo.L, offset: UInt) -> UInt? {
+    static func prev(_ l: inout BreaksInfo.L, _ offset: UInt) -> UInt? {
         for i in 0..<l.data.count {
             if offset <= l.data[i] {
                 if i == 0 {
@@ -168,7 +168,7 @@ struct BreaksMetric: Metric {
         return l.data.last
     }
 
-    static func next(l: inout BreaksInfo.L, offset: UInt) -> UInt? {
+    static func next(_ l: inout BreaksInfo.L, _ offset: UInt) -> UInt? {
         let (pos, found) = l.data.binary_search(offset)
         var n: Int
         if found {

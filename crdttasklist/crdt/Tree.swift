@@ -350,7 +350,7 @@ extension NodeVal {
 struct MetricMeasurable<N: NodeInfo, M: Metric> {}
 extension MetricMeasurable where N == M.N {
     static func measure(_ n: Node<N>) -> UInt{
-        return M.measure(info: &n.body.info, len: n.len())
+        return M.measure(&n.body.info, n.len())
     }
 }
 struct NodeMeasurable2<M1: Metric, M2: Metric, N: NodeInfo> {
@@ -381,21 +381,21 @@ extension NodeMeasurable2 where M1.N == N, M2.N == N {
             }
         }
         var l = node.get_leaf_copy()
-        let base = M1.to_base_units(l: &l, in_measured_units: m1)
-        return m2 + M2.from_base_units(l: &l, in_base_units: base)
+        let base = M1.to_base_units(&l, m1)
+        return m2 + M2.from_base_units(&l, base)
     }
 }
 struct NodeMeasurable<N: NodeInfo, M: Metric> {
 }
 extension NodeMeasurable where N == M.N, N.DefaultMetric.N == N {
-    static func count(_ selv: Node<N>, _ mtype: M.Type, _ offset: UInt) -> UInt {
+    static func count(_ selv: Node<N>, _ offset: UInt) -> UInt {
         return NodeMeasurable2<N.DefaultMetric, M, N>.convert_metrics(selv, offset)
     }
     static func count_base_units(_ selv: Node<N>, _ offset: UInt) -> UInt {
         return NodeMeasurable2<M, N.DefaultMetric, N>.convert_metrics(selv, offset)
     }
     static func measure(_ selv: Node<N>) -> UInt {
-        M.measure(info: &selv.body.info, len: selv.body.len)
+        M.measure(&selv.body.info, selv.body.len)
     }
 }
 
@@ -519,7 +519,7 @@ struct Cursor<N: NodeInfo> {
     /// The offset of `leaf` within the tree.
     var offset_of_leaf: UInt
 
-    init(n: Node<N>, position: UInt) {
+    init(_ n: Node<N>, _ position: UInt = 0) {
         self.root = n
         self.position = position
         self.leaf = .none
@@ -528,9 +528,9 @@ struct Cursor<N: NodeInfo> {
     }
 
 
-    func get_leaf() -> (N.L, UInt)? {
-        return self.leaf.map({ (l: N.L) -> (N.L, UInt) in
-            return (l, self.position - self.offset_of_leaf)
+    func get_leaf() -> (N.L, Int)? {
+        return self.leaf.map({ (l: N.L) -> (N.L, Int) in
+            return (l, Int(self.position - self.offset_of_leaf))
         })
     }
 
@@ -538,11 +538,14 @@ struct Cursor<N: NodeInfo> {
         return self.position
     }
 
+    /// The length of the tree.
+    func total_len() -> UInt { self.root.len() }
+
     mutating func set_cache(elem: Node<N>, pos: Int, k: Int) {
         self.cache[k] = (elem, pos)
     }
 
-    mutating func next_leaf() -> (N.L, UInt)? {
+    mutating func next_leaf() -> (N.L, Int)? {
         let leaf = self.leaf!
         self.position = self.offset_of_leaf + leaf.len()
         for i in 0..<Constants.CURSOR_CACHE_SIZE {
@@ -623,6 +626,43 @@ struct Cursor<N: NodeInfo> {
         // TODO: walk up tree to find leaf if nearby
         self.descend()
     }
+
+    /// Move to beginning of previous leaf.
+    ///
+    /// Return value: same as [`get_leaf`](#method.get_leaf).
+    mutating func prev_leaf() -> (N.L, Int)? {
+        if self.offset_of_leaf == 0 {
+            self.leaf = nil
+            self.position = 0
+            return nil
+        }
+        for i in 0..<Constants.CURSOR_CACHE_SIZE {
+            if self.cache[i] == nil {
+                // this probably can't happen
+                self.leaf = nil
+                return nil
+            }
+            let (node, j) = self.cache[i]!
+            if j > 0 {
+                self.cache[i] = (node, j - 1)
+                var node_down = node.get_children_copy()[j - 1]
+                for k in (0..<i).reversed() {
+                    let last_ix = node_down.get_children_copy().count - 1
+                    self.cache[k] = (node_down, last_ix)
+                    node_down = node_down.get_children_copy()[last_ix]
+                }
+                let leaf = node_down.get_leaf_copy()
+                self.leaf = leaf
+                self.offset_of_leaf -= leaf.len()
+                self.position = self.offset_of_leaf
+                return self.get_leaf()
+            }
+        }
+        self.position = self.offset_of_leaf - 1;
+        self.descend();
+        self.position = self.offset_of_leaf;
+        return self.get_leaf()
+    }
 }
 
 struct CursorMeasurable<N, M: Metric> where N == M.N, N.DefaultMetric.N == N {
@@ -633,7 +673,7 @@ struct CursorMeasurable<N, M: Metric> where N == M.N, N.DefaultMetric.N == N {
             fatalError("inconsistent, shouldn't get here")
         }
         let offset_in_leafp = selv.position - selv.offset_of_leaf
-        let offset_in_leaf = M.next(l: &l, offset: offset_in_leafp)!
+        let offset_in_leaf = M.next(&l, offset_in_leafp)!
         if offset_in_leaf == l.len() && selv.offset_of_leaf + offset_in_leaf != selv.root.len() {
             let _ = selv.next_leaf()
         } else {
@@ -663,7 +703,7 @@ struct CursorMeasurable<N, M: Metric> where N == M.N, N.DefaultMetric.N == N {
         }
 
         // Leaf is 0-measure (otherwise would have already succeeded).
-        let measure = measure_leaf(selv, &selv.position)
+        let measure = measure_leaf(&selv, &selv.position)
         descend_metric(&selv, measure + 1)
         if let offset  = next_inside_leaf(&selv) {
             return offset
@@ -679,7 +719,7 @@ struct CursorMeasurable<N, M: Metric> where N == M.N, N.DefaultMetric.N == N {
     /// Returns the measure at the beginning of the leaf containing `pos`.
     ///
     /// This method is O(log n) no matter the current cursor state.
-    static func measure_leaf(_ selv: Cursor<N>, _ pos: inout UInt) -> UInt {
+    static func measure_leaf(_ selv: inout Cursor<N>, _ pos: inout UInt) -> UInt {
         var node = selv.root
         var metric: UInt = 0
         while node.height() > 0 {
@@ -733,5 +773,93 @@ struct CursorMeasurable<N, M: Metric> where N == M.N, N.DefaultMetric.N == N {
         selv.leaf = node.get_leaf_copy()
         selv.position = offset
         selv.offset_of_leaf = offset
+    }
+
+    /// Returns the current position if it is a boundary in this [`Metric`],
+    /// else behaves like [`prev`](#method.prev).
+    ///
+    /// [`Metric`]: struct.Metric.html
+    static func at_or_prev(_ selv: inout Cursor<N>) -> UInt? {
+        if CursorMeasurable<N, M>.is_boundary(&selv) {
+            return selv.pos()
+        } else {
+            return prev(&selv)
+        }
+    }
+
+
+    /// Determine whether the current position is a boundary.
+    ///
+    /// Note: the beginning and end of the tree may or may not be boundaries, depending on the
+    /// metric. If the metric is not `can_fragment`, then they always are.
+    static func is_boundary(_ selv: inout Cursor<N>) -> Bool {
+        if selv.leaf == nil {
+            // not at a valid position
+            return false
+        }
+        if selv.position == selv.offset_of_leaf && !M.can_fragment() {
+            return true
+        }
+        if selv.position == 0 || selv.position > selv.offset_of_leaf {
+            return M.is_boundary(&selv.leaf!, selv.position - selv.offset_of_leaf)
+        }
+        // tricky case, at beginning of leaf, need to query end of previous
+        // leaf; TODO: would be nice if we could do it another way that didn't
+        // make the method &mut self.
+        var l = selv.prev_leaf()!.0
+        let result = M.is_boundary(&l, l.len())
+        let _ = selv.next_leaf()
+        return result
+    }
+
+    /// Moves the cursor to the previous boundary.
+    ///
+    /// When there is no previous boundary, returns `None` and the cursor becomes invalid.
+    ///
+    /// Return value: the position of the boundary, if it exists.
+    static func prev(_ selv: inout Cursor<N>) -> UInt? {
+        if selv.position == 0 || selv.leaf == nil {
+            selv.leaf = nil
+            return nil
+        }
+        let orig_pos = selv.position
+        let offset_in_leaf = orig_pos - selv.offset_of_leaf
+        if offset_in_leaf > 0 {
+            var l = selv.leaf!
+            if let offset_in_leaf = M.prev(&l, offset_in_leaf) {
+                selv.position = selv.offset_of_leaf + offset_in_leaf
+                return selv.position
+            }
+        }
+
+        // not in same leaf, need to scan backwards
+        let _ = selv.prev_leaf()!
+        if let offset = last_inside_leaf(&selv, orig_pos) {
+            return offset
+        }
+
+        // Not found in previous leaf, find using measurement.
+        let measure = measure_leaf(&selv, &selv.position)
+        if measure == 0 {
+            selv.leaf = nil
+            selv.position = 0
+            return nil
+        }
+        descend_metric(&selv, measure)
+        return last_inside_leaf(&selv, orig_pos)
+    }
+
+    static func last_inside_leaf(_ selv: inout Cursor<N>, _ orig_pos: UInt) -> UInt? {
+        guard var l = selv.leaf else {
+            fatalError("inconsistent, shouldn't get here")
+        }
+        let len = l.len()
+        if selv.offset_of_leaf + len < orig_pos && M.is_boundary(&l, len) {
+            let _ = selv.next_leaf()
+            return selv.position
+        }
+        let offset_in_leaf = M.prev(&l, len)!
+        selv.position = selv.offset_of_leaf + offset_in_leaf
+        return selv.position
     }
 }

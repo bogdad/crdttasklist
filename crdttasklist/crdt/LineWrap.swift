@@ -45,7 +45,7 @@ struct LinesW {
     func visual_line_of_offset(_ text: Rope, _ offset: UInt) -> UInt {
         var line = text.line_of_offset(offset)
         if self.wrap != WrapWidth.None {
-            line += NodeMeasurable.count(self.breaks, BreaksMetric.self, offset)
+            line += NodeMeasurable<BreaksInfo, BreaksMetric>.count(self.breaks, offset)
         }
         return line
     }
@@ -58,8 +58,8 @@ struct LinesW {
             let line2 = min(MetricMeasurable<RopeInfo, LinesMetric>.measure(text) + 1, line)
             return text.offset_of_line(line2)
         default:
-                let mut cursor = MergedBreaks::new(text, &self.breaks);
-                cursor.offset_of_line(line)
+                var cursor = MergedBreaks(text, self.breaks)
+                return cursor.offset_of_line(line)
         }
     }
 
@@ -79,6 +79,7 @@ struct LinesW {
 ///
 /// `self.offset == self.text.pos().min(self.soft.pos())`.
 struct MergedBreaks {
+    let MAX_LINEAR_DIST: UInt = 20
     var text: Cursor<RopeInfo>
     var soft: Cursor<BreaksInfo>
     var offset: UInt
@@ -95,6 +96,97 @@ struct MergedBreaks {
         self.text.set(self.len)
         return self.text.get_leaf()
             .map({ (l, _) in l.last != "\n"})!
+    }
+
+    init(_ text: Rope, _ soft: Breaks) {
+        self.text = Cursor(text)
+        self.soft = Cursor(soft)
+        self.total_lines =
+            NodeMeasurable<RopeInfo, LinesMetric>.measure(self.text.root)
+                + NodeMeasurable<BreaksInfo, BreaksMetric>.measure(self.soft.root)
+                + 1
+        self.len = self.text.total_len()
+        self.cur_line = 0
+        self.offset = 0
+    }
+
+    mutating func offset_of_line(_ line: UInt) -> UInt {
+        if line == 0 {
+            return 0
+        }
+        if line >= self.total_lines {
+            return self.text.total_len()
+        }
+        if line == self.cur_line {
+            return self.offset
+        }
+        if line > self.cur_line && line - self.cur_line < MAX_LINEAR_DIST {
+            return self.offset_of_line_linear(line)
+        }
+        return self.offset_of_line_bsearch(line)
+    }
+
+
+    mutating func offset_of_line_linear(_ line: UInt) -> UInt {
+        assert(line > self.cur_line)
+        let dist = line - self.cur_line
+        return self.nth(Int(dist - 1)) ?? self.len
+    }
+
+
+    mutating func offset_of_line_bsearch(_ line: UInt) -> UInt {
+        var range = 0..<self.len
+        while true {
+            let pivot = range.startIndex + (range.upperBound - range.startIndex) / 2
+            self.set_offset(pivot)
+            let l = self.cur_line
+            if l == line {
+                return self.offset
+            }
+            if l > line {
+                range = range.startIndex..<pivot + 1
+            } else if line - l < MAX_LINEAR_DIST {
+                range = pivot..<range.upperBound
+            } else {
+                return self.offset_of_line_linear(line)
+            }
+        }
+    }
+
+    /// Sets the `self.offset` to the first valid break immediately at or preceding `offset`,
+    /// and restores invariants.
+    mutating func set_offset(_ offset: UInt) {
+        self.text.set(offset)
+        self.soft.set(offset)
+        if offset > 0 {
+            if CursorMeasurable<RopeInfo, LinesMetric>.at_or_prev(&text) == nil {
+                self.text.set(0)
+            }
+
+            if CursorMeasurable<BreaksInfo, BreaksMetric>.at_or_prev(&soft) == nil {
+                self.soft.set(0)
+            }
+        }
+
+        // self.offset should be at the first valid break immediately preceding `offset`, or 0.
+        // the position of the non-break cursor should be > than that of the break cursor, or EOF.
+        let less = self.text.pos() < self.soft.pos()
+        let eq = self.text.pos() == self.soft.pos()
+        if less {
+            let _ = CursorMeasurable<RopeInfo, LinesMetric>.next(&self.text)
+        } else if eq {
+            assert(self.text.pos() == 0)
+        } else /* greater */ {
+            let _ = CursorMeasurable<BreaksInfo, BreaksMetric>.next(&self.soft)
+        }
+
+        self.offset = Swift.min(self.text.pos(), self.soft.pos())
+        self.cur_line = merged_line_of_offset(self.text.root, self.soft.root, self.offset)
+    }
+
+    func merged_line_of_offset(_ text: Rope, _ soft: Breaks, _ offset: UInt) -> UInt {
+        return NodeMeasurable<RopeInfo, LinesMetric>.count(text, offset) +
+        NodeMeasurable<BreaksInfo, BreaksMetric>.count(soft, offset)
     }
 }
 

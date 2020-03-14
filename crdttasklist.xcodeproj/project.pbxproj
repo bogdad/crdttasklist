@@ -23,6 +23,7 @@
 		E74C3DC022D23620001B9CA7 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74C3DBF22D23620001B9CA7 /* Engine.swift */; };
 		E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74C3DC122D23E7F001B9CA7 /* View.swift */; };
 		E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74C3DC522D24086001B9CA7 /* Selection.swift */; };
+		E74D187B241D3FFC00EE3815 /* Iterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74D187A241D3FFC00EE3815 /* Iterator.swift */; };
 		E755519B22A2FCBC004A111C /* .travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = E755519A22A2FCBC004A111C /* .travis.yml */; };
 		E755519D22A3E85F004A111C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E755519C22A3E85F004A111C /* README.md */; };
 		E75B38692300147B005013E0 /* Tabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75B38682300147B005013E0 /* Tabs.swift */; };
@@ -97,6 +98,7 @@
 		E74C3DBF22D23620001B9CA7 /* Engine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 		E74C3DC122D23E7F001B9CA7 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		E74C3DC522D24086001B9CA7 /* Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
+		E74D187A241D3FFC00EE3815 /* Iterator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Iterator.swift; sourceTree = "<group>"; };
 		E755519A22A2FCBC004A111C /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		E755519C22A3E85F004A111C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E75B38682300147B005013E0 /* Tabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tabs.swift; sourceTree = "<group>"; };
@@ -280,6 +282,7 @@
 				E7B05F1F2298284100D2A094 /* Event.swift */,
 				E75B386A230015CF005013E0 /* Find.swift */,
 				E763DF9922DA5DCE003572EC /* Hashes.swift */,
+				E74D187A241D3FFC00EE3815 /* Iterator.swift */,
 				E716D5692413F6FE002F7652 /* LineWrap.swift */,
 				E79E1F8C22C7FA36007099E5 /* Multiset.swift */,
 				E7B62C172299B8D1000143C6 /* Rope.swift */,
@@ -546,6 +549,7 @@
 				E7F88FD723EF2F77005EE3FD /* FileUtils.swift in Sources */,
 				E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */,
 				E716D56E24156C04002F7652 /* Array.swift in Sources */,
+				E74D187B241D3FFC00EE3815 /* Iterator.swift in Sources */,
 				E70B862A23DC9A3300C48E3C /* Note.swift in Sources */,
 				E716D56A2413F6FE002F7652 /* LineWrap.swift in Sources */,
 				E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */,

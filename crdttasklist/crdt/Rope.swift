@@ -111,12 +111,12 @@ extension Leaf {
 
 protocol Metric {
     associatedtype N: NodeInfo
-    static func measure(info: inout N, len: UInt) -> UInt
-    static func to_base_units(l: inout N.L, in_measured_units: UInt) -> UInt
-    static func from_base_units(l: inout N.L, in_base_units: UInt) -> UInt
-    static func is_boundary(l: inout N.L, offset: UInt) -> Bool
-    static func prev(l: inout N.L, offset: UInt) -> UInt?
-    static func next(l: inout N.L, offset: UInt) -> UInt?
+    static func measure(_ info: inout N, _ len: UInt) -> UInt
+    static func to_base_units(_ l: inout N.L, _ in_measured_units: UInt) -> UInt
+    static func from_base_units(_ l: inout N.L, _ in_base_units: UInt) -> UInt
+    static func is_boundary(_ l: inout N.L, _ offset: UInt) -> Bool
+    static func prev(_ l: inout N.L, _ offset: UInt) -> UInt?
+    static func next(_ l: inout N.L, _ offset: UInt) -> UInt?
     static func can_fragment() -> Bool
 }
 
@@ -160,11 +160,11 @@ struct RopeInfo: NodeInfo {
 }
 
 struct LinesMetric: Metric {
-    static func measure(info: inout RopeInfo, len: UInt) -> UInt {
+    static func measure(_ info: inout RopeInfo, _ len: UInt) -> UInt {
         return info.lines
     }
 
-    static func to_base_units(l: inout String, in_measured_units: UInt) -> UInt {
+    static func to_base_units(_ l: inout String, _ in_measured_units: UInt) -> UInt {
         var offset:UInt = 0;
         for _ in 0...in_measured_units {
             let s_ind = String.Index(utf16Offset: Int(offset), in: l)
@@ -180,11 +180,11 @@ struct LinesMetric: Metric {
         return offset
     }
 
-    static func from_base_units(l: inout String, in_base_units: UInt) -> UInt {
+    static func from_base_units(_ l: inout String, _ in_base_units: UInt) -> UInt {
         return Utils.count_newlines(s:l[...String.Index(utf16Offset: Int(in_base_units), in: l)])
     }
 
-    static func is_boundary(l: inout String, offset: UInt) -> Bool {
+    static func is_boundary(_ l: inout String, _ offset: UInt) -> Bool {
         if offset == 0 {
             // shouldn't be called with this, but be defensive
             return false
@@ -193,7 +193,7 @@ struct LinesMetric: Metric {
         }
     }
 
-    static func prev(l: inout String, offset: UInt) -> UInt? {
+    static func prev(_ l: inout String, _ offset: UInt) -> UInt? {
         assert(offset > 0, "caller is responsible for validating input")
         let substr = l[...String.Index(utf16Offset: Int(offset), in: l)]
         return substr.firstIndex(of: "\n").map({ (pos:Substring.Index) -> UInt in
@@ -201,7 +201,7 @@ struct LinesMetric: Metric {
         })
     }
 
-    static func next(l: inout String, offset: UInt) -> UInt? {
+    static func next(_ l: inout String, _ offset: UInt) -> UInt? {
         let substr = l[String.Index(utf16Offset: Int(offset), in: l)...]
         return substr.firstIndex(of: "\n").map({ (pos:Substring.Index) -> UInt in
             return UInt(pos.utf16Offset(in: substr) + 1)
@@ -234,9 +234,9 @@ extension Rope {
 
     // callers should be encouraged to use cursor instead
     func byte_at(_ offset: UInt) -> UInt8 {
-        let cursor = Cursor(n: self, position: offset)
+        let cursor = Cursor(self, offset)
         let (leaf, pos) = cursor.get_leaf()!
-        return leaf.byte_at(pos)
+        return leaf.byte_at(UInt(pos))
     }
 
     static func from_str(_ s: Substring) -> Rope {
@@ -254,7 +254,7 @@ extension Rope {
     func iter_chunks<T: IntervalBounds>(range: T) -> ChunkIter {
         let interval = range.into_interval(upper_bound: self.body.len)
 
-        return ChunkIter(cursor: Cursor(n: self, position: interval.start), end: interval.end)
+        return ChunkIter(cursor: Cursor(self, interval.start), end: interval.end)
     }
 
     func slice_to_cow<T: IntervalBounds>(range: T) -> String {
@@ -341,9 +341,9 @@ struct ChunkIter: IteratorProtocol, Sequence {
             return .none
         }
         let (leaf, start_pos) = self.cursor.get_leaf()!
-        let len = Swift.min(self.end - self.cursor.pos(), leaf.len() - start_pos)
-        self.cursor.next_leaf()
-        return .some(String(leaf.uintO(start_pos, start_pos + len)))
+        let len = Swift.min(self.end - self.cursor.pos(), leaf.len() - UInt(start_pos))
+        let _ = self.cursor.next_leaf()
+        return .some(String(leaf.uintO(UInt(start_pos), UInt(start_pos) + len)))
     }
     
 }
@@ -406,7 +406,7 @@ struct Lines: IteratorProtocol, Sequence {
 
     static func def() -> Lines {
         let rope = Rope.from_str("")
-        let cursor = Cursor.init(n: rope, position: 0)
+        let cursor = Cursor.init(rope, 0)
         let chunkiter = ChunkIter(cursor: cursor, end: 0)
         let inner = LinesRaw(inner: chunkiter, fragment: "")
         return Lines(inner: inner)
@@ -432,25 +432,25 @@ struct Lines: IteratorProtocol, Sequence {
 struct BaseMetric: Metric {
     typealias N = RopeInfo
 
-    static func measure(info: inout RopeInfo, len: UInt) -> UInt {
+    static func measure(_ info: inout RopeInfo, _ len: UInt) -> UInt {
         return len
     }
 
-    static func to_base_units(l: inout String, in_measured_units: UInt) -> UInt {
+    static func to_base_units(_ l: inout String, _ in_measured_units: UInt) -> UInt {
         assert(l.is_char_boundary(in_measured_units))
         return in_measured_units
     }
 
-    static func from_base_units(l: inout String, in_base_units: UInt) -> UInt {
+    static func from_base_units(_ l: inout String, _ in_base_units: UInt) -> UInt {
         assert(l.is_char_boundary(in_base_units))
         return in_base_units
     }
 
-    static func is_boundary(l: inout String, offset: UInt) -> Bool {
+    static func is_boundary(_ l: inout String, _ offset: UInt) -> Bool {
         return l.is_char_boundary(offset)
     }
 
-    static func prev(l: inout String, offset: UInt) -> UInt? {
+    static func prev(_ l: inout String, _ offset: UInt) -> UInt? {
         if offset == 0 {
             // I think it's a precondition that this will never be called
             // with offset == 0, but be defensive.
@@ -464,7 +464,7 @@ struct BaseMetric: Metric {
         }
     }
 
-    static func next(l: inout String, offset: UInt) -> UInt? {
+    static func next(_ l: inout String, _ offset: UInt) -> UInt? {
         if offset == l.len() {
             // I think it's a precondition that this will never be called
             // with offset == s.len(), but be defensive.
