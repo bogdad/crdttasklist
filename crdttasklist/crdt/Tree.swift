@@ -703,7 +703,7 @@ struct CursorMeasurable<N, M: Metric> where N == M.N, N.DefaultMetric.N == N {
         }
 
         // Leaf is 0-measure (otherwise would have already succeeded).
-        let measure = measure_leaf(&selv, &selv.position)
+        let measure = measure_leaf(&selv)
         descend_metric(&selv, measure + 1)
         if let offset  = next_inside_leaf(&selv) {
             return offset
@@ -720,6 +720,27 @@ struct CursorMeasurable<N, M: Metric> where N == M.N, N.DefaultMetric.N == N {
     ///
     /// This method is O(log n) no matter the current cursor state.
     static func measure_leaf(_ selv: inout Cursor<N>, _ pos: inout UInt) -> UInt {
+        var node = selv.root
+        var metric: UInt = 0
+        while node.height() > 0 {
+            for child in node.get_children_copy() {
+                let len = child.len();
+                if pos < len {
+                    node = child;
+                    break;
+                }
+                pos -= len;
+                metric += NodeMeasurable<N, M>.measure(child)
+            }
+        }
+        return metric
+    }
+
+    /// Returns the measure at the beginning of the leaf containing `pos`.
+    ///
+    /// This method is O(log n) no matter the current cursor state.
+    static func measure_leaf(_ selv: inout Cursor<N>) -> UInt {
+        var pos = selv.position
         var node = selv.root
         var metric: UInt = 0
         while node.height() > 0 {
@@ -839,7 +860,7 @@ struct CursorMeasurable<N, M: Metric> where N == M.N, N.DefaultMetric.N == N {
         }
 
         // Not found in previous leaf, find using measurement.
-        let measure = measure_leaf(&selv, &selv.position)
+        let measure = measure_leaf(&selv)
         if measure == 0 {
             selv.leaf = nil
             selv.position = 0

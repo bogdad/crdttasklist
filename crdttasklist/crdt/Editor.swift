@@ -176,17 +176,17 @@ struct Editor: Codable, Equatable {
         // TODO: this function is workable but probably overall code complexity
         // could be improved by implementing a "backspace" movement instead.
         var builder = DeltaBuilder<RopeInfo>(self.text.len())
-        for region in view.sel_regions() {
-            let start = offset_for_delete_backwards(&view, &region, &self.text, &config);
-            let iv = Interval::new(start, region.max());
+        for var region in view.sel_regions() {
+            let start = offset_for_delete_backwards(&view, &region, self.text, config)
+            let iv = Interval(start, region.max())
             if !iv.is_empty() {
                 builder.delete(iv);
             }
         }
 
         if !builder.is_empty() {
-            self.this_edit_type = EditType::Delete;
-            self.add_delta(builder.build());
+            self.this_edit_type = .Delete
+            self.add_delta(builder.build())
         }
     }
 

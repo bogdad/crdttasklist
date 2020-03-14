@@ -111,11 +111,11 @@ struct BreaksBaseMetric: Metric {
     }
 
     static func prev(_ l: inout BreaksInfo.L, _ offset: UInt) -> UInt? {
-        return BreaksMetric.prev(l: &l, offset: offset)
+        return BreaksMetric.prev(&l, offset)
     }
 
     static func next(_ l: inout BreaksInfo.L, _ offset: UInt) -> UInt? {
-        return BreaksMetric.next(l: &l, offset: offset)
+        return BreaksMetric.next(&l, offset)
     }
 
     static func can_fragment() -> Bool {

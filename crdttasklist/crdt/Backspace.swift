@@ -27,10 +27,10 @@ import Foundation
 
 //! Calc start of a backspace delete interval
 func offset_for_delete_backwards(
-    view: inout View,
-    region: inout SelRegion,
-    text: Rope,
-    config: BufferItems
+    _ view: inout View,
+    _ region: inout SelRegion,
+    _ text: Rope,
+    _ config: BufferItems
 ) -> UInt {
 }
     /*if !region.is_caret() {
