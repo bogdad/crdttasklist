@@ -280,6 +280,7 @@
 				E7B05F1F2298284100D2A094 /* Event.swift */,
 				E75B386A230015CF005013E0 /* Find.swift */,
 				E763DF9922DA5DCE003572EC /* Hashes.swift */,
+				E716D5692413F6FE002F7652 /* LineWrap.swift */,
 				E79E1F8C22C7FA36007099E5 /* Multiset.swift */,
 				E7B62C172299B8D1000143C6 /* Rope.swift */,
 				E74C3DC522D24086001B9CA7 /* Selection.swift */,
@@ -288,7 +289,6 @@
 				E7BD0E0922FC366300B14710 /* TestHelpers.swift */,
 				E7F0325D22BD261F00D0BF2D /* Tree.swift */,
 				E74C3DC122D23E7F001B9CA7 /* View.swift */,
-				E716D5692413F6FE002F7652 /* LineWrap.swift */,
 			);
 			path = crdt;
 			sourceTree = "<group>";

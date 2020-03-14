@@ -388,11 +388,14 @@ extension NodeMeasurable2 where M1.N == N, M2.N == N {
 struct NodeMeasurable<N: NodeInfo, M: Metric> {
 }
 extension NodeMeasurable where N == M.N, N.DefaultMetric.N == N {
-    static func count(_ selv: Node<N>, _ offset: UInt) -> UInt {
+    static func count(_ selv: Node<N>, _ mtype: M.Type, _ offset: UInt) -> UInt {
         return NodeMeasurable2<N.DefaultMetric, M, N>.convert_metrics(selv, offset)
     }
     static func count_base_units(_ selv: Node<N>, _ offset: UInt) -> UInt {
         return NodeMeasurable2<M, N.DefaultMetric, N>.convert_metrics(selv, offset)
+    }
+    static func measure(_ selv: Node<N>) -> UInt {
+        M.measure(info: &selv.body.info, len: selv.body.len)
     }
 }
 
@@ -508,7 +511,7 @@ struct Cursor<N: NodeInfo> {
     ///
     /// The main motivation for this being a fixed-size array is to keep the cursor
     /// an allocation-free data structure.
-    var cache = [(Node<N>, UInt)?](repeatElement(nil, count: 4))
+    var cache = [(Node<N>, Int)?](repeatElement(nil, count: 4))
     /// The leaf containing the current position, when the cursor is valid.
     ///
     /// The position is only at the end of the leaf when it is at the end of the tree.
@@ -535,7 +538,7 @@ struct Cursor<N: NodeInfo> {
         return self.position
     }
 
-    mutating func set_cache(elem: Node<N>, pos: UInt, k: Int) {
+    mutating func set_cache(elem: Node<N>, pos: Int, k: Int) {
         self.cache[k] = (elem, pos)
     }
 
@@ -594,7 +597,7 @@ struct Cursor<N: NodeInfo> {
                 }
                 let cache_ix = node.height() - 1;
                 if cache_ix < Constants.CURSOR_CACHE_SIZE {
-                    self.cache[Int(cache_ix)] = (node, UInt(i))
+                    self.cache[Int(cache_ix)] = (node, i)
                 }
                 return children[i]
             })
@@ -603,4 +606,132 @@ struct Cursor<N: NodeInfo> {
         self.offset_of_leaf = offset;
     }
 
+
+    /// Set the position of the cursor.
+    ///
+    /// The cursor is valid after this call.
+    ///
+    /// Precondition: `position` is less than or equal to the length of the tree.
+    mutating func set(_ position: UInt) {
+        self.position = position;
+        if let l = self.leaf {
+            if self.position >= self.offset_of_leaf && self.position < self.offset_of_leaf + l.len()
+            {
+                return
+            }
+        }
+        // TODO: walk up tree to find leaf if nearby
+        self.descend()
+    }
+}
+
+struct CursorMeasurable<N, M: Metric> where N == M.N, N.DefaultMetric.N == N {
+    /// Tries to find the next boundary in the leaf the cursor is currently in.
+    @inline(__always)
+    static func next_inside_leaf(_ selv: inout Cursor<N>) -> UInt? {
+        guard var l = selv.leaf else {
+            fatalError("inconsistent, shouldn't get here")
+        }
+        let offset_in_leafp = selv.position - selv.offset_of_leaf
+        let offset_in_leaf = M.next(l: &l, offset: offset_in_leafp)!
+        if offset_in_leaf == l.len() && selv.offset_of_leaf + offset_in_leaf != selv.root.len() {
+            let _ = selv.next_leaf()
+        } else {
+            selv.position = selv.offset_of_leaf + offset_in_leaf
+        }
+        return selv.position
+    }
+
+    /// Moves the cursor to the next boundary.
+    ///
+    /// When there is no next boundary, returns `None` and the cursor becomes invalid.
+    ///
+    /// Return value: the position of the boundary, if it exists.
+    static func next(_ selv: inout Cursor<N>) -> UInt? {
+        if selv.position >= selv.root.len() || selv.leaf == nil {
+            selv.leaf = nil
+            return nil
+        }
+
+        if let offset = next_inside_leaf(&selv) {
+            return offset
+        }
+
+        let _ = selv.next_leaf()
+        if let offset = next_inside_leaf(&selv) {
+            return offset
+        }
+
+        // Leaf is 0-measure (otherwise would have already succeeded).
+        let measure = measure_leaf(selv, &selv.position)
+        descend_metric(&selv, measure + 1)
+        if let offset  = next_inside_leaf(&selv) {
+            return offset
+        }
+
+        // Not found, properly invalidate cursor.
+        selv.position = selv.root.len()
+        selv.leaf = nil
+        return nil
+    }
+
+
+    /// Returns the measure at the beginning of the leaf containing `pos`.
+    ///
+    /// This method is O(log n) no matter the current cursor state.
+    static func measure_leaf(_ selv: Cursor<N>, _ pos: inout UInt) -> UInt {
+        var node = selv.root
+        var metric: UInt = 0
+        while node.height() > 0 {
+            for child in node.get_children_copy() {
+                let len = child.len();
+                if pos < len {
+                    node = child;
+                    break;
+                }
+                pos -= len;
+                metric += NodeMeasurable<N, M>.measure(child)
+            }
+        }
+        return metric
+    }
+
+    /// Find the leaf having the given measure.
+    ///
+    /// This function sets `self.position` to the beginning of the leaf
+    /// containing the smallest offset with the given metric, and also updates
+    /// state as if [`descend`](#method.descend) was called.
+    ///
+    /// If `measure` is greater than the measure of the whole tree, then moves
+    /// to the last node.
+    static func descend_metric(_ selv: inout Cursor<N>, _ mmeasure: UInt) {
+        var measure = mmeasure
+        var node = selv.root
+        var offset: UInt = 0
+        while node.height() > 0 {
+            let children = node.get_children_copy()
+            var i = 0
+            while true {
+                if i + 1 == children.count {
+                    break
+                }
+                let child = children[i]
+                let child_m = NodeMeasurable<N, M>.measure(child)
+                if child_m >= measure {
+                    break
+                }
+                offset += child.len()
+                measure -= child_m
+                i += 1
+            }
+            let cache_ix = node.height() - 1
+            if cache_ix < Constants.CURSOR_CACHE_SIZE {
+                selv.cache[Int(cache_ix)] = (node, i)
+            }
+            node = children[i]
+        }
+        selv.leaf = node.get_leaf_copy()
+        selv.position = offset
+        selv.offset_of_leaf = offset
+    }
 }

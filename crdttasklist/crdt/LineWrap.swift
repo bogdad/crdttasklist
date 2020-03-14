@@ -68,3 +68,56 @@ struct LinesW {
     }
 
 }
+
+/// A cursor over both hard and soft breaks. Hard breaks are retrieved from
+/// the rope; the soft breaks are stored independently; this interleaves them.
+///
+/// # Invariants:
+///
+/// `self.offset` is always a valid break in one of the cursors, unless
+/// at 0 or EOF.
+///
+/// `self.offset == self.text.pos().min(self.soft.pos())`.
+struct MergedBreaks {
+    var text: Cursor<RopeInfo>
+    var soft: Cursor<BreaksInfo>
+    var offset: UInt
+    /// Starting from zero, how many calls to `next` to get to `self.offset`?
+    var cur_line: UInt
+    let total_lines: UInt
+    /// Total length, in base units
+    let len: UInt
+
+    func at_eof() -> Bool { self.offset == self.len }
+
+    mutating func eof_without_newline() -> Bool {
+        assert(self.at_eof())
+        self.text.set(self.len)
+        return self.text.get_leaf()
+            .map({ (l, _) in l.last != "\n"})!
+    }
+}
+
+extension MergedBreaks: IteratorProtocol, Sequence {
+    typealias Element = UInt
+    mutating func next() -> UInt? {
+        if self.text.pos() == self.offset && !self.at_eof() {
+            // don't iterate past EOF, or we can't get the leaf and check for \n
+            let _ = CursorMeasurable<RopeInfo, LinesMetric>.next(&self.text)
+        }
+        if self.soft.pos() == self.offset {
+            let _ = CursorMeasurable<BreaksInfo, BreaksMetric>.next(&self.soft)
+        }
+        let prev_off = self.offset
+        self.offset = Swift.min(self.text.pos(), self.soft.pos())
+
+        let eof_without_newline = self.offset > 0 && self.at_eof() && self.eof_without_newline()
+        if self.offset == prev_off || eof_without_newline {
+            None
+        } else {
+            self.cur_line += 1;
+            Some(self.offset)
+        }
+    }
+
+}
