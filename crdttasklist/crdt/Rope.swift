@@ -41,10 +41,6 @@ struct RopeConstants {
 }
 
 struct Interval: Equatable, IntervalBounds {
-    func into_interval(upper_bound: UInt) -> Interval {
-        return self
-    }
-
     var start: UInt
     var end: UInt
     init(_ start: UInt, _ end: UInt) {
@@ -82,6 +78,9 @@ struct Interval: Equatable, IntervalBounds {
 
     func start_end() -> (UInt, UInt) {
         return (self.start, self.end)
+    }
+    func into_interval(upper_bound: UInt) -> Interval {
+        return self.intersect(other: Interval(0, upper_bound))
     }
 }
 

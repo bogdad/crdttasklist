@@ -12,18 +12,24 @@ import SwiftyDropbox
 class NoteTableViewController: UITableViewController {
 
     var remoteTimer: Timer?
+    var debugShown = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if !NoteStorage.shared.isStorageLinked() {
+
+        if !NoteStorage.shared.debugShown {
+            let debugViewCountroller = self.storyboard?.instantiateViewController(withIdentifier: "DebugViewController")
+            present(debugViewCountroller!, animated: true, completion: nil)
+        } else if !NoteStorage.shared.isStorageLinked() {
             let linkToSorageViewController = self.storyboard?.instantiateViewController(withIdentifier: "LinkToStorageViewController")
             present(linkToSorageViewController!, animated: true, completion: nil)
-        }
-        NoteStorage.shared.loadNotes()
-        navigationItem.leftBarButtonItem = editButtonItem
+        } else {
+            NoteStorage.shared.loadNotes()
+            navigationItem.leftBarButtonItem = editButtonItem
 
-        NotificationCenter.default.addObserver(self, selector: #selector(notesChangedRemotely), name: NSNotification.Name("notesChangedRemotely"), object: nil)
-        remoteTimer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(runTimedCode), userInfo: nil, repeats: true)
+            NotificationCenter.default.addObserver(self, selector: #selector(notesChangedRemotely), name: NSNotification.Name("notesChangedRemotely"), object: nil)
+            remoteTimer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(runTimedCode), userInfo: nil, repeats: true)
+        }
     }
 
     // MARK: - Table view data source
@@ -44,7 +50,7 @@ class NoteTableViewController: UITableViewController {
         }
 
         let note = getNotes()[indexPath.row]
-        cell.nameLabel!.text = String((note.name + " " + note.editor.text.to_string()).prefix(40))
+        cell.nameLabel!.text = String((note.name + " " + note.crdt.to_string(20)))
 
         return cell
     }

@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct View {
+struct View: Codable, Equatable {
 
     let view_id: ViewId
     let buffer_id: BufferId
@@ -128,5 +128,9 @@ struct View {
 
     func offset_of_line(_ text: Rope, _ line: UInt) -> UInt {
         return self.lines.offset_of_visual_line(text, line)
+    }
+
+    static func == (lhs: View, rhs: View) -> Bool {
+        return lhs.lines == rhs.lines
     }
 }

@@ -14,6 +14,7 @@ class NoteStorage {
 
     var notes: [Note] = []
     var rev: String?
+    var debugShown = false
 
     func isStorageLinked() -> Bool {
         if DropboxClientsManager.authorizedClient != nil {
@@ -221,6 +222,15 @@ class NoteStorage {
     func checkRemotes() {
         if isStorageLinked() {
             conflictDetected()
+        }
+    }
+
+    func eraseAllData() {
+        self.notes = []
+        do {
+            try FileManager.default.removeItem(at: Note.ArchiveURL)
+        } catch let error as NSError {
+            print("Error: \(error.domain)")
         }
     }
 }

@@ -38,7 +38,45 @@ enum WrapWidth: Equatable {
     case Width(Double)
 }
 
-struct LinesW {
+extension WrapWidth: Codable {
+    enum CodingKeys: String, CodingKey {
+        case type
+        case bytes
+        case width
+    }
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: WrapWidth.CodingKeys.self)
+        let type = try container.decode(Int.self, forKey: .type)
+        let bytes = try container.decodeIfPresent(UInt.self, forKey: .bytes)
+        let width = try container.decodeIfPresent(Double.self, forKey: .width)
+        switch type {
+        case 0:
+            self = .None
+        case 1:
+            self = .Bytes(bytes!)
+        case 2:
+            self = .Width(width!)
+        default:
+            fatalError("should not happen")
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: WrapWidth.CodingKeys.self)
+        switch self {
+        case .None:
+            try container.encode(0, forKey: .type)
+        case .Bytes(let bytes):
+            try container.encode(1, forKey: .type)
+            try container.encode(bytes, forKey: .bytes)
+        case .Width(let width):
+            try container.encode(2, forKey: .type)
+            try container.encode(width, forKey: .width)
+        }
+    }
+}
+
+struct LinesW: Codable, Equatable {
     var wrap: WrapWidth
     var breaks: Breaks
 

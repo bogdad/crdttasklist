@@ -31,7 +31,7 @@ typealias HorizPos = UInt
 ///
 /// We say "cursor" here rather than "caret" because (depending on presentation)
 /// the front-end may draw a cursor even when the region is not a caret.
-enum Affinity {
+enum Affinity: Int, Codable {
     /// The cursor should be displayed downstream of the line break. For
     /// example, if the buffer is "abcd", and the cursor is on a line break
     /// after "ab", it should be displayed on the second line before "cd".
@@ -46,7 +46,7 @@ enum Affinity {
     }
 }
 
-struct Selection {
+struct Selection: Codable {
     // An invariant: regions[i].max() <= regions[i+1].min()
     // and < if either is_caret()
     var regions: [SelRegion]
@@ -60,7 +60,7 @@ struct Selection {
     }
 }
 
-struct SelRegion {
+struct SelRegion: Codable {
     /// The inactive edge of a selection, as a byte offset. When
     /// equal to end, the selection range acts as a caret.
     let start: UInt

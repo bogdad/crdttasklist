@@ -12,7 +12,7 @@ import os.log
 
 class Note: Codable, Equatable {
     static func == (lhs: Note, rhs: Note) -> Bool {
-        return lhs.id == rhs.id && lhs.name == rhs.name && lhs.text == rhs.text && lhs.editor == rhs.editor
+        return lhs.id == rhs.id && lhs.name == rhs.name && lhs.text == rhs.text && lhs.crdt == rhs.crdt
     }
 
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -22,22 +22,18 @@ class Note: Codable, Equatable {
     var id: String?
     var name: String
     var text: String
-    var editor: Editor
+    var crdt: CRDT
 
-    init(_ id: String, _ name: String, _ text: String, _ editor: Editor) {
+    init(_ id: String, _ name: String, _ text: String, _ crdt: CRDT) {
         self.id = id
         self.name = name
         self.text = text
-        self.editor = editor
+        self.crdt = crdt
     }
 
-    func text_snapshot() -> String {
-        return editor.get_buffer().to_string()
-    }
-
-    func update(_ name: String, _ text: String) {
+    func update(_ name: String, _ crdt: CRDT) {
         self.name = name
-        self.text = text
+        self.crdt = crdt
     }
 
     func merge(_ other: Note) -> (Note, Bool) {
@@ -58,7 +54,7 @@ class Note: Codable, Equatable {
     }
 
     static func newNote(name: String = "name?", text: String = "text?") -> Note {
-        let note = Note(IdGenerator.shared.generate(), name, text, Editor(text))
+        let note = Note(IdGenerator.shared.generate(), name, text, CRDT(text))
         return note
     }
 }

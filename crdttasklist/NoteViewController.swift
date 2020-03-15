@@ -24,22 +24,25 @@ class NoteViewController: UIViewController, UITextViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        createTextView()
+
 
         nameText.placeholder = "name?"
 
         if let note = note {
             navigationItem.title = note.name
             nameText.text = note.name
-            textView!.text = note.text_snapshot()
+            //textView!.text = note.text_snapshot()
+            createTextView(note)
+        } else {
+            createTextView(nil)
         }
     }
 
-    func createTextView() {
+    func createTextView(_ note: Note?) {
         // 1
         let attrs = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body)]
         let attrString = NSAttributedString(string: note?.text ?? "", attributes: attrs)
-        textStorage = CRDTTextStorage()
+        textStorage = CRDTTextStorage(crdt: note?.crdt)
         textStorage!.append(attrString)
 
         let newTextViewRect = view.bounds
@@ -90,8 +93,7 @@ class NoteViewController: UIViewController, UITextViewDelegate {
             note = Note.newNote()
         }
         let name = nameText.text ?? ""
-        let text = textView!.text ?? ""
-        note?.update(name, text)
+        note?.update(name, textStorage!.crdt)
     }
 
     @IBAction func cancel(_ sender: UIBarButtonItem) {

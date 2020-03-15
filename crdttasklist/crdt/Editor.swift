@@ -114,7 +114,7 @@ struct Editor: Codable, Equatable {
         // self.last_synced_rev = last_rev_id,
     }
 
-    mutating func insert(view: inout View, rope: Rope) {
+    mutating func insert(_ view: inout View, _ rope: Rope) {
         var builder = DeltaBuilder<RopeInfo>(self.text.len())
         for region in view.sel_regions() {
             let iv = Interval(region.min(), region.max())
@@ -151,7 +151,7 @@ struct Editor: Codable, Equatable {
         if has_undos && (force_undo_group || is_unbroken_group) {
             return self.live_undos.last!
         } else {
-            let undo_group = self.undo_group_id;
+            let undo_group = self.undo_group_id
             // FIXME: can it be made faster?
             for elem in self.live_undos[Int(self.cur_undo)...] {
                 self.gc_undos.set.insert(elem)
