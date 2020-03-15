@@ -322,6 +322,12 @@ extension Rope {
         }
         return NodeMeasurable<RopeInfo, LinesMetric>.count_base_units(self, line)
     }
+
+    /// Return the offset of the codepoint before `offset`.
+    func prev_codepoint_offset(_ offset: UInt) -> UInt? {
+        var cursor = Cursor(self, offset)
+        return CursorMeasurable<RopeInfo, BaseMetric>.prev(&cursor)
+    }
 }
 
 
@@ -477,5 +483,19 @@ struct BaseMetric: Metric {
 
     static func can_fragment() -> Bool {
         return false
+    }
+}
+
+extension Cursor where N == RopeInfo {
+    mutating func prev_codepoint() -> Character? {
+        let _ = CursorMeasurable<RopeInfo, BaseMetric>.prev(&self)
+        if let (l, offset) = self.get_leaf() {
+            //return
+            let ss: Substring = l.uintO(UInt(offset), l.len())
+            // TODO: performance
+            return Array(ss).first
+        } else {
+            return nil
+        }
     }
 }

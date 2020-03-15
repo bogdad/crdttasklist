@@ -32,8 +32,7 @@ func offset_for_delete_backwards(
     _ text: Rope,
     _ config: BufferItems
 ) -> UInt {
-}
-    /*if !region.is_caret() {
+    if !region.is_caret() {
         return region.min()
     } else {
         // backspace deletes max(1, tab_size) contiguous spaces
@@ -49,182 +48,166 @@ func offset_for_delete_backwards(
         if tab_start < 0 {
             tab_start = 0
         }
+        let sp: Character = " "
         let preceded_by_spaces =
-            region.start > 0 && (tab_start..<region.start).allSatisfy({ text.byte_at($0) == " "})
+            region.start > 0 && (tab_start..<region.start).allSatisfy({ text.byte_at($0) == sp.asciiValue})
         if preceded_by_spaces && config.translate_tabs_to_spaces && config.use_tab_stops {
-            tab_start
+            return tab_start
         } else {
-            #[derive(PartialEq)]
             enum State {
-                Start,
-                Lf,
-                BeforeKeycap,
-                BeforeVsAndKeycap,
-                BeforeEmojiModifier,
-                BeforeVSAndEmojiModifier,
-                BeforeVS,
-                BeforeEmoji,
-                BeforeZwj,
-                BeforeVSAndZWJ,
-                OddNumberedRIS,
-                EvenNumberedRIS,
-                InTagSequence,
-                Finished,
+                case Start
+                case Lf
+                case BeforeKeycap
+                case BeforeVsAndKeycap
+                case BeforeEmojiModifier
+                case BeforeVSAndEmojiModifier
+                case BeforeVS
+                case BeforeEmoji
+                case BeforeZwj
+                case BeforeVSAndZWJ
+                case OddNumberedRIS
+                case EvenNumberedRIS
+                case InTagSequence
+                case Finished
             };
-            let mut state = State::Start;
-            let mut tmp_offset = region.end;
+            var state: State = .Start
+            var tmp_offset = region.end
 
-            let mut delete_code_point_count = 0;
-            let mut last_seen_vs_code_point_count = 0;
+            var delete_code_point_count = 0
+            var last_seen_vs_code_point_count = 0
 
-            while state != State::Finished && tmp_offset > 0 {
-                let mut cursor = Cursor::new(&text, tmp_offset);
-                let code_point = cursor.prev_codepoint().unwrap_or('0');
+            while state != .Finished && tmp_offset > 0 {
+                var cursor = Cursor(text, tmp_offset)
+                let code_point = cursor.prev_codepoint() ?? "0"
 
-                tmp_offset = text.prev_codepoint_offset(tmp_offset).unwrap_or(0);
+                tmp_offset = text.prev_codepoint_offset(tmp_offset) ?? 0
 
-                match state {
-                    State::Start => {
-                        delete_code_point_count = 1;
-                        if code_point == '\n' {
-                            state = State::Lf;
-                        } else if is_variation_selector(code_point) {
-                            state = State::BeforeVS;
+                switch state {
+                case .Start:
+                        delete_code_point_count = 1
+                        if code_point == "\n" {
+                            state = .Lf
+                        } else if code_point.is_variation_selector() {
+                            state = .BeforeVS
                         } else if code_point.is_regional_indicator_symbol() {
-                            state = State::OddNumberedRIS;
+                            state = .OddNumberedRIS
                         } else if code_point.is_emoji_modifier() {
-                            state = State::BeforeEmojiModifier;
+                            state = .BeforeEmojiModifier
                         } else if code_point.is_emoji_combining_enclosing_keycap() {
-                            state = State::BeforeKeycap;
+                            state = .BeforeKeycap
                         } else if code_point.is_emoji() {
-                            state = State::BeforeEmoji;
+                            state = .BeforeEmoji
                         } else if code_point.is_emoji_cancel_tag() {
-                            state = State::InTagSequence;
+                            state = .InTagSequence
                         } else {
-                            state = State::Finished;
+                            state = .Finished;
                         }
-                    }
-                    State::Lf => {
-                        if code_point == '\r' {
-                            delete_code_point_count += 1;
+                case .Lf:
+                        if code_point == "\r" {
+                            delete_code_point_count += 1
                         }
-                        state = State::Finished;
-                    }
-                    State::OddNumberedRIS => {
+                        state = .Finished
+                case .OddNumberedRIS:
                         if code_point.is_regional_indicator_symbol() {
-                            delete_code_point_count += 1;
-                            state = State::EvenNumberedRIS
+                            delete_code_point_count += 1
+                            state = .EvenNumberedRIS
                         } else {
-                            state = State::Finished
+                            state = .Finished
                         }
-                    }
-                    State::EvenNumberedRIS => {
+                case .EvenNumberedRIS:
                         if code_point.is_regional_indicator_symbol() {
-                            delete_code_point_count -= 1;
-                            state = State::OddNumberedRIS;
+                            delete_code_point_count -= 1
+                            state = .OddNumberedRIS
                         } else {
-                            state = State::Finished;
+                            state = .Finished
                         }
-                    }
-                    State::BeforeKeycap => {
-                        if is_variation_selector(code_point) {
-                            last_seen_vs_code_point_count = 1;
-                            state = State::BeforeVsAndKeycap;
+                case .BeforeKeycap:
+                        if code_point.is_variation_selector() {
+                            last_seen_vs_code_point_count = 1
+                            state = .BeforeVsAndKeycap
                         } else {
-                            if is_keycap_base(code_point) {
-                                delete_code_point_count += 1;
+                            if code_point.is_keycap_base() {
+                                delete_code_point_count += 1
                             }
-                            state = State::Finished;
+                            state = .Finished
                         }
-                    }
-                    State::BeforeVsAndKeycap => {
-                        if is_keycap_base(code_point) {
-                            delete_code_point_count += last_seen_vs_code_point_count + 1;
+                case .BeforeVsAndKeycap:
+                    if code_point.is_keycap_base() {
+                            delete_code_point_count += last_seen_vs_code_point_count + 1
                         }
-                        state = State::Finished;
-                    }
-                    State::BeforeEmojiModifier => {
-                        if is_variation_selector(code_point) {
-                            last_seen_vs_code_point_count = 1;
-                            state = State::BeforeVSAndEmojiModifier;
+                        state = .Finished
+                case .BeforeEmojiModifier:
+                        if code_point.is_variation_selector() {
+                            last_seen_vs_code_point_count = 1
+                            state = .BeforeVSAndEmojiModifier
                         } else {
                             if code_point.is_emoji_modifier_base() {
-                                delete_code_point_count += 1;
+                                delete_code_point_count += 1
                             }
-                            state = State::Finished;
+                            state = .Finished
                         }
-                    }
-                    State::BeforeVSAndEmojiModifier => {
+                case .BeforeVSAndEmojiModifier:
                         if code_point.is_emoji_modifier_base() {
-                            delete_code_point_count += last_seen_vs_code_point_count + 1;
+                            delete_code_point_count += last_seen_vs_code_point_count + 1
                         }
-                        state = State::Finished;
-                    }
-                    State::BeforeVS => {
+                        state = .Finished
+                case .BeforeVS:
                         if code_point.is_emoji() {
-                            delete_code_point_count += 1;
-                            state = State::BeforeEmoji;
+                            delete_code_point_count += 1
+                            state = .BeforeEmoji
                         } else {
-                            if !is_variation_selector(code_point) {
+                            if !code_point.is_variation_selector() {
                                 //TODO: UCharacter.getCombiningClass(codePoint) == 0
-                                delete_code_point_count += 1;
+                                delete_code_point_count += 1
                             }
-                            state = State::Finished;
+                            state = .Finished
                         }
-                    }
-                    State::BeforeEmoji => {
+                case .BeforeEmoji:
                         if code_point.is_zwj() {
-                            state = State::BeforeZwj;
+                            state = .BeforeZwj
                         } else {
-                            state = State::Finished;
+                            state = .Finished
                         }
-                    }
-                    State::BeforeZwj => {
+                case .BeforeZwj:
                         if code_point.is_emoji() {
-                            delete_code_point_count += 2;
-                            state = if code_point.is_emoji_modifier() {
-                                State::BeforeEmojiModifier
-                            } else {
-                                State::BeforeEmoji
-                            };
-                        } else if is_variation_selector(code_point) {
-                            last_seen_vs_code_point_count = 1;
-                            state = State::BeforeVSAndZWJ;
+                            delete_code_point_count += 2
+                            state = code_point.is_emoji_modifier() ?
+                                .BeforeEmojiModifier : .BeforeEmoji
+                        } else if code_point.is_variation_selector() {
+                            last_seen_vs_code_point_count = 1
+                            state = .BeforeVSAndZWJ
                         } else {
-                            state = State::Finished;
+                            state = .Finished
                         }
-                    }
-                    State::BeforeVSAndZWJ => {
+                case .BeforeVSAndZWJ:
                         if code_point.is_emoji() {
-                            delete_code_point_count += last_seen_vs_code_point_count + 2;
-                            last_seen_vs_code_point_count = 0;
-                            state = State::BeforeEmoji;
+                            delete_code_point_count += last_seen_vs_code_point_count + 2
+                            last_seen_vs_code_point_count = 0
+                            state = .BeforeEmoji
                         } else {
-                            state = State::Finished;
+                            state = .Finished
                         }
-                    }
-                    State::InTagSequence => {
+                case .InTagSequence:
                         if code_point.is_tag_spec_char() {
-                            delete_code_point_count += 1;
+                            delete_code_point_count += 1
                         } else if code_point.is_emoji() {
-                            delete_code_point_count += 1;
-                            state = State::Finished;
+                            delete_code_point_count += 1
+                            state = .Finished
                         } else {
-                            delete_code_point_count = 1;
-                            state = State::Finished;
+                            delete_code_point_count = 1
+                            state = .Finished
                         }
-                    }
-                    State::Finished => {
+                case .Finished:
                         break;
-                    }
                 }
             }
 
-            let mut start = region.end;
+            var start = region.end
             while delete_code_point_count > 0 {
-                start = text.prev_codepoint_offset(start).unwrap_or(0);
-                delete_code_point_count -= 1;
+                start = text.prev_codepoint_offset(start) ?? 0
+                delete_code_point_count -= 1
             }
-            start
+            return start
         }
-    }*/
+    }
+}
