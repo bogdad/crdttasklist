@@ -45,4 +45,12 @@ extension Array where Element: Comparable & Equatable {
             return (base, false)
         }
     }
+
+    func truncate(len: UInt) -> Self {
+        let d = distance(from: Int(len + 1), to: endIndex)
+        if (d > 0) {
+            return Array(self.dropLast(d))
+        }
+        return self
+    }
 }

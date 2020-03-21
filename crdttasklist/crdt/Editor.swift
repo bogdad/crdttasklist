@@ -144,26 +144,26 @@ struct Editor: Codable, Equatable {
     }
 
     mutating func calculate_undo_group() -> UInt {
-        let has_undos = self.live_undos.count > 0
+        let has_undos = live_undos.count > 0
         let force_undo_group = self.force_undo_group
-        let is_unbroken_group = !self.this_edit_type.breaks_undo_group(self.last_edit_type)
+        let is_unbroken_group = !this_edit_type.breaks_undo_group(last_edit_type)
 
         if has_undos && (force_undo_group || is_unbroken_group) {
-            return self.live_undos.last!
+            return live_undos.last!
         } else {
-            let undo_group = self.undo_group_id
+            let undo_group = undo_group_id
             // FIXME: can it be made faster?
-            for elem in self.live_undos[Int(self.cur_undo)...] {
-                self.gc_undos.set.insert(elem)
+            for elem in live_undos[Int(cur_undo)...] {
+                gc_undos.set.insert(elem)
             }
-            self.live_undos.removeFirst(Int(self.cur_undo))
-            self.live_undos.append(undo_group)
-            if self.live_undos.count <= EditorConstants.MAX_UNDOS {
-                self.cur_undo += 1
+            live_undos = live_undos.truncate(len: cur_undo)
+            live_undos.append(undo_group)
+            if live_undos.count <= EditorConstants.MAX_UNDOS {
+                cur_undo += 1
             } else {
-                self.gc_undos.set.insert(self.live_undos.remove(at: 0))
+                gc_undos.set.insert(live_undos.remove(at: 0))
             }
-            self.undo_group_id += 1
+            undo_group_id += 1
             return undo_group
         }
     }

@@ -44,10 +44,7 @@ func offset_for_delete_backwards(
             tab_size = tab_off
         }
 
-        var tab_start = region.start - tab_size
-        if tab_start < 0 {
-            tab_start = 0
-        }
+        let tab_start = region.start > tab_size ? region.start - tab_size : 0
         let sp: Character = " "
         let preceded_by_spaces =
             region.start > 0 && (tab_start..<region.start).allSatisfy({ text.byte_at($0) == sp.asciiValue})
