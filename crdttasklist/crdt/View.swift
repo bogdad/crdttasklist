@@ -130,6 +130,45 @@ struct View: Codable, Equatable {
         return self.lines.offset_of_visual_line(text, line)
     }
 
+    /// Updates the view after the text has been modified by the given `delta`.
+    /// This method is responsible for updating the cursors, and also for
+    /// recomputing line wraps.
+    mutating func after_edit(
+        text: Rope,
+        last_text: Rope,
+        delta: RopeDelta,
+        //client: &Client,
+        //width_cache: &mut WidthCache,
+        drift: InsertDrift
+    ) {
+        let visible = self.first_line..<self.first_line + self.height
+        match self.lines.after_edit(text, last_text, delta, width_cache, client, visible) {
+            Some(InvalLines { start_line, inval_count, new_count }) => {
+                self.lc_shadow.edit(start_line, start_line + inval_count, new_count);
+            }
+            None => self.set_dirty(text),
+        }
+
+        // Any edit cancels a drag. This is good behavior for edits initiated through
+        // the front-end, but perhaps not for async edits.
+        self.drag_state = None;
+
+        let (iv, _) = delta.summary();
+        self.annotations.invalidate(iv);
+
+        // update only find highlights affected by change
+        for find in &mut self.find {
+            find.update_highlights(text, delta);
+            self.find_changed = FindStatusChange::All;
+        }
+
+        // Note: for committing plugin edits, we probably want to know the priority
+        // of the delta so we can set the cursor before or after the edit, as needed.
+        let new_sel = self.selection.apply_delta(delta, true, drift);
+        self.set_selection_for_edit(text, new_sel);
+    }
+
+
     static func == (lhs: View, rhs: View) -> Bool {
         return lhs.lines == rhs.lines
     }

@@ -14,7 +14,7 @@ class CRDTTextStorage: NSTextStorage {
     let crdt: CRDT
 
     init(crdt: CRDT?) {
-        self.crdt = crdt ?? CRDT("text?")
+        self.crdt = crdt ?? CRDT("")
         super.init()
     }
 
@@ -23,7 +23,8 @@ class CRDTTextStorage: NSTextStorage {
     }
 
     override var string: String {
-        return backingStore.string
+        //print("string \(crdt.to_string())  \(backingStore.string)")
+        return crdt.to_string()
     }
 
     override func attributes(
@@ -34,7 +35,7 @@ class CRDTTextStorage: NSTextStorage {
     }
 
     override func replaceCharacters(in range: NSRange, with str: String) {
-        print("replaceCharactersInRange:\(range) withString:\(str)")
+        print("replaceCharactersInRange \(range) withString:\(str)")
 
         beginEditing()
         backingStore.replaceCharacters(in: range, with:str)
@@ -42,6 +43,13 @@ class CRDTTextStorage: NSTextStorage {
 
         edited(.editedCharacters, range: range,
              changeInLength: (str as NSString).length - range.length)
+        endEditing()
+    }
+
+    override func insert(_ attrString: NSAttributedString, at loc: Int) {
+        print("insert \(attrString) at loc: \(loc)")
+        beginEditing()
+        crdt.insert(chars: attrString.string)
         endEditing()
     }
 
@@ -69,10 +77,11 @@ class CRDTTextStorage: NSTextStorage {
     }
 
     override func setAttributes(_ attrs: [NSAttributedString.Key: Any]?, range: NSRange) {
-        print("setAttributes:\(String(describing: attrs)) range:\(range)")
+        print("setAttributes:\(String(describing: attrs?.keys)) range:\(range)")
 
         beginEditing()
         backingStore.setAttributes(attrs, range: range)
+        
         edited(.editedAttributes, range: range, changeInLength: 0)
         endEditing()
     }

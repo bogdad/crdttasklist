@@ -25,6 +25,14 @@
 
 import Foundation
 
+/// Describes what has changed after a batch of word wrapping; this is used
+/// for minimal invalidation.
+struct InvalLines {
+    let start_line: UInt
+    let inval_count: UInt
+    let new_count: UInt
+}
+
 enum WrapWidth: Equatable {
     /// No wrapping in effect.
     case None
@@ -103,6 +111,69 @@ struct LinesW: Codable, Equatable {
 
     static func def() -> LinesW {
         return LinesW(wrap: WrapWidth.None, breaks: Breaks.def())
+    }
+
+    /// Updates breaks after an edit. Returns `InvalLines`, for minimal invalidation,
+    /// when possible.
+    mutating func after_edit(
+        text: Rope,
+        old_text: Rope,
+        delta: RopeDelta,
+        //width_cache: &mut WidthCache,
+        //client: &Client,
+        visible_lines: Range<UInt>
+    ) -> InvalLines? {
+        let (iv, newlen) = delta.summary()
+
+        let logical_start_line = text.line_of_offset(iv.start);
+        let old_logical_end_line = old_text.line_of_offset(iv.end) + 1;
+        let new_logical_end_line = text.line_of_offset(iv.start + newlen) + 1;
+        let old_logical_end_offset = old_text.offset_of_line(old_logical_end_line);
+        let old_hard_count = old_logical_end_line - logical_start_line;
+        let new_hard_count = new_logical_end_line - logical_start_line;
+
+        //TODO: we should be able to avoid wrapping the whole para in most cases,
+        // but the logic is trickier.
+        let prev_break = text.offset_of_line(logical_start_line);
+        let next_hard_break = text.offset_of_line(new_logical_end_line);
+
+        // count the soft breaks in the region we will rewrap, before we update them.
+        let inval_soft = self.breaks.count::<BreaksMetric>(old_logical_end_offset)
+            - self.breaks.count::<BreaksMetric>(prev_break);
+
+        // update soft breaks, adding empty spans in the edited region
+        let mut builder = BreakBuilder::new();
+        builder.add_no_break(newlen);
+        self.breaks.edit(iv, builder.build());
+        self.patchup_tasks(iv, newlen);
+
+        if self.wrap == WrapWidth::None {
+            return Some(InvalLines {
+                start_line: logical_start_line,
+                inval_count: old_hard_count,
+                new_count: new_hard_count,
+            });
+        }
+
+        let new_task = prev_break..next_hard_break;
+        self.add_task(new_task);
+
+        // possible if the whole buffer is deleted, e.g
+        if !self.work.is_empty() {
+            let summary = self.do_wrap_task(text, width_cache, client, visible_lines, None);
+            let WrapSummary { start_line, new_soft, .. } = summary;
+            // if we haven't converged after this update we can't do minimal invalidation
+            // because we don't have complete knowledge of the new breaks state.
+            if self.is_converged() {
+                let inval_count = old_hard_count + inval_soft;
+                let new_count = new_hard_count + new_soft;
+                Some(InvalLines { start_line, new_count, inval_count })
+            } else {
+                None
+            }
+        } else {
+            None
+        }
     }
 
 }

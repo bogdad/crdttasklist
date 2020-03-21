@@ -40,10 +40,10 @@ class NoteViewController: UIViewController, UITextViewDelegate {
 
     func createTextView(_ note: Note?) {
         // 1
-        let attrs = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body)]
-        let attrString = NSAttributedString(string: note?.text ?? "", attributes: attrs)
+        //let attrs = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body)]
+        //let attrString = NSAttributedString(string: note?.crdt.to_string() ?? "", attributes: attrs)
         textStorage = CRDTTextStorage(crdt: note?.crdt)
-        textStorage!.append(attrString)
+        //textStorage!.append(attrString)
 
         let newTextViewRect = view.bounds
 

@@ -86,7 +86,7 @@ class NoteTableViewController: UITableViewController {
         case "AddItem":
             break
         case "ShowDetail":
-            guard let mealDetailViewController = segue.destination as? NoteViewController else {
+            guard let noteViewController = segue.destination as? NoteViewController else {
                 fatalError("Unexpected destination: \(segue.destination)")
             }
             guard let selectedNoteCell = sender as? NoteTableViewCell else {
@@ -96,7 +96,7 @@ class NoteTableViewController: UITableViewController {
                 fatalError("The selected cell is not being displayed by the table")
             }
             let selectedNote = getNotes()[indexPath.row]
-            mealDetailViewController.note = selectedNote
+            noteViewController.note = selectedNote
         default:
             fatalError("Unexpected Segue Identifier; \(segue.identifier)")
         }

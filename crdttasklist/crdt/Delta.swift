@@ -31,7 +31,7 @@ enum DeltaElement<N: NodeInfo> {
     case Insert(Node<N>)
 }
 
-struct Delta<N: NodeInfo> {
+class Delta<N: NodeInfo> {
     var els: [DeltaElement<N>]
     var base_len: UInt
 
@@ -216,6 +216,36 @@ struct Delta<N: NodeInfo> {
         return Delta(els, base_len)
     }
 
+    /// Produce a summary of the delta. Everything outside the returned interval
+    /// is unchanged, and the old contents of the interval are replaced by new
+    /// contents of the returned length. Equations:
+    ///
+    /// `(iv, new_len) = self.summary()`
+    ///
+    /// `new_s = self.apply(s)`
+    ///
+    /// `new_s = simple_edit(iv, new_s.subseq(iv.start(), iv.start() + new_len), s.len()).apply(s)`
+    func summary() -> (Interval, UInt) {
+        var els = self.els.as_slice()
+        var iv_start = 0
+        switch els.split_first() {
+        case .Copy():
+
+        default:
+        }
+        guard let DeltaElement::Copy(0, end), rest)) =  {
+            iv_start = end;
+            els = rest;
+        }
+        let mut iv_end = self.base_len;
+        if let Some((&DeltaElement::Copy(beg, end), init)) = els.split_last() {
+            if end == iv_end {
+                iv_end = beg;
+                els = init;
+            }
+        }
+        (Interval::new(iv_start, iv_end), Delta::total_element_len(els))
+    }
 }
 
 struct InsertDelta<N: NodeInfo> {
