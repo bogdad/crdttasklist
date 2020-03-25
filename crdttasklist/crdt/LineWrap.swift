@@ -135,27 +135,28 @@ struct LinesW: Codable, Equatable {
         //TODO: we should be able to avoid wrapping the whole para in most cases,
         // but the logic is trickier.
         let prev_break = text.offset_of_line(logical_start_line);
-        let next_hard_break = text.offset_of_line(new_logical_end_line);
+        let next_hard_break = text.offset_of_line(new_logical_end_line)
 
         // count the soft breaks in the region we will rewrap, before we update them.
-        let inval_soft = self.breaks.count::<BreaksMetric>(old_logical_end_offset)
-            - self.breaks.count::<BreaksMetric>(prev_break);
+
+        let inval_soft = NodeMeasurable<BreaksInfo, BreaksMetric>.count(self.breaks, old_logical_end_offset)
+            - NodeMeasurable<BreaksInfo, BreaksMetric>.count(self.breaks, prev_break)
 
         // update soft breaks, adding empty spans in the edited region
-        let mut builder = BreakBuilder::new();
-        builder.add_no_break(newlen);
-        self.breaks.edit(iv, builder.build());
-        self.patchup_tasks(iv, newlen);
+        var builder = BreakBuilder();
+        builder.add_no_break(newlen)
+        self.breaks = self.breaks.edit(iv, builder.build())
+        // XXXXXXXXXXXXXXX self.patchup_tasks(iv, newlen)
 
-        if self.wrap == WrapWidth::None {
-            return Some(InvalLines {
+        if self.wrap == .None {
+            return InvalLines(
                 start_line: logical_start_line,
                 inval_count: old_hard_count,
-                new_count: new_hard_count,
-            });
+                new_count: new_hard_count
+            )
         }
-
-        let new_task = prev_break..next_hard_break;
+        // XXXXXXXXXXXXXXXXX ?????????????
+        /*let new_task = prev_break..next_hard_break;
         self.add_task(new_task);
 
         // possible if the whole buffer is deleted, e.g
@@ -173,7 +174,8 @@ struct LinesW: Codable, Equatable {
             }
         } else {
             None
-        }
+        }*/
+        return nil
     }
 
 }

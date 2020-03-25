@@ -52,11 +52,11 @@ class CRDT: Codable, Equatable {
     }
 
 
-    func update_views(delta: RopeDelta, last_text: Rope, drift: InsertDrift) {
-        let mut width_cache = self.width_cache.borrow_mut();
-        let iter_views = iter::once(&self.view).chain(self.siblings.iter());
-        iter_views.for_each(|view| {
-            view.borrow_mut().after_edit(
+    func update_views(_ delta: RopeDelta, _ last_text: Rope, _ drift: InsertDrift) {
+        // let mut width_cache = self.width_cache.borrow_mut();
+        /*let iter_views = [self.view]//.chain(self.siblings.iter());
+        iter_views.for_each({ v in
+            view.after_edit(
                 ed.get_buffer(),
                 last_text,
                 delta,
@@ -64,6 +64,7 @@ class CRDT: Codable, Equatable {
                 &mut width_cache,
                 drift,
             )
-        });
+        });*/
+        self.view.after_edit(editor.get_buffer(), last_text, delta, drift)
     }
 }

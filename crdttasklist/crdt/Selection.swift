@@ -58,6 +58,36 @@ struct Selection: Codable {
     static func from(_ region: SelRegion) -> Selection {
         return new_simple(region)
     }
+
+        /// Computes a new selection based on applying a delta to the old selection.
+        ///
+        /// When new text is inserted at a caret, the new caret can be either before
+        /// or after the inserted text, depending on the `after` parameter.
+        ///
+        /// Whether or not the preceding selections are restored depends on the keep_selections
+        /// value (only set to true on transpose).
+    func apply_delta(_ delta: RopeDelta, _ after: Bool, _ drift: InsertDrift) -> Selection {
+        var result = Selection()
+        var transformer = Transformer(delta)
+        for region in self.iter() {
+            let is_caret = region.start == region.end;
+            let is_region_forward = region.start < region.end;
+
+            let (start_after, end_after) = match (drift, is_caret) {
+                (InsertDrift::Inside, false) => (!is_region_forward, is_region_forward),
+                (InsertDrift::Outside, false) => (is_region_forward, !is_region_forward),
+                _ => (after, after),
+            };
+
+            let new_region = SelRegion::new(
+                transformer.transform(region.start, start_after),
+                transformer.transform(region.end, end_after),
+            )
+            .with_affinity(region.affinity);
+            result.add_region(new_region);
+        }
+        result
+    }
 }
 
 struct SelRegion: Codable {

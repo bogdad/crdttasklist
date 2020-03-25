@@ -308,6 +308,15 @@ class Node<N: NodeInfo> : Equatable, Codable {
     }
 
 
+    func edit<T: Node<N>, IV: IntervalBounds>(_ iv: IV, _ new: T) -> Node<N> {
+        var b = TreeBuilder<N>()
+        let iv = iv.into_interval(upper_bound: self.len())
+        let self_iv = self.interval()
+        self.push_subseq(b: &b, iv: self_iv.prefix(iv))
+        b.push(n: new)
+        self.push_subseq(b: &b, iv: self_iv.suffix(iv))
+        return b.build()
+    }
 }
 
 enum NodeVal<N: NodeInfo> : Codable, Equatable {

@@ -71,10 +71,10 @@ class Delta<N: NodeInfo> {
     ///
     /// `d.apply(r).len() == d.new_document_len()`
     func new_document_len() -> UInt {
-        return Delta.total_element_len(self.els)
+        return Delta.total_element_len(self.els[...])
     }
 
-    static func total_element_len(_ els: [DeltaElement<N>]) -> UInt {
+    static func total_element_len(_ els: ArraySlice<DeltaElement<N>>) -> UInt {
         return els.reduce(UInt(0), { (sum, el) in
 
             var add: UInt = 0
@@ -226,25 +226,28 @@ class Delta<N: NodeInfo> {
     ///
     /// `new_s = simple_edit(iv, new_s.subseq(iv.start(), iv.start() + new_len), s.len()).apply(s)`
     func summary() -> (Interval, UInt) {
-        var els = self.els.as_slice()
         var iv_start = 0
-        switch els.split_first() {
-        case .Copy():
-
-        default:
-        }
-        guard let DeltaElement::Copy(0, end), rest)) =  {
-            iv_start = end;
-            els = rest;
-        }
-        let mut iv_end = self.base_len;
-        if let Some((&DeltaElement::Copy(beg, end), init)) = els.split_last() {
-            if end == iv_end {
-                iv_end = beg;
-                els = init;
+        var els = ArraySlice(self.els)
+        let split_first = els.split_first()
+        if split_first != nil {
+            let (first, rest) = split_first!
+            if case .Copy(0, let end) = first[0] {
+                iv_start = Int(end)
+                els = rest
             }
         }
-        (Interval::new(iv_start, iv_end), Delta::total_element_len(els))
+        var iv_end = self.base_len
+        let split_last = els.split_last()
+        if split_last != nil {
+            let (last, initi) = split_last!
+            if case .Copy(let beg, let end) = last[0] {
+                if end == iv_end {
+                    iv_end = beg
+                    els = initi
+                }
+            }
+        }
+        return (Interval(UInt(iv_start), iv_end), Delta.total_element_len(els))
     }
 }
 

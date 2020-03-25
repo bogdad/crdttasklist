@@ -40,49 +40,6 @@ struct RopeConstants {
     static let MAX_LEAF: UInt = 1024;
 }
 
-struct Interval: Equatable, IntervalBounds {
-    var start: UInt
-    var end: UInt
-    init(_ start: UInt, _ end: UInt) {
-        assert(start <= end)
-        self.start = start
-        self.end = end
-    }
-
-    func is_empty() -> Bool {
-        return end <= start
-    }
-
-    static func == (lhs: Interval, rhs: Interval) -> Bool {
-        return lhs.start == rhs.start && lhs.end == rhs.end
-    }
-
-    func is_before(val: UInt) -> Bool {
-        return end <= val
-    }
-
-    func intersect(other: Interval) -> Interval {
-        let start = max(self.start, other.start)
-        let end = min(self.end, other.end)
-        return Interval(start, max(start, end))
-    }
-
-    func translate(amount: UInt) -> Interval {
-        return Interval(start + amount, end + amount)
-    }
-
-    func translate_neg(amount: UInt) -> Interval {
-        assert(start >= amount)
-        return Interval(start - amount, end - amount)
-    }
-
-    func start_end() -> (UInt, UInt) {
-        return (self.start, self.end)
-    }
-    func into_interval(upper_bound: UInt) -> Interval {
-        return self.intersect(other: Interval(0, upper_bound))
-    }
-}
 
 protocol Leaf : Equatable, Codable {
     static func def() -> Self
@@ -222,9 +179,6 @@ struct LinesMetric: Metric {
 
 }
 
-protocol IntervalBounds {
-    func into_interval(upper_bound:UInt) -> Interval
-}
 
 
 typealias Rope = Node<RopeInfo>

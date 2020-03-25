@@ -228,12 +228,6 @@ extension Substring {
     }
 }
 
-struct RangeFull: IntervalBounds {
-    func into_interval(upper_bound: UInt) -> Interval {
-        return Interval(0, upper_bound)
-    }
-}
-
 extension Character {
 
    

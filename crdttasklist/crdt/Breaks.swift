@@ -187,3 +187,36 @@ struct BreaksMetric: Metric {
         true
     }
 }
+
+
+struct BreakBuilder {
+    let MAX_LEAF: UInt = 64
+    var b: TreeBuilder<BreaksInfo>
+    var leaf: BreaksLeaf
+
+    func def() -> BreakBuilder {
+        return BreakBuilder()
+    }
+
+    init() {
+        self.b = TreeBuilder()
+        self.leaf = BreaksLeaf.def()
+    }
+
+    mutating func add_break(_  len: UInt) {
+        if self.leaf.data.count == MAX_LEAF {
+            self.b.push(n: Node.from_leaf(l: &leaf))
+        }
+        self.leaf._len += len;
+        self.leaf.data.append(self.leaf.len())
+    }
+
+    mutating func add_no_break(_ len: UInt) {
+        self.leaf._len += len
+    }
+
+    mutating func build() -> Breaks {
+        self.b.push(n: Node.from_leaf(l: &self.leaf))
+        return self.b.build()
+    }
+}
