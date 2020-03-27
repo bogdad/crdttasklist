@@ -411,3 +411,38 @@ struct DeltaBuilder<N: NodeInfo> {
         self.last_offset == 0 && self.delta.els.isEmpty
     }
 }
+
+// A mapping from coordinates in the source sequence to coordinates in the sequence after
+// the delta is applied.
+// TODO: this doesn't need the new strings, so it should either be based on a new structure
+// like Delta but missing the strings, or perhaps the two subsets it's synthesized from.
+struct Transformer<N: NodeInfo> {
+    var delta: Delta<N>
+
+    init(_ delta: Delta<N>) {
+        self.delta = delta
+    }
+
+    // TODO: implement a cursor so we're not scanning from the beginning every time.
+    mutating func transform(_ ix: UInt, _ after: Bool) -> UInt {
+        if ix == 0 && !after {
+            return 0;
+        }
+        var result: UInt = 0
+        for el in self.delta.els {
+            switch el {
+            case let .Copy(beg, end):
+                if ix <= beg {
+                    return result
+                }
+                if ix < end || (ix == end && !after) {
+                    return result + ix - beg
+                }
+                result += end - beg
+            case .Insert(let n):
+                result += n.len()
+            }
+        }
+        return result
+    }
+}
