@@ -57,6 +57,7 @@
 		E7BD0E0822FC352D00B14710 /* MultisetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7BD0E0722FC352D00B14710 /* MultisetTests.swift */; };
 		E7BD0E0A22FC366300B14710 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7BD0E0922FC366300B14710 /* TestHelpers.swift */; };
 		E7DD4EB4242E87DE00E2B5B9 /* IndexSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7DD4EB3242E87DE00E2B5B9 /* IndexSet.swift */; };
+		E7DD4EB6242FC08F00E2B5B9 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7DD4EB5242FC08F00E2B5B9 /* String.swift */; };
 		E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325D22BD261F00D0BF2D /* Tree.swift */; };
 		E7F0326022BD26F300D0BF2D /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325F22BD26F300D0BF2D /* Strings.swift */; };
 		E7F465E82315AC4200030F3A /* CRDTTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F465E72315AC4200030F3A /* CRDTTextView.swift */; };
@@ -144,6 +145,7 @@
 		E7BD0E0722FC352D00B14710 /* MultisetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisetTests.swift; sourceTree = "<group>"; };
 		E7BD0E0922FC366300B14710 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
 		E7DD4EB3242E87DE00E2B5B9 /* IndexSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexSet.swift; sourceTree = "<group>"; };
+		E7DD4EB5242FC08F00E2B5B9 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		E7F0325D22BD261F00D0BF2D /* Tree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tree.swift; sourceTree = "<group>"; };
 		E7F0325F22BD26F300D0BF2D /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		E7F465E72315AC4200030F3A /* CRDTTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTTextView.swift; sourceTree = "<group>"; };
@@ -305,6 +307,7 @@
 				E79E1F8C22C7FA36007099E5 /* Multiset.swift */,
 				E7B62C172299B8D1000143C6 /* Rope.swift */,
 				E74C3DC522D24086001B9CA7 /* Selection.swift */,
+				E7DD4EB5242FC08F00E2B5B9 /* String.swift */,
 				E7F0325F22BD26F300D0BF2D /* Strings.swift */,
 				E75B38682300147B005013E0 /* Tabs.swift */,
 				E7BD0E0922FC366300B14710 /* TestHelpers.swift */,
@@ -583,6 +586,7 @@
 				E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */,
 				E7B5D57322F34EC90020AFAC /* Collections.swift in Sources */,
 				E74D1881241ECCD600EE3815 /* DebugViewController.swift in Sources */,
+				E7DD4EB6242FC08F00E2B5B9 /* String.swift in Sources */,
 				E78674DA23E7626100728436 /* CRDTTextStorage.swift in Sources */,
 				E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */,
 				E75B386B230015CF005013E0 /* Find.swift in Sources */,

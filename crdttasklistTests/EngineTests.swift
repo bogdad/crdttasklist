@@ -22,11 +22,52 @@ class EngineTests: XCTestCase {
         return d_builder.build()
     }
 
+    func basic_rev(_ i: UInt) -> RevId {
+        return RevId(session1: 1, session2: 0, num: UInt32(i))
+    }
+
+
+    func basic_insert_ops(_ inserts: [Subset], _ priority: UInt) -> [Revision] {
+        return inserts.enumerated().map({ (i, inserts) in
+            let ui = UInt(i)
+            let deletes = Subset.make_empty(inserts.len())
+            return Revision(
+                rev_id: basic_rev(ui + 1),
+                edit: .Edit(
+                    priority: priority,
+                    undo_group: ui + 1,
+                    inserts: inserts,
+                    deletes: deletes
+                ),
+                max_undo_so_far: ui + 1
+            )
+        })
+    }
+
     func test_edit_rev_simple() {
         var engine = Engine.make_from_rope(Rope.from_str(TEST_STR[...]))
         let first_rev = engine.get_head_rev_id().token()
         engine.edit_rev(0, 1, first_rev, build_delta_1());
         XCTAssertEqual("0123456789abcDEEFghijklmnopqr999stuvz", String.from(rope: engine.get_head()))
+    }
+
+    func test_try_delta_rev_simple() {
+        let str = "123456789"
+        var engine = Engine.make_from_rope(Rope.from_str(str))
+        let first_rev = engine.get_head_rev_id().token()
+        var db = DeltaBuilder<RopeInfo>(str.len())
+        db.delete(Interval(0, 8))
+        let d = db.build()
+        print("delta applied \(d.apply_to_string(str))")
+        engine.edit_rev(1, 1, first_rev, d)
+        XCTAssertEqual("9", engine.get_head().to_string())
+
+        do {
+            let d = try engine.try_delta_rev_head(first_rev).get()
+            XCTAssertEqual(String.from(rope: engine.get_head()), d.apply_to_string(str))
+        } catch {
+            fatalError("should not happen")
+        }
     }
 
     func test_try_delta_rev_head() {
@@ -46,5 +87,36 @@ class EngineTests: XCTestCase {
         let fileEngine = saveThenLoad(obj: engine)
         XCTAssertEqual(engine, fileEngine)
 
+    }
+
+    func test_compute_transforms_2() {
+        let inserts_1 = TestHelpers.parse_subset_list("""
+        -##-
+        --#--
+        """)
+        var revs: [Revision] = basic_insert_ops(inserts_1, 1)
+        let inserts_2 = TestHelpers.parse_subset_list("""
+        ----
+        """)
+        let revs_2 = basic_insert_ops(inserts_2, 4)
+        revs.append(contentsOf: revs_2)
+        let inserts_3 = TestHelpers.parse_subset_list("""
+        ---#--
+        #------
+        """)
+        let revs_3 = basic_insert_ops(inserts_3, 2)
+        revs.append(contentsOf: revs_3)
+
+        let expand_by = compute_transforms(revs)
+        XCTAssertEqual(2, expand_by.len())
+        XCTAssertEqual(1, expand_by[0].0.priority);
+        XCTAssertEqual(2, expand_by[1].0.priority);
+
+        let subset_str = expand_by[0].1.dbg()
+        XCTAssertEqual("-###-", subset_str)
+
+
+        let subset_str_2 = (expand_by[1].1).dbg()
+        XCTAssertEqual("#---#--", subset_str_2)
     }
 }

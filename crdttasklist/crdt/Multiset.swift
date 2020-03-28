@@ -213,6 +213,26 @@ struct Subset: Codable, Equatable {
         return sb.build()
     }
 
+    func len() -> UInt {UInt(segments.count)}
+
+    func dbg() -> String {
+        var res = ""
+        for s in self.segments {
+            var chr: Character
+            if s.count == 0 {
+                chr = "-"
+            } else if s.count == 1 {
+                chr = "#"
+            } else if s.count <= 9 {
+                chr = "\(s.count)".first!
+            } else {
+                chr = "+"
+            }
+            res += String(repeating: chr, count: Int(s.len))
+        }
+        return res
+    }
+
     func delete_from_string(_ s: inout String) -> String {
         var result = String()
             for (b, e) in self.range_iter(CountMatcher.Zero) {
@@ -336,6 +356,7 @@ struct Subset: Codable, Equatable {
     // Map the contents of `self` into the 0-regions of `other`.
     /// Precondition: `self.count(CountMatcher::All) == other.count(CountMatcher::Zero)`
     func transform(_ other: Cow<Subset>, _ union: Bool) -> Subset {
+        assert(self.count(.All) == other.value.count(.Zero))
         var sb = SubsetBuilder()
         var seg_iter = self.segments.makeIterator()
         var cur_seg = Segment(0, 0)

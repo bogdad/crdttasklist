@@ -479,7 +479,7 @@ struct Engine: Codable, Equatable {
         return deletes_from_union
     }
 
-    /// Get the Subset to delete from the current union string in order to obtain a revision's content
+    // Get the Subset to delete from the current union string in order to obtain a revision's content
     func deletes_from_cur_union_for_index(_ rev_index: UInt) -> Cow<Subset> {
         var deletes_from_union = self.deletes_from_union_for_index(rev_index)
         for rev in self.revs.suffix(Int(rev_index) + 1) {
@@ -494,7 +494,7 @@ struct Engine: Codable, Equatable {
         return deletes_from_union
     }
 
-    /// Find the first revision that could be affected by toggling a set of undo groups
+    // Find the first revision that could be affected by toggling a set of undo groups
     func find_first_undo_candidate_index(_ toggled_groups: SortedSet<UInt>) -> UInt {
         // find the lowest toggled undo group number
         if case let .some(lowest_group) = toggled_groups.first {
@@ -590,4 +590,34 @@ struct GenericHelpers {
         //     old_deletes_from_union, new_deletes_from_union, text, new_text, tombstones);
         return (new_text, shuffle_tombstones(text, tombstones, &old_deletes_from_union, &new_deletes_from_union))
     }
+}
+
+/// Computes a series of priorities and transforms for the deltas on the right
+/// from the new revisions on the left.
+///
+/// Applies an optimization where it combines sequential revisions with the
+/// same priority into one transform to decrease the number of transforms that
+/// have to be considered in `rebase` substantially for normal editing
+/// patterns. Any large runs of typing in the same place by the same user (e.g
+/// typing a paragraph) will be combined into a single segment in a transform
+/// as opposed to thousands of revisions.
+func compute_transforms(_ revs: [Revision]) -> [(FullPriority, Subset)] {
+    var out: [(FullPriority, Subset)] = []
+    var last_priority: UInt? = nil
+    for r in revs {
+        if case let .Edit(priority, _, inserts, _) = r.edit {
+            if inserts.is_empty() {
+                continue
+            }
+            if priority == last_priority {
+                let last = UnsafeMutablePointer<(FullPriority, Subset)>(&out[out.count - 1])
+                last.pointee.1 = last.pointee.1.transform_union(Cow(inserts))
+            } else {
+                last_priority = priority
+                let prio = FullPriority(priority:priority, session_id: r.rev_id.session_id())
+                out.append((prio, inserts))
+            }
+        }
+    }
+    return out
 }
