@@ -56,4 +56,77 @@ class MultisetTests: XCTestCase {
             "0123457ABCDEFHIJLNOQRSUVWXYZaeghikpqrstuvwxz"
             )
     }
+
+    func test_apply() {
+        var sb = SubsetBuilder()
+        for (b, e) in [
+            (0, 1),
+            (2, 4),
+            (6, 11),
+            (13, 14),
+            (15, 18),
+            (19, 23),
+            (24, 26),
+            (31, 32),
+            (33, 35),
+            (36, 37),
+            (40, 44),
+            (45, 48),
+            (49, 51),
+            (52, 57),
+            (58, 59),
+        ] {
+            sb.add_range(UInt(b), UInt(e), 1)
+        }
+        sb.pad_to_len(MultisetTests.TEST_STR.len())
+        let s = sb.build()
+        print("\(s)")
+        XCTAssertEqual("145BCEINQRSTUWZbcdimpvxyz", s.delete_from_string(MultisetTests.TEST_STR))
+    }
+
+    func testtrivial() {
+        let s = SubsetBuilder().build()
+        XCTAssertTrue(s.is_empty())
+    }
+
+    func test_find_deletions() {
+        let substr = "015ABDFHJOPQVYdfgloprsuvz"
+        let s = TestHelpers.find_deletions(substr, MultisetTests.TEST_STR)
+        XCTAssertEqual(substr, s.delete_from_string(MultisetTests.TEST_STR))
+        XCTAssertTrue(!s.is_empty())
+    }
+
+    func test_complement() {
+        let substr = "0456789DEFGHIJKLMNOPQRSTUVWXYZdefghijklmnopqrstuvw"
+        let s = TestHelpers.find_deletions(substr, MultisetTests.TEST_STR)
+        let c = s.complement()
+        // deleting the complement of the deletions we found should yield the deletions
+        XCTAssertEqual("123ABCabcxyz", c.delete_from_string(MultisetTests.TEST_STR))
+    }
+
+    func test_mapper() {
+        let substr = "469ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwz"
+        let s = TestHelpers.find_deletions(substr, MultisetTests.TEST_STR)
+        var m = s.mapper(.NonZero)
+        // subset is {0123 5 78 xy}
+        XCTAssertEqual(0, m.doc_index_to_subset(0))
+        XCTAssertEqual(2, m.doc_index_to_subset(2))
+        XCTAssertEqual(2, m.doc_index_to_subset(2))
+        XCTAssertEqual(3, m.doc_index_to_subset(3))
+        XCTAssertEqual(4, m.doc_index_to_subset(4)) // not in subset
+        XCTAssertEqual(4, m.doc_index_to_subset(5))
+        XCTAssertEqual(5, m.doc_index_to_subset(7))
+        XCTAssertEqual(6, m.doc_index_to_subset(8))
+        XCTAssertEqual(6, m.doc_index_to_subset(8))
+        XCTAssertEqual(8, m.doc_index_to_subset(60))
+        XCTAssertEqual(9, m.doc_index_to_subset(61)) // not in subset
+        XCTAssertEqual(9, m.doc_index_to_subset(62)) // not in subset
+    }
+
+    func test_union() {
+        let s1 = TestHelpers.find_deletions("024AEGHJKNQTUWXYZabcfgikqrvy", MultisetTests.TEST_STR)
+        var s2 = TestHelpers.find_deletions("14589DEFGIKMOPQRUXZabcdefglnpsuxyz", MultisetTests.TEST_STR)
+        XCTAssertEqual("4EGKQUXZabcfgy", s1.union(&s2).delete_from_string(MultisetTests.TEST_STR))
+    }
+
 }

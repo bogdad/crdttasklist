@@ -371,8 +371,8 @@ struct Subset: Codable, Equatable {
         return self.transform(other, true)
     }
 
-    /// Compute the union of two subsets. The count of an element in the
-    /// result is the sum of the counts in the inputs.
+    // Compute the union of two subsets. The count of an element in the
+    // result is the sum of the counts in the inputs.
     func union(_ other: inout Subset) -> Subset {
         var sb = SubsetBuilder()
         for zseg in self.zip(&other) {
@@ -381,11 +381,11 @@ struct Subset: Codable, Equatable {
         return sb.build()
     }
 
-    /// Return an iterator over `ZipSegment`s where each `ZipSegment` contains
-    /// the count for both self and other in that range. The two `Subset`s
-    /// must have the same total length.
-    ///
-    /// Each returned `ZipSegment` will differ in at least one count.
+    // Return an iterator over `ZipSegment`s where each `ZipSegment` contains
+    // the count for both self and other in that range. The two `Subset`s
+    // must have the same total length.
+    //
+    // Each returned `ZipSegment` will differ in at least one count.
     func zip(_ other: inout Subset) -> ZipIter {
         return ZipIter(
             a_segs: self.segments,

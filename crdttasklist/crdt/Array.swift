@@ -84,4 +84,12 @@ extension Array {
             return (base + (cmp < 0 ? 1: 0), false)
         }
     }
+
+    func len() -> Int {
+        return count
+    }
+
+    mutating func truncate(_ new_len: Int) {
+        self = Array(self.dropLast(count - new_len))
+    }
 }

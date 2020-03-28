@@ -20,7 +20,7 @@ class EditorTests: XCTestCase {
 
         var view = View(view_id: 1, buffer_id: 1)
 
-        editor.insert(view: &view, rope: Rope.from_str("ss"))
+        editor.insert(&view, Rope.from_str("ss"))
 
         XCTAssertEqual(editor.get_buffer().to_string(), "sshello")
     }

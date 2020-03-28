@@ -36,7 +36,7 @@ struct View: Codable, Equatable {
     //let pending_render: Bool
     //let size: Size
     /// The selection state for this view. Invariant: non-empty.
-    let selection: Selection
+    var selection: Selection
 
     // let drag_state: Option<DragState>,
 
@@ -153,7 +153,7 @@ struct View: Codable, Equatable {
         // the front-end, but perhaps not for async edits.
         // self.drag_state = nil
 
-        let (iv, _) = delta.summary()
+        // let (iv, _) = delta.summary()
         // self.annotations.invalidate(iv);
 
         // update only find highlights affected by change
@@ -166,6 +166,12 @@ struct View: Codable, Equatable {
         // of the delta so we can set the cursor before or after the edit, as needed.
         let new_sel = self.selection.apply_delta(delta, true, drift)
         self.set_selection_for_edit(text, new_sel)
+    }
+
+    // Sets the selection to a new value, without invalidating.
+    mutating func set_selection_for_edit(_ text: Rope, _ sel: Selection) {
+        self.selection = sel
+        //self.scroll_to_cursor(text)
     }
 
 

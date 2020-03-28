@@ -125,7 +125,7 @@ struct Selection: Codable {
             self.regions.insert(region, at: ix)
         } else {
             self.regions[ix] = region
-            remove_n_at(self.regions, ix + 1, end_ix - ix - 1)
+            remove_n_at(&self.regions, UInt(ix + 1), UInt(end_ix - ix - 1))
         }
     }
 

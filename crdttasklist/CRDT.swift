@@ -28,11 +28,13 @@ class CRDT: Codable, Equatable {
 
     func deleteBackward() {
          editor.delete_backward(&view, CRDT.config)
+        after_edit()
     }
 
     func insert(chars: String) {
         editor.insert(&view, Rope.from_str(chars))
         print("cur: \(editor.get_buffer())")
+        after_edit()
     }
 
     static func == (lhs: CRDT, rhs: CRDT) -> Bool {
@@ -41,7 +43,7 @@ class CRDT: Codable, Equatable {
 
     /// Commits any changes to the buffer, updating views and plugins as needed.
     /// This only updates internal state; it does not update the client.
-    func after_edit(author: String) {
+    func after_edit() {
 
         let edit_info = editor.commit_delta()
         guard let (delta, last_text, drift) = edit_info else {

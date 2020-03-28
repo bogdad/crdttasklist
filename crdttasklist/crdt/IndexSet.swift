@@ -36,18 +36,14 @@ struct IndexSet {
     var ranges: [(UInt, UInt)]
 }
 
-func remove_n_at<T>(v: [T], index: UInt, n: UInt) {
-    match n.cmp(&1) {
-        Ordering::Equal => {
-            v.remove(index);
+func remove_n_at<T>(_ v: inout [T], _ index: UInt, _ n: UInt) {
+    if n == 1 {
+        v.remove(at: Int(index))
+    } else if n > 1 {
+        let new_len: Int = v.len() - Int(n)
+        for i in Int(index)..<new_len {
+            v[i] = v[i + Int(n)]
         }
-        Ordering::Greater => {
-            let new_len = v.len() - n;
-            for i in index..new_len {
-                v[i] = v[i + n].clone();
-            }
-            v.truncate(new_len);
-        }
-        Ordering::Less => (),
+        v.truncate(new_len)
     }
 }
