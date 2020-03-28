@@ -213,7 +213,7 @@ struct Subset: Codable, Equatable {
         return sb.build()
     }
 
-    func len() -> UInt {UInt(segments.count)}
+    func len() -> UInt {self.count(.All)}
 
     func dbg() -> String {
         var res = ""

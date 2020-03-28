@@ -638,32 +638,32 @@ func compute_deltas(
     _ tombstones: Rope,
     _ deletes_from_union: inout Subset
 ) -> [DeltaOp] {
-    var out = [DeltaOp?](repeatElement(nil, count: revs.len()))
+    var out = [DeltaOp]()//(repeatElement(nil, count: revs.len()))
 
     var cur_all_inserts = Subset.make_empty(deletes_from_union.len())
     for rev in revs.makeIterator().reversed() {
         switch rev.edit {
-        case let .Edit(priority, undo_group, inserts, deletes):
+        case .Edit(let priority, let undo_group, var inserts, var deletes):
             var older_all_inserts = inserts.transform_union(Cow(cur_all_inserts))
                 // TODO could probably be more efficient by avoiding shuffling from head every time
-                let tombstones_here =
-                    GenericHelpers.shuffle_tombstones(text, tombstones, &deletes_from_union, &older_all_inserts)
-                let delta =
-                    Delta.synthesize(tombstones_here, &older_all_inserts, &cur_all_inserts)
-                // TODO create InsertDelta directly and more efficiently instead of factoring
-                let (ins, _) = delta.factor()
-                out.append(DeltaOp(
-                    rev_id: rev.rev_id,
-                    priority: priority,
-                    undo_group: undo_group,
-                    inserts: ins,
-                    deletes: deletes.clone()
-                ))
+            let tombstones_here =
+                GenericHelpers.shuffle_tombstones(text, tombstones, &deletes_from_union, &older_all_inserts)
+            let delta =
+                Delta.synthesize(tombstones_here, &older_all_inserts, &cur_all_inserts)
+            // TODO create InsertDelta directly and more efficiently instead of factoring
+            let (ins, _) = delta.factor()
+            out.append(DeltaOp(
+                rev_id: rev.rev_id,
+                priority: priority,
+                undo_group: undo_group,
+                inserts: ins,
+                deletes: deletes.clone()
+            ))
 
-                cur_all_inserts = older_all_inserts
+            cur_all_inserts = older_all_inserts
         case .Undo(_, _):
             fatalError("can't merge undo yet")
         }
     }
-    return out.reversed().map{$0!}
+    return out.reversed()
 }

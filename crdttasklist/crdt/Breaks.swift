@@ -129,7 +129,7 @@ typealias Breaks = Node<BreaksInfo>
 struct BreaksMetric: Metric {
     typealias N = BreaksInfo
     static func measure(_ info: inout BreaksInfo, _ len: UInt) -> UInt {
-        info._0
+        return info._0
     }
 
     static func to_base_units(_ l: inout BreaksInfo.L, _ in_measured_units: UInt) -> UInt {
