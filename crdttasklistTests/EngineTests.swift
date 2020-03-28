@@ -89,6 +89,22 @@ class EngineTests: XCTestCase {
 
     }
 
+    func test_compute_transforms_1() {
+        let inserts = TestHelpers.parse_subset_list("""
+        -##-
+        --#--
+        ---#--
+        #------
+        """)
+        let revs = basic_insert_ops(inserts, 1)
+
+        let expand_by = compute_transforms(revs);
+        XCTAssertEqual(1, expand_by.len())
+        XCTAssertEqual(1, expand_by[0].0.priority)
+        let subset_str = expand_by[0].1.dbg()
+        XCTAssertEqual("#-####-", subset_str)
+    }
+
     func test_compute_transforms_2() {
         let inserts_1 = TestHelpers.parse_subset_list("""
         -##-
@@ -119,4 +135,28 @@ class EngineTests: XCTestCase {
         let subset_str_2 = (expand_by[1].1).dbg()
         XCTAssertEqual("#---#--", subset_str_2)
     }
+
+    func test_compute_deltas_1() {
+        let inserts = TestHelpers.parse_subset_list("""
+        -##-
+        --#--
+        ---#--
+        #------
+        """)
+        let revs = basic_insert_ops(inserts, 1);
+
+        let text = Rope.from_str("13456")
+        let tombstones = Rope.from_str("27")
+        var deletes_from_union = TestHelpers.parse_subset("-#----#")
+        let delta_ops = compute_deltas(revs, text, tombstones, &deletes_from_union)
+
+        print(delta_ops)
+
+        var r = Rope.from_str("27");
+        for op in delta_ops {
+            r = op.inserts.apply(r)
+        }
+        XCTAssertEqual("1234567", String.from(rope: r))
+    }
+
 }
