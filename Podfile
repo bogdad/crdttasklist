@@ -16,6 +16,7 @@ target 'crdttasklist' do
       inherit! :search_paths
       pod 'IteratorTools', '~> 1.1.0'
       pod 'BTree', :git => 'https://github.com/bogdad/BTree.git', :commit => '66c22d815ad192af2ccff1d8389c2dfcabe023de'
+      pod 'SwiftyDropbox'
   end
 end
 
