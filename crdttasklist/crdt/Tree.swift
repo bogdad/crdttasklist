@@ -404,7 +404,7 @@ extension NodeMeasurable where N == M.N, N.DefaultMetric.N == N {
         return NodeMeasurable2<M, N.DefaultMetric, N>.convert_metrics(selv, offset)
     }
     static func measure(_ selv: Node<N>) -> UInt {
-        M.measure(&selv.body.info, selv.body.len)
+        return M.measure(&selv.body.info, selv.body.len)
     }
 }
 
@@ -548,7 +548,7 @@ struct Cursor<N: NodeInfo> {
     }
 
     /// The length of the tree.
-    func total_len() -> UInt { self.root.len() }
+    func total_len() -> UInt { return self.root.len() }
 
     mutating func set_cache(elem: Node<N>, pos: Int, k: Int) {
         self.cache[k] = (elem, pos)
