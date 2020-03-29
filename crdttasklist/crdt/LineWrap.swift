@@ -200,7 +200,7 @@ struct MergedBreaks {
     /// Total length, in base units
     let len: UInt
 
-    func at_eof() -> Bool { self.offset == self.len }
+    func at_eof() -> Bool { return self.offset == self.len }
 
     mutating func eof_without_newline() -> Bool {
         assert(self.at_eof())
