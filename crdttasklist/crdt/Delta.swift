@@ -408,7 +408,7 @@ struct DeltaBuilder<N: NodeInfo> {
 
     /// Determines if delta would be a no-op transformation if built.
     func is_empty() -> Bool {
-        self.last_offset == 0 && self.delta.els.isEmpty
+        return self.last_offset == 0 && self.delta.els.isEmpty
     }
 }
 
