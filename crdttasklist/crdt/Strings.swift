@@ -243,14 +243,16 @@ extension Character {
         return self >= "\u{1F3FB}" && self <= "\u{1F3FF}"
     }
 
-    func is_emoji_combining_enclosing_keycap() -> Bool {self == "\u{20E3}"}
+    func is_emoji_combining_enclosing_keycap() -> Bool {
+        return self == "\u{20E3}"
+    }
 
     func is_emoji() -> Bool {
         return Character.is_in_asc_list(self, EMOJI_TABLE, 0, EMOJI_TABLE.count - 1)
     }
 
     func is_emoji_cancel_tag() -> Bool {
-        self == "\u{E007F}"
+        return self == "\u{E007F}"
     }
 
     func is_keycap_base() -> Bool {
@@ -259,11 +261,11 @@ extension Character {
     }
 
     func is_zwj() -> Bool {
-        self == "\u{200D}"
+        return self == "\u{200D}"
     }
 
     func is_emoji_modifier_base() -> Bool {
-        Character.is_in_asc_list(self, EMOJI_MODIFIER_BASE_TABLE, 0, EMOJI_MODIFIER_BASE_TABLE.count - 1)
+        return Character.is_in_asc_list(self, EMOJI_MODIFIER_BASE_TABLE, 0, EMOJI_MODIFIER_BASE_TABLE.count - 1)
     }
 
     func is_tag_spec_char() -> Bool {
@@ -282,8 +284,7 @@ extension Character {
 
         if c >= list[mid] {
             return is_in_asc_list(c, list, mid, end)
-        } else {
-            return is_in_asc_list(c, list, start, mid)
         }
+        return is_in_asc_list(c, list, start, mid)
     }
 }

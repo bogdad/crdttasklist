@@ -39,11 +39,11 @@ struct BreaksLeaf: Leaf {
     }
 
     func len() -> UInt {
-        _len
+        return _len
     }
 
     func is_ok_child() -> Bool {
-        self.data.count >= MIN_LEAF
+        return self.data.count >= MIN_LEAF
     }
 
     mutating func push_maybe_split(other: inout BreaksLeaf, iv: Interval) -> BreaksLeaf? {
@@ -95,15 +95,15 @@ struct BreaksBaseMetric: Metric {
     typealias N = BreaksInfo
 
     static func measure(_ info: inout BreaksInfo, _ len: UInt) -> UInt {
-        len
+        return len
     }
 
     static func to_base_units(_ l: inout BreaksInfo.L, _ in_measured_units: UInt) -> UInt {
-        in_measured_units
+        return in_measured_units
     }
 
     static func from_base_units(_ l: inout BreaksInfo.L, _ in_base_units: UInt) -> UInt {
-        in_base_units
+        return in_base_units
     }
 
     static func is_boundary(_ l: inout BreaksInfo.L, _ offset: UInt) -> Bool {
@@ -119,7 +119,7 @@ struct BreaksBaseMetric: Metric {
     }
 
     static func can_fragment() -> Bool {
-        true
+        return true
     }
 }
 
@@ -152,7 +152,7 @@ struct BreaksMetric: Metric {
     }
 
     static func is_boundary(_ l: inout BreaksInfo.L, _ offset: UInt) -> Bool {
-        l.data.binary_search(offset).1
+        return l.data.binary_search(offset).1
     }
 
     static func prev(_ l: inout BreaksInfo.L, _ offset: UInt) -> UInt? {
@@ -184,7 +184,7 @@ struct BreaksMetric: Metric {
     }
 
     static func can_fragment() -> Bool {
-        true
+        return true
     }
 }
 
