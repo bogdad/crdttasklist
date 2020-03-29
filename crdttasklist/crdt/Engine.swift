@@ -277,7 +277,7 @@ struct Engine: Codable, Equatable {
 
     /// Get text of a given revision, if it can be found.
     mutating func get_rev(_ rev: RevToken) -> Rope? {
-        self.find_rev_token(rev).map { rev_index in self.rev_content_for_index(rev_index) }
+        return self.find_rev_token(rev).map { rev_index in self.rev_content_for_index(rev_index) }
     }
 
     func get_head_rev_id() -> RevId {
