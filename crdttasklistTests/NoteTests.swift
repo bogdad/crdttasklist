@@ -11,7 +11,7 @@ import XCTest
 @testable import crdttasklist
 
 class NoteTests: XCTestCase {
-    func testCodingDecoding() {
+    func tes1tCodingDecoding() {
         let note = Note("1234", "name", "text", CRDT("text"))
         let fileNote = saveThenLoad(obj: note)
 

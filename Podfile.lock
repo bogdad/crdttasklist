@@ -6,7 +6,7 @@ PODS:
     - Alamofire (~> 4.8.2)
 
 DEPENDENCIES:
-  - BTree (from `https://github.com/bogdad/BTree.git`, commit `66c22d815ad192af2ccff1d8389c2dfcabe023de`)
+  - BTree (from `https://github.com/bogdad/BTree.git`, commit `0658371e574a0a66b1cd4bf5efe2665e00cf1ed8`)
   - IteratorTools (~> 1.1.0)
   - SwiftyDropbox
 
@@ -18,12 +18,12 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   BTree:
-    :commit: 66c22d815ad192af2ccff1d8389c2dfcabe023de
+    :commit: 0658371e574a0a66b1cd4bf5efe2665e00cf1ed8
     :git: https://github.com/bogdad/BTree.git
 
 CHECKOUT OPTIONS:
   BTree:
-    :commit: 66c22d815ad192af2ccff1d8389c2dfcabe023de
+    :commit: 0658371e574a0a66b1cd4bf5efe2665e00cf1ed8
     :git: https://github.com/bogdad/BTree.git
 
 SPEC CHECKSUMS:
@@ -32,6 +32,6 @@ SPEC CHECKSUMS:
   IteratorTools: 085fb5125062d3dc2f7a9919be1b805bef72a94f
   SwiftyDropbox: 7ca4961e0340c62c8d6d1ece91d67badfe4c0380
 
-PODFILE CHECKSUM: dd880f151294799518f19163bde22647db27399a
+PODFILE CHECKSUM: 1cf99a24f084a012d13d62cc18df2a97a1adf8a8
 
 COCOAPODS: 1.8.4

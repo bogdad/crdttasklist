@@ -117,14 +117,14 @@ extension Contents {
         let inserts = try container.decodeIfPresent(Subset.self, forKey: CodingKeys.inserts)
         let deletes = try container.decodeIfPresent(Subset.self, forKey: CodingKeys.deletes)
 
-        let toggled_groups = try container.decodeIfPresent(CodableSortedSet<UInt>.self, forKey: .toggled_groups)
+        let toggled_groups = try container.decodeIfPresent(SortedSet<UInt>.self, forKey: .toggled_groups)
         let deletes_bitxor = try container.decodeIfPresent(Subset.self, forKey: .deletes_bitxor)
 
         switch type {
         case 0:
             self = .Edit(priority: priority!, undo_group: undo_group!, inserts: inserts!, deletes: deletes!)
         case 1:
-            self = .Undo(toggled_groups: toggled_groups!.set, deletes_bitxor: deletes_bitxor!)
+            self = .Undo(toggled_groups: toggled_groups!, deletes_bitxor: deletes_bitxor!)
         default:
             throw BadDataError.error
         }
@@ -140,7 +140,7 @@ extension Contents {
             try container.encode(edit.deletes, forKey: .deletes)
         case .Undo(let undo):
             try container.encode(1, forKey: .type)
-            try container.encode(CodableSortedSet(undo.toggled_groups), forKey: .toggled_groups)
+            try container.encode(undo.toggled_groups, forKey: .toggled_groups)
             try container.encode(undo.deletes_bitxor, forKey: .deletes_bitxor)
         }
     }

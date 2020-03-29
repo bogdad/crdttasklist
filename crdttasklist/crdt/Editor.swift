@@ -70,9 +70,9 @@ struct Editor: Codable, Equatable {
     /// (but may be redone)
     var cur_undo: UInt
     /// undo groups that are undone
-    var undos: CodableSortedSet<UInt>
+    var undos: SortedSet<UInt>
     /// undo groups that are no longer live and should be gc'ed
-    var gc_undos: CodableSortedSet<UInt>
+    var gc_undos: SortedSet<UInt>
     var force_undo_group: Bool
 
     var this_edit_type: EditType
@@ -103,8 +103,8 @@ struct Editor: Codable, Equatable {
         // so we want to collect that as part of the prefix.
         self.live_undos = [0]
         self.cur_undo = 1
-        self.undos = CodableSortedSet()
-        self.gc_undos = CodableSortedSet()
+        self.undos = SortedSet()
+        self.gc_undos = SortedSet()
         self.force_undo_group = false
         self.last_edit_type = .Other
         self.this_edit_type = .Other
@@ -154,14 +154,14 @@ struct Editor: Codable, Equatable {
             let undo_group = undo_group_id
             // FIXME: can it be made faster?
             for elem in live_undos[Int(cur_undo)...] {
-                gc_undos.set.insert(elem)
+                gc_undos.insert(elem)
             }
             live_undos = live_undos.truncate(len: cur_undo)
             live_undos.append(undo_group)
             if live_undos.count <= EditorConstants.MAX_UNDOS {
                 cur_undo += 1
             } else {
-                gc_undos.set.insert(live_undos.remove(at: 0))
+                gc_undos.insert(live_undos.remove(at: 0))
             }
             undo_group_id += 1
             return undo_group
