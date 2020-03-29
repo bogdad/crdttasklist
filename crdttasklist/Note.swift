@@ -50,7 +50,7 @@ class Note: Codable, Equatable {
     }
 
     func dedupHash() -> Int {
-        name.hashValue &* 13 &+ text.hashValue
+        return name.hashValue &* 13 &+ text.hashValue
     }
 
     static func newNote(name: String = "name?", text: String = "text?") -> Note {
@@ -72,7 +72,7 @@ class IdGenerator {
     private (set) var value: Int = 0
 
     func generate() -> String {
-        "\(UIDevice.current.identifierForVendor!.uuidString)_\(NSDate().timeIntervalSince1970)_\(incrementAndGet())"
+        return "\(UIDevice.current.identifierForVendor!.uuidString)_\(NSDate().timeIntervalSince1970)_\(incrementAndGet())"
     }
 
     private func incrementAndGet() -> Int {
