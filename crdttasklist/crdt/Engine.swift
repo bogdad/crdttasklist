@@ -321,8 +321,8 @@ struct Engine: Codable, Equatable {
 
 
 
-    /// A delta that, when applied to `base_rev`, results in the current head. Returns
-    /// an error if there is not at least one edit.
+    // A delta that, when applied to `base_rev`, results in the current head. Returns
+    // an error if there is not at least one edit.
     mutating func try_delta_rev_head(_ base_rev: RevToken) -> Result<Delta<RopeInfo>, Error> {
         guard let ix = self.find_rev_token(base_rev) else {
             return .failure(CrdtError.MissingRevision(base_rev))
@@ -482,7 +482,8 @@ struct Engine: Codable, Equatable {
     // Get the Subset to delete from the current union string in order to obtain a revision's content
     func deletes_from_cur_union_for_index(_ rev_index: UInt) -> Cow<Subset> {
         var deletes_from_union = self.deletes_from_union_for_index(rev_index)
-        for rev in self.revs.suffix(Int(rev_index) + 1) {
+        print("\(deletes_from_union.value)")
+        for rev in self.revs[Int(rev_index + 1)...] {
             switch rev.edit {
             case .Edit(_, _, let inserts, _):
                 if !inserts.is_empty() {
@@ -638,7 +639,8 @@ func compute_deltas(
     _ tombstones: Rope,
     _ deletes_from_union: inout Subset
 ) -> [DeltaOp] {
-    var out = [DeltaOp]()//(repeatElement(nil, count: revs.len()))
+    var out = [DeltaOp]()
+    out.reserveCapacity(revs.len())
 
     var cur_all_inserts = Subset.make_empty(deletes_from_union.len())
     for rev in revs.makeIterator().reversed() {
@@ -666,4 +668,74 @@ func compute_deltas(
         }
     }
     return out.reversed()
+}
+
+// Rebase `b_new` on top of `expand_by` and return revision contents that can be appended as new
+// revisions on top of the revisions represented by `expand_by`.
+func rebase(
+    _ expand_by: inout [(FullPriority, Subset)],
+    _ b_new: [DeltaOp],
+    _ itext: Rope,
+    _ itombstones: Rope,
+    _ deletes_from_union: inout Subset,
+    _ imax_undo_so_far: UInt
+) -> ([Revision], Rope, Rope, Subset) {
+    var out: [Revision] = []
+    out.reserveCapacity(b_new.len())
+    var next_expand_by:[(FullPriority, Subset)] = []
+    next_expand_by.reserveCapacity(expand_by.len())
+
+    var text = itext
+    var tombstones = itombstones
+    var max_undo_so_far = imax_undo_so_far
+    for var op in b_new {
+        //guard case let DeltaOp(rev_id, priority, undo_group, inserts, deletes) = op else {
+        //    fatalError()
+        //}
+        //let DeltaOp {  } = op;
+        let full_priority = FullPriority(priority: op.priority, session_id: op.rev_id.session_id())
+        // expand by each in expand_by
+        for (trans_priority, trans_inserts) in expand_by {
+            let after = full_priority >= trans_priority; // should never be ==
+                                                         // d-expand by other
+            op.inserts = op.inserts.transform_expand(Cow(trans_inserts), after)
+            // trans-expand other by expanded so they have the same context
+            let inserted = op.inserts.inserted_subset()
+            let new_trans_inserts = trans_inserts.transform_expand(Cow(inserted))
+            // The deletes are already after our inserts, but we need to include the other inserts
+            op.deletes = op.deletes.transform_expand(Cow(new_trans_inserts))
+            // On the next step we want things in expand_by to have op in the context
+            next_expand_by.append((trans_priority, new_trans_inserts))
+        }
+
+        let text_inserts = op.inserts.transform_shrink(Cow(deletes_from_union))
+        let text_with_inserts = text_inserts.apply(text)
+        let inserted = op.inserts.inserted_subset()
+
+        var expanded_deletes_from_union = deletes_from_union.transform_expand(Cow(inserted))
+        var new_deletes_from_union = expanded_deletes_from_union.union(&op.deletes)
+        let (new_text, new_tombstones) = GenericHelpers.shuffle(
+            text_with_inserts,
+            tombstones,
+            &expanded_deletes_from_union,
+            &new_deletes_from_union
+        )
+
+        text = new_text
+        tombstones = new_tombstones
+        deletes_from_union = new_deletes_from_union
+
+        max_undo_so_far = Swift.max(max_undo_so_far, op.undo_group)
+        out.append(Revision (
+            rev_id: op.rev_id,
+            edit: .Edit(priority: op.priority, undo_group: op.undo_group, inserts: inserted, deletes: op.deletes),
+            max_undo_so_far: max_undo_so_far
+        ))
+
+        expand_by = next_expand_by
+        next_expand_by = []
+        next_expand_by.reserveCapacity(expand_by.len())
+    }
+
+    return (out, text, tombstones, deletes_from_union)
 }

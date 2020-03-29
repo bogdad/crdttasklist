@@ -279,7 +279,7 @@ struct InsertDelta<N: NodeInfo> {
             if after && y < next_iv_beg {
                 y = next_iv_beg
             }
-            while i < cur_els.count {
+            innerloop: while i < cur_els.count {
                 switch cur_els[Int(i)] {
                 case DeltaElement.Insert(let n):
                     if y > b1 {
@@ -305,7 +305,7 @@ struct InsertDelta<N: NodeInfo> {
                             }
                         }
                     }
-                    break;
+                    break innerloop;
                 }
             }
             if !after && y < next_iv_beg {

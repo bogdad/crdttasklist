@@ -159,4 +159,47 @@ class EngineTests: XCTestCase {
         XCTAssertEqual("1234567", String.from(rope: r))
     }
 
+    func test_rebase_1() {
+        let inserts = TestHelpers.parse_subset_list("""
+        --#-
+        ----#
+        """)
+        let a_revs = basic_insert_ops(Array(inserts), 1)
+        let b_revs = basic_insert_ops(inserts, 2)
+
+        let text_b = Rope.from_str("zpbj")
+        let tombstones_b = Rope.from_str("a")
+        var deletes_from_union_b = TestHelpers.parse_subset("-#---")
+        let b_delta_ops = compute_deltas(b_revs, text_b, tombstones_b, &deletes_from_union_b)
+
+        print("\(b_delta_ops)")
+
+        let text_a = Rope.from_str("zcbd")
+        let tombstones_a = Rope.from_str("a")
+        var deletes_from_union_a = TestHelpers.parse_subset("-#---")
+        var expand_by = compute_transforms(a_revs)
+
+        let (revs, text_2, tombstones_2, deletes_from_union_2) =
+            rebase(&expand_by, b_delta_ops, text_a, tombstones_a, &deletes_from_union_a, 0)
+
+        let rebased_inserts: [Subset] = revs.map({ c -> Subset in
+            guard case .Edit(_, _, inserts: let inserts_, _) = c.edit else {
+                 fatalError("not implemented")
+            }
+            return inserts_
+        })
+
+        TestHelpers.debug_subsets(rebased_inserts)
+        let correct = TestHelpers.parse_subset_list("""
+        ---#--
+        ------#
+        """)
+        XCTAssertEqual(correct, rebased_inserts);
+
+
+        XCTAssertEqual("zcpbdj", String.from(rope: text_2))
+        XCTAssertEqual("a", String.from(rope: tombstones_2))
+        XCTAssertEqual("-#-----", deletes_from_union_2.dbg())
+    }
+
 }

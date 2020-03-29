@@ -70,4 +70,10 @@ class TestHelpers {
             .filter{!$0.isEmpty}
             .map{parse_subset($0)}
     }
+
+    static func debug_subsets(_ subsets: [Subset]) {
+        for s in subsets {
+            print("\(s.dbg())");
+        }
+    }
 }
