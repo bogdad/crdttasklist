@@ -172,7 +172,7 @@ struct SelRegion: Codable {
     }
 
     /// Determines whether the region is a caret (ie has an empty interior).
-    func is_caret() -> Bool { self.start == self.end }
+    func is_caret() -> Bool { return self.start == self.end }
 
     static func caret(_ pos: UInt) -> SelRegion {
         return SelRegion(pos, pos)
