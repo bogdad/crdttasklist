@@ -76,7 +76,7 @@ class IdGenerator {
     }
 
     private func incrementAndGet() -> Int {
-        queue.sync {
+        return queue.sync {
             value += 1
             return value
         }

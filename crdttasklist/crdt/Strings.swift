@@ -230,25 +230,9 @@ extension Substring {
 
 extension Character {
 
-   
-
-    func to_u32() -> UInt32 {
-        let bytes = [UInt8](self.utf8)
-        let count = bytes.count
-        var res:UInt32 = 0
-        var pow: UInt32 = 1
-        for i in (0..<count) {
-            res += UInt32(bytes[i]) * pow
-            pow *= 255
-        }
-        return res
-    }
-
     func is_variation_selector() -> Bool {
-        let cp = to_u32()
-        return (cp >= 917760 && cp <= 917999)
-            || (cp >= 65024 && cp <= 65039)
-            || (cp >= 6155 && cp <= 6157)
+        let c = self
+        return (c >= "\u{FE00}" && c <= "\u{FE0F}") || (c >= "\u{E0100}" && c <= "\u{E01EF}")
     }
 
     func is_regional_indicator_symbol() -> Bool {
