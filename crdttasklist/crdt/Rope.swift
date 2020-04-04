@@ -122,7 +122,7 @@ struct LinesMetric: Metric {
 
     static func to_base_units(_ l: inout String, _ in_measured_units: UInt) -> UInt {
         var offset:UInt = 0;
-        for _ in 0...in_measured_units {
+        for _ in 0..<in_measured_units {
             let s_ind = String.Index(utf16Offset: Int(offset), in: l)
             let substr = l[s_ind...]
             let res = substr.firstIndex(of: "\n")

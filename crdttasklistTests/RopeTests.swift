@@ -134,6 +134,19 @@ class RopeTests: XCTestCase {
         XCTAssertEqual(rope.to_string(), fileRope.to_string())
     }
 
+    func test_offset_of_line() {
+        let rope = Rope.from_str("hi\ni'm\nfour\nlines")
+        XCTAssertEqual(rope.offset_of_line(0), 0)
+        XCTAssertEqual(rope.offset_of_line(1), 3)
+        XCTAssertEqual(rope.line_of_offset(0), 0)
+        XCTAssertEqual(rope.line_of_offset(3), 1)
+        // interior of first line should be first line
+        XCTAssertEqual(rope.line_of_offset(1), 0)
+        // interior of last line should be last line
+        XCTAssertEqual(rope.line_of_offset(15), 3)
+        XCTAssertEqual(rope.offset_of_line(4), rope.len())
+    }
+
     func build_triangle(n: UInt) -> String {
         var s = String()
         var line = String()

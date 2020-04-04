@@ -103,14 +103,6 @@
                     <view key="view" contentMode="scaleToFill" id="rfH-u1-zzO">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Vg6-Fa-KM8">
-                                <rect key="frame" x="16" y="8" width="382" height="34"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                        </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <viewLayoutGuide key="safeArea" id="L8d-8s-tmX"/>
                     </view>
@@ -128,7 +120,6 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="nameText" destination="Vg6-Fa-KM8" id="MyM-Rl-fbM"/>
                         <outlet property="saveButton" destination="gX0-Jw-6PX" id="pWl-WW-OhN"/>
                     </connections>
                 </viewController>

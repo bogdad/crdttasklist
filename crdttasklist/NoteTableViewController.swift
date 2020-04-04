@@ -96,7 +96,7 @@ class NoteTableViewController: UITableViewController {
                 fatalError("The selected cell is not being displayed by the table")
             }
             let selectedNote = getNotes()[indexPath.row]
-            noteViewController.note = selectedNote
+            NoteStorage.shared.currentNote = selectedNote
         default:
             fatalError("Unexpected Segue Identifier; \(segue.identifier)")
         }
@@ -104,16 +104,16 @@ class NoteTableViewController: UITableViewController {
 
 
     @IBAction func unwindToNoteList(sender: UIStoryboardSegue) {
-        if let sourceViewController = sender.source as? NoteViewController, var note = sourceViewController.note {
+        if var note = NoteStorage.shared.currentNote {
             if let selectedIndexPath = tableView.indexPathForSelectedRow {
                 // Update an existing meal.
                 NoteStorage.shared.setNote(selectedIndexPath.row, &note)
                 tableView.reloadRows(at: [selectedIndexPath], with: .none)
             }
             else {
-                // Add a new meal.
+                // Add a new note.
                 let newIndexPath = IndexPath(row: getNotes().count, section: 0)
-                NoteStorage.shared.append(&note)
+                NoteStorage.shared.append(&NoteStorage.shared.currentNote!)
                 tableView.insertRows(at: [newIndexPath], with: .automatic)
             }
         }

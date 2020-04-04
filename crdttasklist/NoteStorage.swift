@@ -15,6 +15,14 @@ class NoteStorage {
     var notes: [Note] = []
     var rev: String?
     var debugShown = false
+    var currentNote: Note?
+
+    func upsertNote(_ crdt: CRDT) {
+        if currentNote == nil {
+            currentNote = Note.newNote()
+        }
+        currentNote?.update("", crdt)
+    }
 
     func isStorageLinked() -> Bool {
         if DropboxClientsManager.authorizedClient != nil {
@@ -233,4 +241,6 @@ class NoteStorage {
             print("Error: \(error.domain)")
         }
     }
+
+
 }
