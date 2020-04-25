@@ -165,11 +165,11 @@ struct View: Codable, Equatable {
         // Note: for committing plugin edits, we probably want to know the priority
         // of the delta so we can set the cursor before or after the edit, as needed.
         let new_sel = self.selection.apply_delta(delta, true, drift)
-        self.set_selection_for_edit(text, new_sel)
+        self.set_selection_for_edit(new_sel)
     }
 
     // Sets the selection to a new value, without invalidating.
-    mutating func set_selection_for_edit(_ text: Rope, _ sel: Selection) {
+    mutating func set_selection_for_edit(_ sel: Selection) {
         self.selection = sel
         //self.scroll_to_cursor(text)
     }

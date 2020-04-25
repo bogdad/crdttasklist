@@ -178,6 +178,10 @@ struct SelRegion: Codable {
         return SelRegion(pos, pos)
     }
 
+    static func from(_ interval: Interval) -> SelRegion {
+        return SelRegion(interval.start, interval.end)
+    }
+
     init(_ start: UInt, _ end: UInt) {
         self.start = start
         self.end = end

@@ -50,7 +50,7 @@ class CRDTTextStorage: NSTextStorage {
     override func insert(_ attrString: NSAttributedString, at loc: Int) {
         print("insert \(attrString) at loc: \(loc)")
         beginEditing()
-        crdt.insert(chars: attrString.string)
+        crdt.insert(Interval(UInt(loc), UInt(loc)), attrString.string)
         endEditing()
     }
 
@@ -70,9 +70,9 @@ class CRDTTextStorage: NSTextStorage {
              crdt.deleteBackward()
          }
          if let attrStr = aString as? NSAttributedString {
-             crdt.insert(chars: attrStr.string)
+            crdt.insert(aRange.to_interval(), attrStr.string)
          } else if let str = aString as? String {
-             crdt.insert(chars: str)
+            crdt.insert(aRange.to_interval(), str)
          }
          return NSMakeRange(replacementRange.location, len)
     }

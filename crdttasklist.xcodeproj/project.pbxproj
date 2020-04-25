@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -61,6 +61,7 @@
 		E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325D22BD261F00D0BF2D /* Tree.swift */; };
 		E7F0326022BD26F300D0BF2D /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325F22BD26F300D0BF2D /* Strings.swift */; };
 		E7F465E82315AC4200030F3A /* CRDTTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F465E72315AC4200030F3A /* CRDTTextView.swift */; };
+		E7F5A82324544B88006AB4CA /* NSRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F5A82224544B88006AB4CA /* NSRange.swift */; };
 		E7F88FD323EF203B005EE3FD /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD223EF203B005EE3FD /* Utils.swift */; };
 		E7F88FD523EF2CC8005EE3FD /* NoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD423EF2CC8005EE3FD /* NoteTests.swift */; };
 		E7F88FD723EF2F77005EE3FD /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD623EF2F77005EE3FD /* FileUtils.swift */; };
@@ -149,6 +150,7 @@
 		E7F0325D22BD261F00D0BF2D /* Tree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tree.swift; sourceTree = "<group>"; };
 		E7F0325F22BD26F300D0BF2D /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		E7F465E72315AC4200030F3A /* CRDTTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTTextView.swift; sourceTree = "<group>"; };
+		E7F5A82224544B88006AB4CA /* NSRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRange.swift; sourceTree = "<group>"; };
 		E7F88FD223EF203B005EE3FD /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		E7F88FD423EF2CC8005EE3FD /* NoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTests.swift; sourceTree = "<group>"; };
 		E7F88FD623EF2F77005EE3FD /* FileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUtils.swift; sourceTree = "<group>"; };
@@ -310,6 +312,7 @@
 				E7BD0E0922FC366300B14710 /* TestHelpers.swift */,
 				E7F0325D22BD261F00D0BF2D /* Tree.swift */,
 				E74C3DC122D23E7F001B9CA7 /* View.swift */,
+				E7F5A82224544B88006AB4CA /* NSRange.swift */,
 			);
 			path = crdt;
 			sourceTree = "<group>";
@@ -529,6 +532,7 @@
 				E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */,
 				E7B5D57322F34EC90020AFAC /* Collections.swift in Sources */,
 				E74D1881241ECCD600EE3815 /* DebugViewController.swift in Sources */,
+				E7F5A82324544B88006AB4CA /* NSRange.swift in Sources */,
 				E7DD4EB6242FC08F00E2B5B9 /* String.swift in Sources */,
 				E78674DA23E7626100728436 /* CRDTTextStorage.swift in Sources */,
 				E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */,
