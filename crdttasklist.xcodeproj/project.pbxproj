@@ -62,6 +62,7 @@
 		E7F0326022BD26F300D0BF2D /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325F22BD26F300D0BF2D /* Strings.swift */; };
 		E7F465E82315AC4200030F3A /* CRDTTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F465E72315AC4200030F3A /* CRDTTextView.swift */; };
 		E7F5A82324544B88006AB4CA /* NSRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F5A82224544B88006AB4CA /* NSRange.swift */; };
+		E7F5A82524548C96006AB4CA /* SortedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F5A82424548C96006AB4CA /* SortedSet.swift */; };
 		E7F88FD323EF203B005EE3FD /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD223EF203B005EE3FD /* Utils.swift */; };
 		E7F88FD523EF2CC8005EE3FD /* NoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD423EF2CC8005EE3FD /* NoteTests.swift */; };
 		E7F88FD723EF2F77005EE3FD /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD623EF2F77005EE3FD /* FileUtils.swift */; };
@@ -151,6 +152,7 @@
 		E7F0325F22BD26F300D0BF2D /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		E7F465E72315AC4200030F3A /* CRDTTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTTextView.swift; sourceTree = "<group>"; };
 		E7F5A82224544B88006AB4CA /* NSRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRange.swift; sourceTree = "<group>"; };
+		E7F5A82424548C96006AB4CA /* SortedSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortedSet.swift; sourceTree = "<group>"; };
 		E7F88FD223EF203B005EE3FD /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		E7F88FD423EF2CC8005EE3FD /* NoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTests.swift; sourceTree = "<group>"; };
 		E7F88FD623EF2F77005EE3FD /* FileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUtils.swift; sourceTree = "<group>"; };
@@ -306,6 +308,7 @@
 				E79E1F8C22C7FA36007099E5 /* Multiset.swift */,
 				E7B62C172299B8D1000143C6 /* Rope.swift */,
 				E74C3DC522D24086001B9CA7 /* Selection.swift */,
+				E7F5A82424548C96006AB4CA /* SortedSet.swift */,
 				E7DD4EB5242FC08F00E2B5B9 /* String.swift */,
 				E7F0325F22BD26F300D0BF2D /* Strings.swift */,
 				E75B38682300147B005013E0 /* Tabs.swift */,
@@ -513,6 +516,7 @@
 				E7B3F80F242BE0EE004095D8 /* ArraySlice.swift in Sources */,
 				E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */,
 				E716D56C24156885002F7652 /* Breaks.swift in Sources */,
+				E7F5A82524548C96006AB4CA /* SortedSet.swift in Sources */,
 				E7A2E23023DF3D1E00C65976 /* LinkToStorageController.swift in Sources */,
 				E7F88FD723EF2F77005EE3FD /* FileUtils.swift in Sources */,
 				E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */,

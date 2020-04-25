@@ -159,7 +159,8 @@ struct FullPriority {
     }
 }
 
-struct RevId: Hashable, Codable, Equatable {
+struct RevId: Hashable, Codable, Equatable, Comparable {
+
     // 96 bits has a 10^(-12) chance of collision with 400 million sessions and 10^(-6) with 100 billion.
     // `session1==session2==0` is reserved for initialization which is the same on all sessions.
     // A colliding session will break merge invariants and the document will start crashing Xi.
@@ -188,6 +189,25 @@ struct RevId: Hashable, Codable, Equatable {
 
     func session_id() -> SessionId {
         return SessionId(self.session1, self.session2)
+    }
+
+    static func < (lhs: RevId, rhs: RevId) -> Bool {
+        if lhs.session1 < rhs.session1 {
+            return true
+        }
+        if lhs.session1 > rhs.session1 {
+            return false
+        }
+        if lhs.session2 < rhs.session2 {
+            return true
+        }
+        if lhs.session2 > rhs.session2 {
+            return false
+        }
+        if lhs.num < rhs.num {
+            return true
+        }
+        return false
     }
 }
 
@@ -555,6 +575,116 @@ struct Engine: Codable, Equatable {
     static func default_session() -> SessionId {
         return SessionId(1, 0)
     }
+
+    func find_base_index(_ a: [Revision], _ b: [Revision]) -> UInt {
+        assert(!a.is_empty() && !b.is_empty())
+        assert(a[0].rev_id == b[0].rev_id)
+        // TODO find the maximum base revision.
+        // this should have the same behavior, but worse performance
+        return 1
+    }
+
+    /// Find a set of revisions common to both lists
+    func find_common(_ a: [Revision], _ b: [Revision]) -> SortedSet<RevId> {
+        // TODO make this faster somehow?
+        let a_ids: SortedSet<RevId> = SortedSet(a.map{ $0.rev_id })
+        let b_ids: SortedSet<RevId> = SortedSet(b.map{ $0.rev_id })
+        return a_ids.intersection(b_ids)
+    }
+
+    // Returns the operations in `revs` that don't have their `rev_id` in
+    // `base_revs`, but modified so that they are in the same order but based on
+    // the `base_revs`. This allows the rest of the merge to operate on only
+    // revisions not shared by both sides.
+    //
+    // Conceptually, see the diagram below, with `.` being base revs and `n` being
+    // non-base revs, `N` being transformed non-base revs, and rearranges it:
+    // .n..n...nn..  -> ........NNNN -> returns vec![N,N,N,N]
+    func rearrange(_ revs: [Revision], _ base_revs: SortedSet<RevId>, _ head_len: UInt) -> [Revision] {
+        // transform representing the characters added by common revisions after a point.
+        var s = Subset.make_empty(head_len)
+
+        var out = Array<RevId>.with_capacity(revs.len() - base_revs.len())
+
+        for rev in revs.makeIterator().reversed() {
+            let is_base = base_revs.contains(rev.rev_id)
+            var contents: Contents?
+            switch rev.edit {
+            case .Edit(let priority, let undo_group, let inserts, let deletes)
+                if is_base {
+                    s = inserts.transform_union(Cow(s))
+                    contents = nil
+                } else {
+                    // fast-forward this revision over all common ones after it
+                    let transformed_inserts = inserts.transform_expand(s)
+                    let transformed_deletes = deletes.transform_expand(&s);
+                    // we don't want new revisions before this to be transformed after us
+                    s = s.transform_shrink(&transformed_inserts);
+                    Some(Contents::Edit {
+                        inserts: transformed_inserts,
+                        deletes: transformed_deletes,
+                        priority,
+                        undo_group,
+                    })
+                }
+            default:
+                <#code#>
+            }
+            let contents = match rev.edit {
+                Contents::Edit { priority, undo_group, ref inserts, ref deletes } => {
+
+                }
+                Contents::Undo { .. } => panic!("can't merge undo yet"),
+            };
+            if let Some(edit) = contents {
+                out.push(Revision { edit, rev_id: rev.rev_id, max_undo_so_far: rev.max_undo_so_far });
+            }
+        }
+
+        out.as_mut_slice().reverse();
+        out
+    }
+
+
+    /// Merge the new content from another Engine into this one with a CRDT merge
+    mutating func merge(_ other: inout Engine) {
+
+        let base_index:Int = Int(find_base_index(self.revs, other.revs))
+        let a_to_merge = self.revs[base_index...]
+        let b_to_merge = other.revs[base_index...]
+
+        let common = find_common(Array(a_to_merge), Array(b_to_merge))
+
+        let a_new = rearrange(a_to_merge, &common, self.deletes_from_union.len())
+        let b_new = rearrange(b_to_merge, &common, other.deletes_from_union.len())
+
+        let (mut new_revs, text, tombstones, deletes_from_union) = {
+
+
+
+
+
+            let b_deltas =
+                compute_deltas(&b_new, &other.text, &other.tombstones, &other.deletes_from_union);
+            let expand_by = compute_transforms(a_new);
+
+            let max_undo = self.max_undo_group_id();
+            rebase(
+                expand_by,
+                b_deltas,
+                self.text.clone(),
+                self.tombstones.clone(),
+                self.deletes_from_union.clone(),
+                max_undo,
+            )
+        };
+
+        self.text = text;
+        self.tombstones = tombstones;
+        self.deletes_from_union = deletes_from_union;
+        self.revs.append(&mut new_revs);
+    }
+
 }
 
 struct GenericHelpers {

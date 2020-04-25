@@ -10,7 +10,6 @@ import Foundation
 
 extension Array where Element: Comparable & Equatable {
 
-
     struct IntError: Error {
         var i: Int
     }
@@ -89,7 +88,17 @@ extension Array {
         return count
     }
 
+    func is_empty() -> Bool {
+        return len() == 0
+    }
+
     mutating func truncate(_ new_len: Int) {
         self = Array(self.dropLast(count - new_len))
+    }
+
+    static func with_capacity(_ len: Int) -> [Element] {
+        var res = [Element]()
+        res.reserveCapacity(len)
+        return res
     }
 }
