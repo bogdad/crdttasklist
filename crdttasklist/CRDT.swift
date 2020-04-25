@@ -27,7 +27,7 @@ class CRDT: Codable, Equatable {
     }
 
     func deleteBackward() {
-         editor.delete_backward(&view, CRDT.config)
+        editor.delete_backward(&view, CRDT.config)
         after_edit()
     }
 
@@ -53,6 +53,9 @@ class CRDT: Codable, Equatable {
         self.update_views(delta, last_text, drift)
     }
 
+    func editing_finished() {
+        view.reset_selection()
+    }
 
     func update_views(_ delta: RopeDelta, _ last_text: Rope, _ drift: InsertDrift) {
         // let mut width_cache = self.width_cache.borrow_mut();

@@ -35,7 +35,7 @@ class NoteViewController: UIViewController, UITextViewDelegate {
         // 1
         //let attrs = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body)]
         //let attrString = NSAttributedString(string: note?.crdt.to_string() ?? "", attributes: attrs)
-        textStorage = CRDTTextStorage(crdt: note?.crdt)
+        textStorage = CRDTTextStorage()
         //textStorage!.append(NSAttributedString(string: ""))
         //textStorage!.append(attrString)
 
@@ -66,7 +66,9 @@ class NoteViewController: UIViewController, UITextViewDelegate {
         textView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         self.textView = textView
-        textView.text.append("")
+        if note != nil {
+            textView.text.append(note!.crdt.to_string())
+        }
     }
 
     @IBAction func dismissPressed(_ sender:Any) {
@@ -84,7 +86,7 @@ class NoteViewController: UIViewController, UITextViewDelegate {
         guard let button = sender as? UIBarButtonItem, button === saveButton else {
             return
         }
-        NoteStorage.shared.upsertNote(textStorage!.crdt)
+        NoteStorage.shared.editingFinished(textStorage!.crdt)
     }
 
     @IBAction func cancel(_ sender: UIBarButtonItem) {

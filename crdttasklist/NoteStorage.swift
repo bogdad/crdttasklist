@@ -17,7 +17,7 @@ class NoteStorage {
     var debugShown = false
     var currentNote: Note?
 
-    func upsertNote(_ crdt: CRDT) {
+    func editingFinished(_ crdt: CRDT) {
         if currentNote == nil {
             currentNote = Note.newNote()
         }

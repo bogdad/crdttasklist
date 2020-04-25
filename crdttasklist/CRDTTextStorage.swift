@@ -13,13 +13,9 @@ class CRDTTextStorage: NSTextStorage {
     let backingStore: NSMutableAttributedString
     let crdt: CRDT
 
-    init(crdt: CRDT?) {
-        self.crdt = crdt ?? CRDT("")
-        if crdt == nil {
-            self.backingStore = NSMutableAttributedString()
-        } else {
-            self.backingStore = NSMutableAttributedString(string: crdt!.to_string())
-        }
+    override init() {
+        self.crdt = CRDT("")
+        self.backingStore = NSMutableAttributedString()
         super.init()
     }
 

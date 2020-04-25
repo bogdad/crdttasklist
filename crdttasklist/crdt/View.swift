@@ -174,6 +174,9 @@ struct View: Codable, Equatable {
         //self.scroll_to_cursor(text)
     }
 
+    mutating func reset_selection() {
+        self.selection = Selection.from(SelRegion.caret(0))
+    }
 
     static func == (lhs: View, rhs: View) -> Bool {
         return lhs.lines == rhs.lines

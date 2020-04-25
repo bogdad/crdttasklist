@@ -34,6 +34,7 @@ class Note: Codable, Equatable {
     func update(_ name: String, _ crdt: CRDT) {
         self.name = name
         self.crdt = crdt
+        self.crdt.editing_finished()
     }
 
     func merge(_ other: Note) -> (Note, Bool) {
