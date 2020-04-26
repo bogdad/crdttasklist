@@ -50,7 +50,7 @@ class NoteTableViewController: UITableViewController {
         }
 
         let note = getNotes()[indexPath.row]
-        cell.nameLabel!.text = String((note.name + " " + note.crdt.to_string(20)))
+        cell.nameLabel!.text = String(note.getDisplayName())
 
         return cell
     }
@@ -86,7 +86,7 @@ class NoteTableViewController: UITableViewController {
         case "AddItem":
             break
         case "ShowDetail":
-            guard let noteViewController = segue.destination as? NoteViewController else {
+            guard let noteViewController = segue.destination as? CRDTNoteViewController else {
                 fatalError("Unexpected destination: \(segue.destination)")
             }
             guard let selectedNoteCell = sender as? NoteTableViewCell else {

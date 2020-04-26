@@ -58,6 +58,10 @@ class CRDT: Codable, Equatable {
         view.reset_selection()
     }
 
+    func merge(_ other: CRDT) {2
+        self.editor.merge(&other.editor.engine)
+    }
+
     func update_views(_ delta: RopeDelta, _ last_text: Rope, _ drift: InsertDrift) {
         // let mut width_cache = self.width_cache.borrow_mut();
         /*let iter_views = [self.view]//.chain(self.siblings.iter());

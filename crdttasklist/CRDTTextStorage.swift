@@ -11,11 +11,18 @@ import UIKit
 
 class CRDTTextStorage: NSTextStorage {
     let backingStore: NSMutableAttributedString
-    let crdt: CRDT
+    let serialQueue = DispatchQueue(label: "crdt text storage queue", attributes: .concurrent)
+    var _crdt: CRDT
 
-    override init() {
-        self.crdt = CRDT("")
-        self.backingStore = NSMutableAttributedString()
+    func crdt<R>(block: (inout CRDT) -> R) -> R {
+        return serialQueue.sync(flags: .barrier) {
+            return block(&_crdt)
+        }
+    }
+
+    init(_ crdt: CRDT?) {
+        self._crdt = crdt ?? CRDT("")
+        self.backingStore = NSMutableAttributedString(string: self._crdt.to_string())
         super.init()
     }
 
@@ -25,7 +32,7 @@ class CRDTTextStorage: NSTextStorage {
 
     override var string: String {
         //print("string \(crdt.to_string())  \(backingStore.string)")
-        return crdt.to_string()
+        return crdt { crdt in crdt.to_string() }
     }
 
     override func attributes(
@@ -50,7 +57,7 @@ class CRDTTextStorage: NSTextStorage {
     override func insert(_ attrString: NSAttributedString, at loc: Int) {
         print("insert \(attrString) at loc: \(loc)")
         beginEditing()
-        crdt.insert(Interval(UInt(loc), UInt(loc)), attrString.string)
+        _crdt.insert(Interval(UInt(loc), UInt(loc)), attrString.string)
         endEditing()
     }
 
@@ -66,13 +73,15 @@ class CRDTTextStorage: NSTextStorage {
              replacementRange.location = 0
              replacementRange.length = 0
          }
-         for _ in 0..<aRange.length {
-             crdt.deleteBackward()
-         }
-         if let attrStr = aString as? NSAttributedString {
-            crdt.insert(aRange.to_interval(), attrStr.string)
-         } else if let str = aString as? String {
-            crdt.insert(aRange.to_interval(), str)
+        crdt { crdt in
+            for _ in 0..<aRange.length {
+                crdt.deleteBackward()
+            }
+            if let attrStr = aString as? NSAttributedString {
+               crdt.insert(aRange.to_interval(), attrStr.string)
+            } else if let str = aString as? String {
+               crdt.insert(aRange.to_interval(), str)
+            }
          }
          return NSMakeRange(replacementRange.location, len)
     }

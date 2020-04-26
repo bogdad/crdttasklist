@@ -84,7 +84,7 @@ struct Editor: Codable, Equatable {
     //#[allow(dead_code)]
     //sync_store: Option<SyncStore>,
     //#[allow(dead_code)]
-    //last_synced_rev: RevId,
+    var last_synced_rev: RevId
 
     // we dont have it yet
     //layers: Layers,
@@ -111,7 +111,7 @@ struct Editor: Codable, Equatable {
         // self.layers = Layers.default()
         self.revs_in_flight = 0
         // self.sync_store = nil
-        // self.last_synced_rev = last_rev_id,
+        self.last_synced_rev = last_rev_id
     }
 
     mutating func insert(_ view: inout View, _ rope: Rope) {
@@ -239,5 +239,17 @@ struct Editor: Codable, Equatable {
 
     func sync_state_changed() {
         // TODO: what is this for?
+    }
+
+    mutating func merge(_ new_engine: inout Engine) {
+        self.engine.merge(&new_engine)
+        self.text = self.engine.get_head().clone()
+        // TODO: better undo semantics. This only implements separate undo
+        // histories for low concurrency.
+        self.undo_group_id = self.engine.max_undo_group_id() + 1
+        self.last_synced_rev = self.engine.get_head_rev_id()
+        self.commit_delta()
+        //self.render();
+        //FIXME: render after fuchsia sync
     }
 }

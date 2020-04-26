@@ -31,4 +31,8 @@ extension ArraySlice {
         }
         return nil
     }
+
+    func len() -> Int {
+        return count
+    }
 }

@@ -11,7 +11,7 @@ import Foundation
 
 import UIKit
 
-class NoteViewController: UIViewController, UITextViewDelegate {
+class CRDTNoteViewController: UIViewController, UITextViewDelegate {
 
     var textView: CRDTTextView?
     var textStorage: CRDTTextStorage?
@@ -23,7 +23,7 @@ class NoteViewController: UIViewController, UITextViewDelegate {
         print(self)
 
         if let note = NoteStorage.shared.currentNote {
-            navigationItem.title = note.name
+            navigationItem.title = note.getDisplayName()
             //textView!.text = note.text_snapshot()
             createTextView(note)
         } else {
@@ -35,7 +35,7 @@ class NoteViewController: UIViewController, UITextViewDelegate {
         // 1
         //let attrs = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body)]
         //let attrString = NSAttributedString(string: note?.crdt.to_string() ?? "", attributes: attrs)
-        textStorage = CRDTTextStorage()
+        textStorage = CRDTTextStorage(note?.crdt)
         //textStorage!.append(NSAttributedString(string: ""))
         //textStorage!.append(attrString)
 
@@ -67,7 +67,7 @@ class NoteViewController: UIViewController, UITextViewDelegate {
         ])
         self.textView = textView
         if note != nil {
-            textView.text.append(note!.crdt.to_string())
+            textView.text.append("")
         }
     }
 
@@ -86,7 +86,7 @@ class NoteViewController: UIViewController, UITextViewDelegate {
         guard let button = sender as? UIBarButtonItem, button === saveButton else {
             return
         }
-        NoteStorage.shared.editingFinished(textStorage!.crdt)
+        textStorage?.crdt { NoteStorage.shared.editingFinished($0) }
     }
 
     @IBAction func cancel(_ sender: UIBarButtonItem) {

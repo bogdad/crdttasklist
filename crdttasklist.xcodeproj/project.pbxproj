@@ -11,7 +11,7 @@
 		58306044A7B51CF3A31EAA18 /* libPods-crdttasklistUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E21D30F1418E3F48D72C1C6 /* libPods-crdttasklistUITests.a */; };
 		BAD28DFEE190D8F0686C9D39 /* libPods-crdttasklistTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAE0F9C15F1BE26A7C8D160E /* libPods-crdttasklistTests.a */; };
 		E70B862A23DC9A3300C48E3C /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70B862923DC9A3300C48E3C /* Note.swift */; };
-		E70B862C23DCB3AF00C48E3C /* NoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70B862B23DCB3AF00C48E3C /* NoteViewController.swift */; };
+		E70B862C23DCB3AF00C48E3C /* CRDTNoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70B862B23DCB3AF00C48E3C /* CRDTNoteViewController.swift */; };
 		E716D56A2413F6FE002F7652 /* LineWrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E716D5692413F6FE002F7652 /* LineWrap.swift */; };
 		E716D56C24156885002F7652 /* Breaks.swift in Sources */ = {isa = PBXBuildFile; fileRef = E716D56B24156885002F7652 /* Breaks.swift */; };
 		E716D56E24156C04002F7652 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = E716D56D24156C04002F7652 /* Array.swift */; };
@@ -95,7 +95,7 @@
 		AAE0F9C15F1BE26A7C8D160E /* libPods-crdttasklistTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-crdttasklistTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CBC63A97996E075536225CAE /* Pods-crdttasklistTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklistTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests.release.xcconfig"; sourceTree = "<group>"; };
 		E70B862923DC9A3300C48E3C /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
-		E70B862B23DCB3AF00C48E3C /* NoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewController.swift; sourceTree = "<group>"; };
+		E70B862B23DCB3AF00C48E3C /* CRDTNoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTNoteViewController.swift; sourceTree = "<group>"; };
 		E716D5692413F6FE002F7652 /* LineWrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrap.swift; sourceTree = "<group>"; };
 		E716D56B24156885002F7652 /* Breaks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Breaks.swift; sourceTree = "<group>"; };
 		E716D56D24156C04002F7652 /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
@@ -245,10 +245,10 @@
 				E7B05EED2298223300D2A094 /* AppDelegate.swift */,
 				E7A2E22F23DF3D1E00C65976 /* LinkToStorageController.swift */,
 				E74D187E241EC31E00EE3815 /* CRDT.swift */,
+				E70B862B23DCB3AF00C48E3C /* CRDTNoteViewController.swift */,
 				E7F465E72315AC4200030F3A /* CRDTTextView.swift */,
 				E78674D923E7626100728436 /* CRDTTextStorage.swift */,
 				E74D1880241ECCD600EE3815 /* DebugViewController.swift */,
-				E70B862B23DCB3AF00C48E3C /* NoteViewController.swift */,
 				E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */,
 				E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */,
 				E70B862923DC9A3300C48E3C /* Note.swift */,
@@ -542,7 +542,7 @@
 				E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */,
 				E75B386B230015CF005013E0 /* Find.swift in Sources */,
 				E7F0326022BD26F300D0BF2D /* Strings.swift in Sources */,
-				E70B862C23DCB3AF00C48E3C /* NoteViewController.swift in Sources */,
+				E70B862C23DCB3AF00C48E3C /* CRDTNoteViewController.swift in Sources */,
 				E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */,
 				E763DF9E22E4CD2E003572EC /* Cow.swift in Sources */,
 				E7B05F202298284100D2A094 /* Event.swift in Sources */,

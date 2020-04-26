@@ -21,7 +21,7 @@ class NoteStorage {
         if currentNote == nil {
             currentNote = Note.newNote()
         }
-        currentNote?.update("", crdt)
+        currentNote?.update(crdt)
     }
 
     func isStorageLinked() -> Bool {
