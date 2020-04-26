@@ -45,17 +45,17 @@ class DeltaTests: XCTestCase {
     func testSynthesize() {
         let d = Delta.simple_edit(Interval(1, 9), Rope.from_str("era"), 11)
         var (d1, del) = d.factor()
-        var ins = Cow(d1.inserted_subset())
+        var ins = d1.inserted_subset()
         del = del.transform_expand(ins)
         var union_str = d1.apply_to_string("hello world")
         print("union_str", union_str)
-        let tombstones = ins.value.complement().delete_from_string(&union_str)
+        let tombstones = ins.complement().delete_from_string(union_str)
         print("tombstones", tombstones)
-        let new_d = Delta.synthesize(Rope.from_str(tombstones[...]), &ins.value, &del)
+        let new_d = Delta.synthesize(Rope.from_str(tombstones[...]), ins, del)
         XCTAssertTrue("herald" == new_d.apply_to_string("hello world"))
         let text = del.complement().delete_from_string(&union_str)
         print("text", text)
-        let inv_d = Delta.synthesize(Rope.from_str(text[...]), &del, &ins.value)
+        let inv_d = Delta.synthesize(Rope.from_str(text[...]), del, ins)
         XCTAssertTrue("hello world" == inv_d.apply_to_string("herald"))
     }
 
@@ -66,12 +66,12 @@ class DeltaTests: XCTestCase {
         assert("01259DGJKN+UVWXYcdefghkmopqrstvwxy" == d.apply_to_string(str1))
         let (d2, _ss) = d.factor()
         XCTAssertEqual("01259DGJKN+QTUVWXYcdefghkmopqrstvwxy", d2.apply_to_string(str1))
-        let d3 = d2.transform_expand(Cow(s1), false)
+        let d3 = d2.transform_expand(s1, false)
         XCTAssertEqual(
             "0123456789ABCDEFGHIJKLMN+OPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
             d3.apply_to_string(TEST_STR)
         )
-        let d4 = d2.transform_expand(Cow(s1), true)
+        let d4 = d2.transform_expand(s1, true)
         XCTAssertEqual(
             "0123456789ABCDEFGHIJKLMNOP+QRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
             d4.apply_to_string(TEST_STR)
@@ -86,12 +86,12 @@ class DeltaTests: XCTestCase {
         XCTAssertEqual("f+t", d.apply_to_string(str1))
         let (d2, _) = d.factor()
         XCTAssertEqual("f+irst", d2.apply_to_string(str1))
-        let d3 = d2.transform_expand(Cow(s1), false)
+        let d3 = d2.transform_expand(s1, false)
         XCTAssertEqual(
             "andf+iondrstsec",
             d3.apply_to_string(str1andstuff)
         )
-        let d4 = d2.transform_expand(Cow(s1), true)
+        let d4 = d2.transform_expand(s1, true)
         XCTAssertEqual(
             "andf+iondrstsec",
             d4.apply_to_string(str1andstuff)

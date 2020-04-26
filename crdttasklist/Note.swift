@@ -37,7 +37,7 @@ class Note: Codable, Equatable {
     }
 
     func dedupHash() -> Int {
-        return crdt.to_string().hashValue * 13 + id.hashValue
+        return crdt.to_string().hashValue &* 13 &+ id.hashValue
     }
 
     func getDisplayName() -> String {

@@ -251,7 +251,7 @@ struct Engine: Codable, Equatable {
     /// You could construct the "union string" from `text`, `tombstones` and
     /// `deletes_from_union` by splicing a segment of `tombstones` into `text`
     /// wherever there's a non-zero-count segment in `deletes_from_union`.
-    var deletes_from_union: Cow<Subset>
+    var deletes_from_union: Subset
     // TODO: switch to a persistent Set representation to avoid O(n) copying
     var undone_groups: CowSortedSet<UInt> // set of undo_group id's
     /// The revision history of the document
@@ -270,7 +270,7 @@ struct Engine: Codable, Equatable {
         self.rev_id_counter = 1
         self.text = Rope.def()
         self.tombstones = Rope.def()
-        self.deletes_from_union = Cow(deletes_from_union)
+        self.deletes_from_union = deletes_from_union
         self.undone_groups = CowSortedSet<UInt>()
         self.revs = [rev]
     }
@@ -348,15 +348,15 @@ struct Engine: Codable, Equatable {
             return .failure(CrdtError.MissingRevision(base_rev))
         }
 
-        var prev_from_union = self.deletes_from_cur_union_for_index(ix)
+        let prev_from_union = self.deletes_from_cur_union_for_index(ix)
         // TODO: this does 2 calls to Delta::synthesize and 1 to apply, this probably could be better.
         let old_tombstones = GenericHelpers.shuffle_tombstones(
             self.text,
             self.tombstones,
-            &self.deletes_from_union.value,
-            &prev_from_union.value
+            self.deletes_from_union,
+            prev_from_union
         );
-        return .success(Delta.synthesize(old_tombstones, &prev_from_union.value, &self.deletes_from_union.value))
+        return .success(Delta.synthesize(old_tombstones, prev_from_union, self.deletes_from_union))
     }
 
 
@@ -371,7 +371,7 @@ struct Engine: Codable, Equatable {
             self.revs.append(new_rev)
             self.text = new_text
             self.tombstones = new_tombstones
-            self.deletes_from_union.value = new_deletes_from_union
+            self.deletes_from_union = new_deletes_from_union
         }
         return .success(())
     }
@@ -393,15 +393,15 @@ struct Engine: Codable, Equatable {
         let deletes_at_rev = self.deletes_from_union_for_index(ix)
 
         // validate delta
-        if ins_delta.elem.base_len != deletes_at_rev.value.len_after_delete() {
+        if ins_delta.elem.base_len != deletes_at_rev.len_after_delete() {
             return .failure(CrdtError.MalformedDelta(
-                rev_len: deletes_at_rev.value.len_after_delete(),
+                rev_len: deletes_at_rev.len_after_delete(),
                 delta_len: ins_delta.base_len
                 ))
         }
 
         var union_ins_delta = ins_delta.transform_expand(deletes_at_rev, true)
-        var new_deletes = Cow(deletes.transform_expand(deletes_at_rev))
+        var new_deletes = deletes.transform_expand(deletes_at_rev)
 
         // rebase the delta to be on the head union instead of the base_rev union
         // FIXME: Cow is a mess here!
@@ -412,32 +412,32 @@ struct Engine: Codable, Equatable {
                     let full_priority =
                         FullPriority(priority: priority, session_id: r.rev_id.session_id())
                     let after = new_full_priority >= full_priority // should never be ==
-                    union_ins_delta = union_ins_delta.transform_expand(Cow(inserts), after)
-                    new_deletes.value = new_deletes.value.transform_expand(Cow(inserts))
+                    union_ins_delta = union_ins_delta.transform_expand(inserts, after)
+                    new_deletes = new_deletes.transform_expand(inserts)
                 }
             }
         }
 
         // rebase the deletion to be after the inserts instead of directly on the head union
-        let new_inserts = Cow(union_ins_delta.inserted_subset())
-        if !new_inserts.value.is_empty() {
-            new_deletes.value = new_deletes.value.transform_expand(new_inserts)
+        let new_inserts = union_ins_delta.inserted_subset()
+        if !new_inserts.is_empty() {
+            new_deletes = new_deletes.transform_expand(new_inserts)
         }
 
         // rebase insertions on text and apply
         let cur_deletes_from_union = self.deletes_from_union
         let text_ins_delta = union_ins_delta.transform_shrink(cur_deletes_from_union)
         let text_with_inserts = text_ins_delta.apply(self.text)
-        var rebased_deletes_from_union = cur_deletes_from_union.value.transform_expand(new_inserts)
+        let rebased_deletes_from_union = cur_deletes_from_union.transform_expand(new_inserts)
 
         // is the new edit in an undo group that was already undone due to concurrency?
         let undone = self.undone_groups.value.contains(undo_group)
-        var to_delete = undone ? new_inserts : new_deletes
-        var new_deletes_from_union = rebased_deletes_from_union.union(&to_delete.value)
+        let to_delete = undone ? new_inserts : new_deletes
+        let new_deletes_from_union = rebased_deletes_from_union.union(to_delete)
 
         // move deleted or undone-inserted things from text to tombstones
         let (new_text, new_tombstones) = GenericHelpers.shuffle(
-        text_with_inserts, self.tombstones, &rebased_deletes_from_union, &new_deletes_from_union)
+        text_with_inserts, self.tombstones, rebased_deletes_from_union, new_deletes_from_union)
 
         let head_rev = self.revs[revs.count - 1]
         return .success((
@@ -447,8 +447,8 @@ struct Engine: Codable, Equatable {
                     priority: new_priority,
                     undo_group: undo_group,
                     // FIXME: move instead of copy
-                    inserts: new_inserts.value,
-                    deletes: new_deletes.value
+                    inserts: new_inserts,
+                    deletes: new_deletes
                 ),
                 max_undo_so_far: max(undo_group, head_rev.max_undo_so_far)),
                 new_text,
@@ -459,20 +459,20 @@ struct Engine: Codable, Equatable {
 
     /// Get the contents of the document at a given revision number
     mutating func rev_content_for_index(_ rev_index: UInt) -> Rope {
-        var old_deletes_from_union = self.deletes_from_cur_union_for_index(rev_index)
+        let old_deletes_from_union = self.deletes_from_cur_union_for_index(rev_index)
         let delta =
-            Delta.synthesize(self.tombstones, &self.deletes_from_union.value, &old_deletes_from_union.value)
+            Delta.synthesize(self.tombstones, self.deletes_from_union, old_deletes_from_union)
         return delta.apply(self.text)
     }
 
     // TODO: does Cow really help much here? It certainly won't after making Subsets a rope.
     /// Find what the `deletes_from_union` field in Engine would have been at the time
     /// of a certain `rev_index`. In other words, the deletes from the union string at that time.
-    func deletes_from_union_for_index(_ rev_index: UInt) -> Cow<Subset> {
+    func deletes_from_union_for_index(_ rev_index: UInt) -> Subset {
         return self.deletes_from_union_before_index(rev_index + 1, true)
     }
 
-    func deletes_from_union_before_index(_ rev_index: UInt, _ invert_undos: Bool) -> Cow<Subset> {
+    func deletes_from_union_before_index(_ rev_index: UInt, _ invert_undos: Bool) -> Subset {
         var deletes_from_union = self.deletes_from_union
         var undone_groups = self.undone_groups
 
@@ -482,17 +482,17 @@ struct Engine: Codable, Equatable {
             case .Edit(_, let undo_group, var inserts, var deletes):
                 if undone_groups.value.contains(undo_group) {
                     // no need to un-delete undone inserts since we'll just shrink them out
-                    deletes_from_union = Cow(deletes_from_union.value.transform_shrink(&inserts))
+                    deletes_from_union = deletes_from_union.transform_shrink(inserts)
                 } else {
-                    let un_deleted = deletes_from_union.value.subtract(&deletes)
-                    deletes_from_union = Cow(un_deleted.transform_shrink(&inserts))
+                    let un_deleted = deletes_from_union.subtract(deletes)
+                    deletes_from_union = un_deleted.transform_shrink(inserts)
                 }
             case .Undo(let toggled_groups, var deletes_bitxor):
                 if invert_undos {
                     let new_undone =
                         undone_groups.value.symmetricDifference(toggled_groups)
                     undone_groups = CowSortedSet(new_undone)
-                    deletes_from_union = Cow(deletes_from_union.value.bitxor(&deletes_bitxor))
+                    deletes_from_union = deletes_from_union.bitxor(deletes_bitxor)
                 }
             }
         }
@@ -500,14 +500,13 @@ struct Engine: Codable, Equatable {
     }
 
     // Get the Subset to delete from the current union string in order to obtain a revision's content
-    func deletes_from_cur_union_for_index(_ rev_index: UInt) -> Cow<Subset> {
+    func deletes_from_cur_union_for_index(_ rev_index: UInt) -> Subset {
         var deletes_from_union = self.deletes_from_union_for_index(rev_index)
-        print("\(deletes_from_union.value)")
         for rev in self.revs[Int(rev_index + 1)...] {
             switch rev.edit {
             case .Edit(_, _, let inserts, _):
                 if !inserts.is_empty() {
-                    deletes_from_union.value = deletes_from_union.value.transform_union(Cow(inserts))
+                    deletes_from_union = deletes_from_union.transform_union(inserts)
                 }
             default: break
             }
@@ -547,20 +546,20 @@ struct Engine: Codable, Equatable {
             if case .Edit(_, let undo_group, let inserts, var deletes) = rev.edit {
                 if groups.contains(undo_group) {
                     if !inserts.is_empty() {
-                        deletes_from_union.value = deletes_from_union.value.transform_union(Cow(inserts))
+                        deletes_from_union = deletes_from_union.transform_union(inserts)
                     }
                 } else {
                     if !inserts.is_empty() {
-                        deletes_from_union.value = deletes_from_union.value.transform_expand(Cow(inserts))
+                        deletes_from_union = deletes_from_union.transform_expand(inserts)
                     }
                     if !deletes.is_empty() {
-                        deletes_from_union.value = deletes_from_union.value.union(&deletes)
+                        deletes_from_union = deletes_from_union.union(deletes)
                     }
                 }
             }
         }
 
-        let deletes_bitxor = self.deletes_from_union.value.bitxor(&deletes_from_union.value)
+        let deletes_bitxor = self.deletes_from_union.bitxor(deletes_from_union)
         let max_undo_so_far = self.revs.last!.max_undo_so_far
         return (
             Revision(
@@ -568,7 +567,7 @@ struct Engine: Codable, Equatable {
                 edit: .Undo(toggled_groups: toggled_groups, deletes_bitxor: deletes_bitxor),
                 max_undo_so_far: max_undo_so_far
             ),
-            deletes_from_union.value
+            deletes_from_union
         )
     }
 
@@ -612,14 +611,14 @@ struct Engine: Codable, Equatable {
             switch rev.edit {
             case .Edit(let priority, let undo_group, let inserts, let deletes):
                 if is_base {
-                    s = inserts.transform_union(Cow(s))
+                    s = inserts.transform_union(s)
                     contents = nil
                 } else {
                     // fast-forward this revision over all common ones after it
-                    var transformed_inserts = inserts.transform_expand(Cow(s))
-                    let transformed_deletes = deletes.transform_expand(Cow(s))
+                    let transformed_inserts = inserts.transform_expand(s)
+                    let transformed_deletes = deletes.transform_expand(s)
                     // we don't want new revisions before this to be transformed after us
-                    s = s.transform_shrink(&transformed_inserts)
+                    s = s.transform_shrink(transformed_inserts)
                     contents = Contents.Edit(
                         priority: priority,
                         undo_group: undo_group,
@@ -645,25 +644,25 @@ struct Engine: Codable, Equatable {
 
 
     // Merge the new content from another Engine into this one with a CRDT merge
-    mutating func merge(_ other: inout Engine) {
+    mutating func merge(_ other: Cow<Engine>) {
 
-        let base_index:Int = Int(find_base_index(self.revs, other.revs))
+        let base_index:Int = Int(find_base_index(self.revs, other.value.revs))
         let a_to_merge = self.revs[base_index...]
-        let b_to_merge = other.revs[base_index...]
+        let b_to_merge = other.value.revs[base_index...]
 
         let common = find_common(a_to_merge, b_to_merge)
 
-        let a_new = rearrange(a_to_merge, common, self.deletes_from_union.value.len())
-        let b_new = rearrange(b_to_merge, common, other.deletes_from_union.value.len())
+        let a_new = rearrange(a_to_merge, common, self.deletes_from_union.len())
+        let b_new = rearrange(b_to_merge, common, other.value.deletes_from_union.len())
 
         let b_deltas =
-            compute_deltas(b_new, other.text, other.tombstones, &other.deletes_from_union.value)
+            compute_deltas(b_new, other.value.text, other.value.tombstones, other.value.deletes_from_union)
 
         var expand_by = compute_transforms(a_new)
 
         let max_undo = self.max_undo_group_id()
 
-        var deletes_from_union_clone = self.deletes_from_union.value.clone()
+        var deletes_from_union_clone = self.deletes_from_union.clone()
 
         let (new_revs, text, tombstones, deletes_from_union) = rebase(
             &expand_by,
@@ -676,7 +675,7 @@ struct Engine: Codable, Equatable {
 
         self.text = text
         self.tombstones = tombstones
-        self.deletes_from_union = Cow(deletes_from_union)
+        self.deletes_from_union = deletes_from_union
         self.revs.append(contentsOf: new_revs)
     }
 
@@ -688,15 +687,15 @@ struct GenericHelpers {
     static func shuffle_tombstones(
     _ text: Rope,
     _ tombstones: Rope,
-    _ old_deletes_from_union: inout Subset,
-    _ new_deletes_from_union: inout Subset
+    _ old_deletes_from_union: Subset,
+    _ new_deletes_from_union: Subset
     ) -> Rope {
         // Taking the complement of deletes_from_union leads to an interleaving valid for swapped text and tombstones,
         // allowing us to use the same method to insert the text into the tombstones.
-        var inverse_tombstones_map = old_deletes_from_union.complement()
+        let inverse_tombstones_map = old_deletes_from_union.complement()
         var new_deletes_from_union_complement = new_deletes_from_union.complement()
         let move_delta =
-            Delta.synthesize(text, &inverse_tombstones_map, &new_deletes_from_union_complement)
+            Delta.synthesize(text, inverse_tombstones_map, new_deletes_from_union_complement)
         return move_delta.apply(tombstones)
     }
 
@@ -706,15 +705,15 @@ struct GenericHelpers {
     static func shuffle(
                     _ text: Rope,
                     _ tombstones: Rope,
-                    _ old_deletes_from_union: inout Subset,
-                    _ new_deletes_from_union: inout Subset
+                    _ old_deletes_from_union: Subset,
+                    _ new_deletes_from_union: Subset
     ) -> (Rope, Rope) {
         // Delta that deletes the right bits from the text
-        let del_delta = Delta.synthesize(tombstones, &old_deletes_from_union, &new_deletes_from_union)
+        let del_delta = Delta.synthesize(tombstones, old_deletes_from_union, new_deletes_from_union)
         let new_text = del_delta.apply(text)
         // println!("shuffle: old={:?} new={:?} old_text={:?} new_text={:?} old_tombstones={:?}",
         //     old_deletes_from_union, new_deletes_from_union, text, new_text, tombstones);
-        return (new_text, shuffle_tombstones(text, tombstones, &old_deletes_from_union, &new_deletes_from_union))
+        return (new_text, shuffle_tombstones(text, tombstones, old_deletes_from_union, new_deletes_from_union))
     }
 }
 
@@ -745,7 +744,7 @@ func compute_transforms(_ revs: [Revision]) -> [(FullPriority, Subset)] {
             }
             if priority == last_priority {
                 let last = UnsafeMutablePointer<(FullPriority, Subset)>(&out[out.count - 1])
-                last.pointee.1 = last.pointee.1.transform_union(Cow(inserts))
+                last.pointee.1 = last.pointee.1.transform_union(inserts)
             } else {
                 last_priority = priority
                 let prio = FullPriority(priority:priority, session_id: r.rev_id.session_id())
@@ -762,7 +761,7 @@ func compute_deltas(
     _ revs: [Revision],
     _ text: Rope,
     _ tombstones: Rope,
-    _ deletes_from_union: inout Subset
+    _ deletes_from_union: Subset
 ) -> [DeltaOp] {
     var out = [DeltaOp]()
     out.reserveCapacity(revs.len())
@@ -770,13 +769,13 @@ func compute_deltas(
     var cur_all_inserts = Subset.make_empty(deletes_from_union.len())
     for rev in revs.makeIterator().reversed() {
         switch rev.edit {
-        case .Edit(let priority, let undo_group, var inserts, var deletes):
-            var older_all_inserts = inserts.transform_union(Cow(cur_all_inserts))
+        case .Edit(let priority, let undo_group, let inserts, let deletes):
+            let older_all_inserts = inserts.transform_union(cur_all_inserts)
                 // TODO could probably be more efficient by avoiding shuffling from head every time
             let tombstones_here =
-                GenericHelpers.shuffle_tombstones(text, tombstones, &deletes_from_union, &older_all_inserts)
+                GenericHelpers.shuffle_tombstones(text, tombstones, deletes_from_union, older_all_inserts)
             let delta =
-                Delta.synthesize(tombstones_here, &older_all_inserts, &cur_all_inserts)
+                Delta.synthesize(tombstones_here, older_all_inserts, cur_all_inserts)
             // TODO create InsertDelta directly and more efficiently instead of factoring
             let (ins, _) = delta.factor()
             out.append(DeltaOp(
@@ -823,27 +822,27 @@ func rebase(
         for (trans_priority, trans_inserts) in expand_by {
             let after = full_priority >= trans_priority // should never be ==
                                                          // d-expand by other
-            op.inserts = op.inserts.transform_expand(Cow(trans_inserts), after)
+            op.inserts = op.inserts.transform_expand(trans_inserts, after)
             // trans-expand other by expanded so they have the same context
             let inserted = op.inserts.inserted_subset()
-            let new_trans_inserts = trans_inserts.transform_expand(Cow(inserted))
+            let new_trans_inserts = trans_inserts.transform_expand(inserted)
             // The deletes are already after our inserts, but we need to include the other inserts
-            op.deletes = op.deletes.transform_expand(Cow(new_trans_inserts))
+            op.deletes = op.deletes.transform_expand(new_trans_inserts)
             // On the next step we want things in expand_by to have op in the context
             next_expand_by.append((trans_priority, new_trans_inserts))
         }
 
-        let text_inserts = op.inserts.transform_shrink(Cow(deletes_from_union))
+        let text_inserts = op.inserts.transform_shrink(deletes_from_union)
         let text_with_inserts = text_inserts.apply(text)
         let inserted = op.inserts.inserted_subset()
 
-        var expanded_deletes_from_union = deletes_from_union.transform_expand(Cow(inserted))
-        var new_deletes_from_union = expanded_deletes_from_union.union(&op.deletes)
+        let expanded_deletes_from_union = deletes_from_union.transform_expand(inserted)
+        let new_deletes_from_union = expanded_deletes_from_union.union(op.deletes)
         let (new_text, new_tombstones) = GenericHelpers.shuffle(
             text_with_inserts,
             tombstones,
-            &expanded_deletes_from_union,
-            &new_deletes_from_union
+            expanded_deletes_from_union,
+            new_deletes_from_union
         )
 
         text = new_text

@@ -134,8 +134,29 @@ class RopeTests: XCTestCase {
         XCTAssertEqual(rope.to_string(), fileRope.to_string())
     }
 
+    func test_line_of_offset_small() {
+        let a = Rope.from_str("a\nb\nc")
+        XCTAssertEqual(0, a.line_of_offset(0))
+        XCTAssertEqual(0, a.line_of_offset(1))
+        XCTAssertEqual(1, a.line_of_offset(2))
+        XCTAssertEqual(1, a.line_of_offset(3))
+        XCTAssertEqual(2, a.line_of_offset(4))
+        XCTAssertEqual(2, a.line_of_offset(5))
+        let b = a.slice(Interval(2,4))
+        XCTAssertEqual(0, b.line_of_offset(0))
+        XCTAssertEqual(0, b.line_of_offset(1))
+        XCTAssertEqual(1, b.line_of_offset(2))
+    }
+
+    func test_line_of_offset_small_1() {
+        let a = Rope.from_str("a\nb\nc")
+        let b = a.slice(Interval(2,4))
+        XCTAssertEqual(1, b.line_of_offset(2))
+    }
+
     func test_offset_of_line() {
         let rope = Rope.from_str("hi\ni'm\nfour\nlines")
+        print(rope.len())
         XCTAssertEqual(rope.offset_of_line(0), 0)
         XCTAssertEqual(rope.offset_of_line(1), 3)
         XCTAssertEqual(rope.line_of_offset(0), 0)
@@ -145,6 +166,13 @@ class RopeTests: XCTestCase {
         // interior of last line should be last line
         XCTAssertEqual(rope.line_of_offset(15), 3)
         XCTAssertEqual(rope.offset_of_line(4), rope.len())
+    }
+
+    func test_offset_of_line_1() {
+        let rope = Rope.from_str("hi\ni'm\nfour\nlines")
+        print(rope.len())
+        // interior of last line should be last line
+        XCTAssertEqual(rope.line_of_offset(3), 1)
     }
 
     func build_triangle(n: UInt) -> String {

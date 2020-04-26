@@ -15,13 +15,13 @@ class MultisetTests: XCTestCase {
     static var TEST_STR = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
     func transform_case(_ str1: String, _ str2: String, _ result: String) {
-        let s1 = Cow(TestHelpers.find_deletions(str1, MultisetTests.TEST_STR))
-        let s2 = Cow(TestHelpers.find_deletions(str2, str1))
-        var s3 = s2.value.transform_expand(s1)
+        let s1 = TestHelpers.find_deletions(str1, MultisetTests.TEST_STR)
+        let s2 = TestHelpers.find_deletions(str2, str1)
+        var s3 = s2.transform_expand(s1)
         let str3 = s3.delete_from_string(MultisetTests.TEST_STR)
         XCTAssertEqual(result, str3)
-        XCTAssertEqual(str2, s1.value.transform_shrink(&s3).delete_from_string(str3))
-        XCTAssertEqual(str2, s2.value.transform_union(s1).delete_from_string(MultisetTests.TEST_STR))
+        XCTAssertEqual(str2, s1.transform_shrink(s3).delete_from_string(str3))
+        XCTAssertEqual(str2, s2.transform_union(s1).delete_from_string(MultisetTests.TEST_STR))
     }
 
     func testTransform() {
@@ -126,7 +126,7 @@ class MultisetTests: XCTestCase {
     func test_union() {
         let s1 = TestHelpers.find_deletions("024AEGHJKNQTUWXYZabcfgikqrvy", MultisetTests.TEST_STR)
         var s2 = TestHelpers.find_deletions("14589DEFGIKMOPQRUXZabcdefglnpsuxyz", MultisetTests.TEST_STR)
-        XCTAssertEqual("4EGKQUXZabcfgy", s1.union(&s2).delete_from_string(MultisetTests.TEST_STR))
+        XCTAssertEqual("4EGKQUXZabcfgy", s1.union(s2).delete_from_string(MultisetTests.TEST_STR))
     }
 
 }

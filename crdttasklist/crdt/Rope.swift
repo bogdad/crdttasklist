@@ -77,7 +77,7 @@ protocol Metric {
 }
 
 struct RopeInfo: NodeInfo {
-    typealias DefaultMetric = LinesMetric
+    typealias DefaultMetric = BaseMetric
 
     typealias L = String
 
@@ -137,7 +137,10 @@ struct LinesMetric: Metric {
     }
 
     static func from_base_units(_ l: inout String, _ in_base_units: UInt) -> UInt {
-        return Utils.count_newlines(s:l[...String.Index(utf16Offset: Int(in_base_units), in: l)])
+        if l.count == in_base_units {
+            return from_base_units(&l, in_base_units-1)
+        }
+        return Utils.count_newlines(s:l[..<String.Index(utf16Offset: Int(in_base_units), in: l)])
     }
 
     static func is_boundary(_ l: inout String, _ offset: UInt) -> Bool {
@@ -250,7 +253,7 @@ extension Rope {
     /// This function will panic if `offset > self.len()`. Callers are expected to
     /// validate their input.
     func line_of_offset(_ offset: UInt) -> UInt {
-        return NodeMeasurable2<LinesMetric, LinesMetric, RopeInfo>.convert_metrics(self, offset)
+        return NodeMeasurable2<RopeInfo.DefaultMetric, LinesMetric, RopeInfo>.convert_metrics(self, offset)
     }
 
     /// Return the byte offset corresponding to the line number `line`.
@@ -280,6 +283,11 @@ extension Rope {
     func prev_codepoint_offset(_ offset: UInt) -> UInt? {
         var cursor = Cursor(self, offset)
         return CursorMeasurable<RopeInfo, BaseMetric>.prev(&cursor)
+    }
+
+    // Returns a new Rope with the contents of the provided range.
+    func slice<T: IntervalBounds>(_ iv: T) -> Rope {
+        return self.subseq(iv)
     }
 }
 

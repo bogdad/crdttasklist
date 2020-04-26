@@ -148,7 +148,7 @@ class EngineTests: XCTestCase {
         let text = Rope.from_str("13456")
         let tombstones = Rope.from_str("27")
         var deletes_from_union = TestHelpers.parse_subset("-#----#")
-        let delta_ops = compute_deltas(revs, text, tombstones, &deletes_from_union)
+        let delta_ops = compute_deltas(revs, text, tombstones, deletes_from_union)
 
         print(delta_ops)
 
@@ -170,7 +170,7 @@ class EngineTests: XCTestCase {
         let text_b = Rope.from_str("zpbj")
         let tombstones_b = Rope.from_str("a")
         var deletes_from_union_b = TestHelpers.parse_subset("-#---")
-        let b_delta_ops = compute_deltas(b_revs, text_b, tombstones_b, &deletes_from_union_b)
+        let b_delta_ops = compute_deltas(b_revs, text_b, tombstones_b, deletes_from_union_b)
 
         print("\(b_delta_ops)")
 

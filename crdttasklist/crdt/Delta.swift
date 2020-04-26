@@ -142,7 +142,7 @@ class Delta<N: NodeInfo> {
     ///     assert_eq!(String::from(d2.apply(r)), String::from(d.apply(r)));
     /// }
     /// ```
-    static func synthesize(_ tombstones: Node<N>, _ from_dels: inout Subset, _ to_dels: inout Subset) -> Delta<N> {
+    static func synthesize(_ tombstones: Node<N>, _ from_dels: Subset, _ to_dels: Subset) -> Delta<N> {
         let base_len = from_dels.len_after_delete()
         var els = [DeltaElement<N>]()
         var x: UInt = 0
@@ -264,16 +264,16 @@ struct InsertDelta<N: NodeInfo> {
     /// coordinate transform.
     //
     // TODO: write accurate equations
-    func transform_expand(_ xform: Cow<Subset>, _ after: Bool) -> InsertDelta<N> {
+    func transform_expand(_ xform: Subset, _ after: Bool) -> InsertDelta<N> {
         let cur_els = self.elem.els
         var els = [DeltaElement<N>]()
         var x: UInt = 0 // coordinate within self
         var y: UInt = 0 // coordinate within xform
         var i: UInt = 0 // index into self.els
         var b1: UInt = 0
-        var xform_ranges = xform.value.complement_iter()
+        var xform_ranges = xform.complement_iter()
         var last_xform = xform_ranges.next()
-        let l = xform.value.count(CountMatcher.All)
+        let l = xform.count(CountMatcher.All)
         while y < l || i < cur_els.count {
             let next_iv_beg = last_xform != nil ? last_xform!.0 : l
             if after && y < next_iv_beg {
@@ -324,8 +324,8 @@ struct InsertDelta<N: NodeInfo> {
     /// the same base. For example, if `self` applies to a union string, and
     /// `xform` is the deletions from that union, the resulting Delta will
     /// apply to the text.
-    func transform_shrink(_ xform: Cow<Subset>) -> InsertDelta<N> {
-        var m = xform.value.mapper(CountMatcher.Zero)
+    func transform_shrink(_ xform: Subset) -> InsertDelta<N> {
+        var m = xform.mapper(CountMatcher.Zero)
         let els = self
             .elem
             .els
@@ -337,7 +337,7 @@ struct InsertDelta<N: NodeInfo> {
                     return DeltaElement.Insert(n.clone())
                 }
             })
-        return InsertDelta(elem: Delta(els, xform.value.len_after_delete()))
+        return InsertDelta(elem: Delta(els, xform.len_after_delete()))
     }
 
     /// Apply the delta to the given rope. May not work well if the length of the rope

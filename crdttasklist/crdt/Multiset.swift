@@ -297,9 +297,9 @@ struct Subset: Codable, Equatable {
 
     /// Compute the difference of two subsets. The count of an element in the
     /// result is the subtraction of the counts of other from self.
-    func subtract(_ other: inout Subset) -> Subset {
+    func subtract(_ other: Subset) -> Subset {
         var sb = SubsetBuilder()
-        for zseg in self.zip(&other) {
+        for zseg in self.zip(other) {
             assert(
                 zseg.a_count >= zseg.b_count,
                 "can't subtract from")
@@ -314,9 +314,9 @@ struct Subset: Codable, Equatable {
     ///
     /// This works like set symmetric difference when all counts are 0 or 1
     /// but it extends nicely to the case of larger counts.
-    func bitxor(_ other: inout Subset) -> Subset {
+    func bitxor(_ other: Subset) -> Subset {
         var sb = SubsetBuilder()
-        for zseg in self.zip(&other) {
+        for zseg in self.zip(other) {
             sb.push_segment(zseg.len, zseg.a_count ^ zseg.b_count)
         }
         return sb.build()
@@ -330,7 +330,7 @@ struct Subset: Codable, Equatable {
     /// s2 = self.delete_from_string(s1)
     ///
     /// element in self.transform_expand(other).delete_from_string(s0) if (not in s1) or in s2
-    func transform_expand(_ other: Cow<Subset>) -> Subset {
+    func transform_expand(_ other: Subset) -> Subset {
         return self.transform(other, false)
     }
 
@@ -341,10 +341,10 @@ struct Subset: Codable, Equatable {
     ///
     /// B.transform_shrink(C).delete_from_string(C.delete_from_string(s)) =
     ///   A.delete_from_string(B.delete_from_string(s))
-    func transform_shrink(_ other: inout Subset) -> Subset {
+    func transform_shrink(_ other: Subset) -> Subset {
         var sb = SubsetBuilder()
         // discard ZipSegments where the shrinking set has positive count
-        for zseg in self.zip(&other) {
+        for zseg in self.zip(other) {
             // TODO: should this actually do something like subtract counts?
             if zseg.b_count == 0 {
                 sb.push_segment(zseg.len, zseg.a_count)
@@ -355,12 +355,12 @@ struct Subset: Codable, Equatable {
 
     // Map the contents of `self` into the 0-regions of `other`.
     /// Precondition: `self.count(CountMatcher::All) == other.count(CountMatcher::Zero)`
-    func transform(_ other: Cow<Subset>, _ union: Bool) -> Subset {
-        print("\(self.count(.All)) == \(other.value.count(.Zero))")
+    func transform(_ other: Subset, _ union: Bool) -> Subset {
+        print("\(self.count(.All)) == \(other.count(.Zero))")
         var sb = SubsetBuilder()
         var seg_iter = self.segments.makeIterator()
         var cur_seg = Segment(0, 0)
-        for oseg in other.value.segments {
+        for oseg in other.segments {
             if oseg.count > 0 {
                 sb.push_segment(oseg.len, union ? oseg.count : 0)
             } else {
@@ -388,15 +388,15 @@ struct Subset: Codable, Equatable {
     }
 
     /// The same as taking transform_expand and then unioning with `other`.
-    func transform_union(_ other: Cow<Subset>) -> Subset {
+    func transform_union(_ other: Subset) -> Subset {
         return self.transform(other, true)
     }
 
     // Compute the union of two subsets. The count of an element in the
     // result is the sum of the counts in the inputs.
-    func union(_ other: inout Subset) -> Subset {
+    func union(_ other: Subset) -> Subset {
         var sb = SubsetBuilder()
-        for zseg in self.zip(&other) {
+        for zseg in self.zip(other) {
             sb.push_segment(zseg.len, zseg.a_count + zseg.b_count)
         }
         return sb.build()
@@ -407,7 +407,7 @@ struct Subset: Codable, Equatable {
     // must have the same total length.
     //
     // Each returned `ZipSegment` will differ in at least one count.
-    func zip(_ other: inout Subset) -> ZipIter {
+    func zip(_ other: Subset) -> ZipIter {
         return ZipIter(
             a_segs: self.segments,
             b_segs: other.segments)

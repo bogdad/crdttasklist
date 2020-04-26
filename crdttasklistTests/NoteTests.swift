@@ -12,7 +12,7 @@ import XCTest
 
 class NoteTests: XCTestCase {
     func tes1tCodingDecoding() {
-        let note = Note("1234", "name", "text", CRDT("text"))
+        let note = Note("1234", CRDT("text"))
         let fileNote = saveThenLoad(obj: note)
 
         XCTAssertEqual(note, fileNote)

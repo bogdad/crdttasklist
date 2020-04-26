@@ -27,14 +27,14 @@
 import Foundation
 
 struct Utils {
-
     static func count_newlines(s: Substring) -> UInt {
-        let ns = s as NSString
-        var count:UInt = 0
-        ns.enumerateLines { (str, _) in
-            count += 1
+        let nl: Character = "\n"
+
+        return s.reduce(into: 0) { (count, letter) in
+            if (letter == nl) {
+                count = count + 1
+            }
         }
-        return count
     }
 
     static func count_utf16_code_units(s: inout String) -> UInt {

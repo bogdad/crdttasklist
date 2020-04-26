@@ -56,7 +56,7 @@ struct Editor: Codable, Equatable {
     /// The contents of the buffer.
     var text: Rope
     /// The CRDT engine, which tracks edit history and manages concurrent edits.
-    var engine: Engine
+    var engine: Cow<Engine>
 
     /// The most recent revision.
     var last_rev_id: RevId
@@ -94,7 +94,7 @@ struct Editor: Codable, Equatable {
         let buffer = engine.get_head()
         let last_rev_id = engine.get_head_rev_id();
         self.text = buffer
-        self.engine = engine
+        self.engine = Cow(engine)
         self.last_rev_id = last_rev_id
         self.pristine_rev_id = last_rev_id
         self.undo_group_id = 1
@@ -135,12 +135,12 @@ struct Editor: Codable, Equatable {
     /// breaks are to be considered invalid after this method, until the
     /// `commit_delta` call.
     mutating func add_delta(_ delta: RopeDelta) {
-        let head_rev_id = self.engine.get_head_rev_id()
+        let head_rev_id = self.engine.value.get_head_rev_id()
         let undo_group = self.calculate_undo_group()
         self.last_edit_type = self.this_edit_type
         let priority: UInt = 0x10000
-        self.engine.edit_rev(priority, undo_group, head_rev_id.token(), delta)
-        self.text = self.engine.get_head().clone()
+        self.engine.value.edit_rev(priority, undo_group, head_rev_id.token(), delta)
+        self.text = self.engine.value.get_head().clone()
     }
 
     mutating func calculate_undo_group() -> UInt {
@@ -169,7 +169,7 @@ struct Editor: Codable, Equatable {
     }
 
     func get_head_rev_token() -> UInt64 {
-        return self.engine.get_head_rev_id().token()
+        return self.engine.value.get_head_rev_id().token()
     }
 
     mutating func delete_backward(_ view: inout View, _ config: BufferItems) {
@@ -200,20 +200,20 @@ struct Editor: Codable, Equatable {
     /// behaviour.
     mutating func commit_delta() -> (RopeDelta, Rope, InsertDrift)? {
 
-        if self.engine.get_head_rev_id() == self.last_rev_id {
+        if self.engine.value.get_head_rev_id() == self.last_rev_id {
             return nil
         }
 
         let last_token = self.last_rev_id.token()
         var delta: Delta<RopeInfo>
         do {
-             delta = try self.engine.try_delta_rev_head(last_token).get()
+            delta = try self.engine.value.try_delta_rev_head(last_token).get()
         } catch {
             fatalError("last_rev not found")
         }
         // TODO (performance): it's probably quicker to stash last_text
         // rather than resynthesize it.
-        guard let last_text = self.engine.get_rev(last_token) else {
+        guard let last_text = self.engine.value.get_rev(last_token) else {
             fatalError("last_rev not found")
         }
 
@@ -232,7 +232,7 @@ struct Editor: Codable, Equatable {
         // TODO: what is this for?
         //self.layers.update_all(delta)
 
-        self.last_rev_id = self.engine.get_head_rev_id()
+        self.last_rev_id = self.engine.value.get_head_rev_id()
         self.sync_state_changed()
         return (delta, last_text, drift)
     }
@@ -241,13 +241,13 @@ struct Editor: Codable, Equatable {
         // TODO: what is this for?
     }
 
-    mutating func merge(_ new_engine: inout Engine) {
-        self.engine.merge(&new_engine)
-        self.text = self.engine.get_head().clone()
+    mutating func merge(_ new_engine: Cow<Engine>) {
+        self.engine.value.merge(new_engine)
+        self.text = self.engine.value.get_head().clone()
         // TODO: better undo semantics. This only implements separate undo
         // histories for low concurrency.
-        self.undo_group_id = self.engine.max_undo_group_id() + 1
-        self.last_synced_rev = self.engine.get_head_rev_id()
+        self.undo_group_id = self.engine.value.max_undo_group_id() + 1
+        self.last_synced_rev = self.engine.value.get_head_rev_id()
         self.commit_delta()
         //self.render();
         //FIXME: render after fuchsia sync
