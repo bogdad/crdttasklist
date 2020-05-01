@@ -35,8 +35,8 @@ extension String {
     }
 
     func byte_at(_ offset: UInt)  -> UInt8 {
-        if self.utf8CString.endIndex >= offset {
-            fatalError("read past end index")
+        if offset >= self.len() {
+            fatalError("read past end index len \(self.len()) offset \(offset)")
         }
         return withCString({ body -> UInt8 in
             return UInt8(body.advanced(by: Int(offset)).pointee)
