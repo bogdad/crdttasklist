@@ -56,10 +56,12 @@
 		E7B62C182299B8D1000143C6 /* Rope.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B62C172299B8D1000143C6 /* Rope.swift */; };
 		E7BD0E0822FC352D00B14710 /* MultisetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7BD0E0722FC352D00B14710 /* MultisetTests.swift */; };
 		E7BD0E0A22FC366300B14710 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7BD0E0922FC366300B14710 /* TestHelpers.swift */; };
+		E7D05487245C06260097E298 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D05486245C06260097E298 /* Character.swift */; };
+		E7D05489245C06580097E298 /* Substring.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D05488245C06580097E298 /* Substring.swift */; };
 		E7DD4EB4242E87DE00E2B5B9 /* IndexSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7DD4EB3242E87DE00E2B5B9 /* IndexSet.swift */; };
 		E7DD4EB6242FC08F00E2B5B9 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7DD4EB5242FC08F00E2B5B9 /* String.swift */; };
 		E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325D22BD261F00D0BF2D /* Tree.swift */; };
-		E7F0326022BD26F300D0BF2D /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325F22BD26F300D0BF2D /* Strings.swift */; };
+		E7F0326022BD26F300D0BF2D /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F0325F22BD26F300D0BF2D /* Utils.swift */; };
 		E7F465E82315AC4200030F3A /* CRDTTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F465E72315AC4200030F3A /* CRDTTextView.swift */; };
 		E7F5A82324544B88006AB4CA /* NSRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F5A82224544B88006AB4CA /* NSRange.swift */; };
 		E7F5A82524548C96006AB4CA /* SortedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F5A82424548C96006AB4CA /* SortedSet.swift */; };
@@ -146,10 +148,12 @@
 		E7B62C172299B8D1000143C6 /* Rope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rope.swift; sourceTree = "<group>"; };
 		E7BD0E0722FC352D00B14710 /* MultisetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisetTests.swift; sourceTree = "<group>"; };
 		E7BD0E0922FC366300B14710 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
+		E7D05486245C06260097E298 /* Character.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
+		E7D05488245C06580097E298 /* Substring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Substring.swift; sourceTree = "<group>"; };
 		E7DD4EB3242E87DE00E2B5B9 /* IndexSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexSet.swift; sourceTree = "<group>"; };
 		E7DD4EB5242FC08F00E2B5B9 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		E7F0325D22BD261F00D0BF2D /* Tree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tree.swift; sourceTree = "<group>"; };
-		E7F0325F22BD26F300D0BF2D /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
+		E7F0325F22BD26F300D0BF2D /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		E7F465E72315AC4200030F3A /* CRDTTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTTextView.swift; sourceTree = "<group>"; };
 		E7F5A82224544B88006AB4CA /* NSRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRange.swift; sourceTree = "<group>"; };
 		E7F5A82424548C96006AB4CA /* SortedSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortedSet.swift; sourceTree = "<group>"; };
@@ -291,6 +295,7 @@
 				E7B3F80E242BE0EE004095D8 /* ArraySlice.swift */,
 				E72FC387240C00C600611A75 /* Backspace.swift */,
 				E716D56B24156885002F7652 /* Breaks.swift */,
+				E7D05486245C06260097E298 /* Character.swift */,
 				E72FC385240BFF4F00611A75 /* Config.swift */,
 				E7B5D57222F34EC90020AFAC /* Collections.swift */,
 				E763DF9D22E4CD2E003572EC /* Cow.swift */,
@@ -306,16 +311,17 @@
 				E74D187A241D3FFC00EE3815 /* Iterator.swift */,
 				E716D5692413F6FE002F7652 /* LineWrap.swift */,
 				E79E1F8C22C7FA36007099E5 /* Multiset.swift */,
+				E7F5A82224544B88006AB4CA /* NSRange.swift */,
 				E7B62C172299B8D1000143C6 /* Rope.swift */,
 				E74C3DC522D24086001B9CA7 /* Selection.swift */,
 				E7F5A82424548C96006AB4CA /* SortedSet.swift */,
 				E7DD4EB5242FC08F00E2B5B9 /* String.swift */,
-				E7F0325F22BD26F300D0BF2D /* Strings.swift */,
+				E7D05488245C06580097E298 /* Substring.swift */,
 				E75B38682300147B005013E0 /* Tabs.swift */,
 				E7BD0E0922FC366300B14710 /* TestHelpers.swift */,
 				E7F0325D22BD261F00D0BF2D /* Tree.swift */,
+				E7F0325F22BD26F300D0BF2D /* Utils.swift */,
 				E74C3DC122D23E7F001B9CA7 /* View.swift */,
-				E7F5A82224544B88006AB4CA /* NSRange.swift */,
 			);
 			path = crdt;
 			sourceTree = "<group>";
@@ -522,6 +528,7 @@
 				E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */,
 				E716D56E24156C04002F7652 /* Array.swift in Sources */,
 				E74D187B241D3FFC00EE3815 /* Iterator.swift in Sources */,
+				E7D05487245C06260097E298 /* Character.swift in Sources */,
 				E70B862A23DC9A3300C48E3C /* Note.swift in Sources */,
 				E716D56A2413F6FE002F7652 /* LineWrap.swift in Sources */,
 				E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */,
@@ -534,6 +541,7 @@
 				E72FC388240C00C600611A75 /* Backspace.swift in Sources */,
 				E778F217238C8A0E0036EB29 /* NoteTableViewController.swift in Sources */,
 				E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */,
+				E7D05489245C06580097E298 /* Substring.swift in Sources */,
 				E7B5D57322F34EC90020AFAC /* Collections.swift in Sources */,
 				E74D1881241ECCD600EE3815 /* DebugViewController.swift in Sources */,
 				E7F5A82324544B88006AB4CA /* NSRange.swift in Sources */,
@@ -541,7 +549,7 @@
 				E78674DA23E7626100728436 /* CRDTTextStorage.swift in Sources */,
 				E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */,
 				E75B386B230015CF005013E0 /* Find.swift in Sources */,
-				E7F0326022BD26F300D0BF2D /* Strings.swift in Sources */,
+				E7F0326022BD26F300D0BF2D /* Utils.swift in Sources */,
 				E70B862C23DCB3AF00C48E3C /* CRDTNoteViewController.swift in Sources */,
 				E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */,
 				E763DF9E22E4CD2E003572EC /* Cow.swift in Sources */,

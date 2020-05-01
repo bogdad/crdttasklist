@@ -91,7 +91,7 @@ struct RopeInfo: NodeInfo {
 
     static func compute_info(leaf s: inout String) -> RopeInfo {
         return RopeInfo(
-            lines: Utils.count_newlines(s: s[...]),
+            lines: s.count_newlines(),
             utf16_size: Utils.count_utf16_code_units(s: &s))
     }
 
@@ -140,7 +140,7 @@ struct LinesMetric: Metric {
         if l.count == in_base_units {
             return from_base_units(&l, in_base_units-1)
         }
-        return Utils.count_newlines(s:l[..<String.Index(utf16Offset: Int(in_base_units), in: l)])
+        return l[..<String.Index(utf16Offset: Int(in_base_units), in: l)].count_newlines()
     }
 
     static func is_boundary(_ l: inout String, _ offset: UInt) -> Bool {
