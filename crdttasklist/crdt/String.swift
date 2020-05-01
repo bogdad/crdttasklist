@@ -29,11 +29,9 @@ extension String {
     func count_newlines() -> UInt {
         let nl: Character = "\n"
 
-        return reduce(into: 0) { (count, letter) in
-            if (letter == nl) {
-                count = count + 1
-            }
-        }
+        return UInt(data(using: .utf8)!
+        .filter { $0 == nl.asciiValue! }
+        .count)
     }
 
     func byte_at(_ offset: UInt)  -> UInt8 {
@@ -45,10 +43,18 @@ extension String {
         })
     }
 
+    func at(_ i: UInt) -> Character {
+        return self[String.Index(utf16Offset: Int(i), in: self)]
+    }
+
     func uintO(_ start: UInt, _ end: UInt) -> Substring {
         let s_i = String.Index(utf16Offset: Int(start), in: self)
         let e_i = String.Index(utf16Offset: Int(end), in: self)
         return self[s_i..<e_i]
+    }
+    func substr_starting(_ start: UInt) -> Substring {
+        let s_i = String.Index(utf16Offset: Int(start), in: self)
+        return self[s_i...]
     }
     func uintC(_ start: UInt, _ end: UInt) -> Substring {
         let s_i = String.Index(utf16Offset: Int(start), in: self)

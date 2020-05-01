@@ -65,10 +65,8 @@ extension Substring {
     func count_newlines() -> UInt {
         let nl: Character = "\n"
 
-        return reduce(into: 0) { (count, letter) in
-            if (letter == nl) {
-                count = count + 1
-            }
-        }
+        return UInt(data(using: .utf8)!
+        .filter { $0 == nl.asciiValue! }
+        .count)
     }
 }

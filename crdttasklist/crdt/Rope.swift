@@ -123,8 +123,7 @@ struct LinesMetric: Metric {
     static func to_base_units(_ l: inout String, _ in_measured_units: UInt) -> UInt {
         var offset:UInt = 0;
         for _ in 0..<in_measured_units {
-            let s_ind = String.Index(utf16Offset: Int(offset), in: l)
-            let substr = l[s_ind...]
+            let substr = l.substr_starting(offset)
             let res = substr.firstIndex(of: "\n")
             switch res {
             case .some(let pos):
@@ -137,10 +136,7 @@ struct LinesMetric: Metric {
     }
 
     static func from_base_units(_ l: inout String, _ in_base_units: UInt) -> UInt {
-        if l.count == in_base_units {
-            return from_base_units(&l, in_base_units-1)
-        }
-        return l[..<String.Index(utf16Offset: Int(in_base_units), in: l)].count_newlines()
+        return l.uintO(0, in_base_units).count_newlines()
     }
 
     static func is_boundary(_ l: inout String, _ offset: UInt) -> Bool {
@@ -148,13 +144,13 @@ struct LinesMetric: Metric {
             // shouldn't be called with this, but be defensive
             return false
         } else {
-            return l[String.Index(utf16Offset: Int(offset - 1), in: l)] == "\n"
+            return l.at(offset - 1) == "\n"
         }
     }
 
     static func prev(_ l: inout String, _ offset: UInt) -> UInt? {
         assert(offset > 0, "caller is responsible for validating input")
-        let substr = l[...String.Index(utf16Offset: Int(offset), in: l)]
+        let substr = l.uintC(0, offset)
         return substr.firstIndex(of: "\n").map({ (pos:Substring.Index) -> UInt in
             return UInt(pos.utf16Offset(in: substr) + 1)
         })
