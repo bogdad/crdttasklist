@@ -711,8 +711,6 @@ struct GenericHelpers {
         // Delta that deletes the right bits from the text
         let del_delta = Delta.synthesize(tombstones, old_deletes_from_union, new_deletes_from_union)
         let new_text = del_delta.apply(text)
-        // println!("shuffle: old={:?} new={:?} old_text={:?} new_text={:?} old_tombstones={:?}",
-        //     old_deletes_from_union, new_deletes_from_union, text, new_text, tombstones);
         return (new_text, shuffle_tombstones(text, tombstones, old_deletes_from_union, new_deletes_from_union))
     }
 }

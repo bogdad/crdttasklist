@@ -31,10 +31,8 @@ class CRDT: Codable, Equatable {
         after_edit()
     }
 
-    func insert(_ range: Interval, _ chars: String) {
-        view.set_selection_for_edit(Selection.new_simple(SelRegion.from(range)))
+    func insert(_ chars: String) {
         editor.insert(&view, Rope.from_str(chars))
-        print("cur: \(editor.get_buffer())")
         after_edit()
     }
 
@@ -76,5 +74,13 @@ class CRDT: Codable, Equatable {
             )
         });*/
         self.view.after_edit(editor.get_buffer(), last_text, delta, drift)
+    }
+
+    func position() -> Interval {
+        return view.selection.regions[0].to_interval()
+    }
+
+    func set_position(_ r: Interval) {
+        view.set_selection_for_edit(Selection.new_simple(SelRegion.from(r)))
     }
 }

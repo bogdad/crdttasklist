@@ -10,8 +10,9 @@ import Foundation
 import UIKit
 
 class CRDTTextStorage: NSTextStorage {
-    let backingStore: NSMutableAttributedString
+    let backingStore: NSTextStorage
     let serialQueue = DispatchQueue(label: "crdt text storage queue", attributes: .concurrent)
+    let controller: CRDTNoteViewController
     var _crdt: CRDT
 
     func crdt<R>(block: (inout CRDT) -> R) -> R {
@@ -20,9 +21,10 @@ class CRDTTextStorage: NSTextStorage {
         }
     }
 
-    init(_ crdt: CRDT?) {
+    init(_ crdt: CRDT?, _ controller: CRDTNoteViewController) {
         self._crdt = crdt ?? CRDT("")
-        self.backingStore = NSMutableAttributedString(string: self._crdt.to_string())
+        self.backingStore = NSTextStorage(string: self._crdt.to_string())
+        self.controller = controller
         super.init()
     }
 
@@ -31,8 +33,8 @@ class CRDTTextStorage: NSTextStorage {
     }
 
     override var string: String {
-        //print("string \(crdt.to_string())  \(backingStore.string)")
-        return crdt { crdt in crdt.to_string() }
+        //return crdt { crdt in crdt.to_string() }
+        return backingStore.string
     }
 
     override func attributes(
@@ -43,55 +45,34 @@ class CRDTTextStorage: NSTextStorage {
     }
 
     override func replaceCharacters(in range: NSRange, with str: String) {
-        print("replaceCharactersInRange \(range) withString:\(str)")
-
         beginEditing()
         backingStore.replaceCharacters(in: range, with:str)
         replaceCharactersInRange(range, withText: str as NSString)
-
-        edited(.editedCharacters, range: range,
+        edited([.editedCharacters, .editedAttributes], range: range,
              changeInLength: (str as NSString).length - range.length)
         endEditing()
+
     }
 
-    override func insert(_ attrString: NSAttributedString, at loc: Int) {
-        print("insert \(attrString) at loc: \(loc)")
-        beginEditing()
-        _crdt.insert(Interval(UInt(loc), UInt(loc)), attrString.string)
-        endEditing()
-    }
-
-    func replaceCharactersInRange(_ aRange: NSRange, withText aString: AnyObject) -> NSRange {
-         var replacementRange = aRange
-         var len = 0
-         if let attrStr = aString as? NSAttributedString {
-             len = attrStr.string.utf16.count
-         } else if let str = aString as? NSString {
-             len = str.length
-         }
-         if (replacementRange.location == NSNotFound) {
-             replacementRange.location = 0
-             replacementRange.length = 0
-         }
+    func replaceCharactersInRange(_ aRange: NSRange, withText aString: AnyObject) {
         crdt { crdt in
+            crdt.set_position(aRange.to_interval())
             for _ in 0..<aRange.length {
                 crdt.deleteBackward()
             }
             if let attrStr = aString as? NSAttributedString {
-               crdt.insert(aRange.to_interval(), attrStr.string)
+               crdt.insert(attrStr.string)
             } else if let str = aString as? String {
-               crdt.insert(aRange.to_interval(), str)
+               crdt.insert(str)
             }
+            controller.textView?.selectedRange = NSRange.from_interval(crdt.position())
+            print("after edit \(controller.textView?.selectedRange)")
          }
-         return NSMakeRange(replacementRange.location, len)
     }
 
     override func setAttributes(_ attrs: [NSAttributedString.Key: Any]?, range: NSRange) {
-        print("setAttributes:\(String(describing: attrs?.keys)) range:\(range)")
-
         beginEditing()
         backingStore.setAttributes(attrs, range: range)
-        
         edited(.editedAttributes, range: range, changeInLength: 0)
         endEditing()
     }

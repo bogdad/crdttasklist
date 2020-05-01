@@ -89,4 +89,8 @@ struct Interval: Equatable, IntervalBounds {
     func suffix(_ other: Interval) -> Interval {
         return Interval(max(self.start, other.end), max(self.end, other.end))
     }
+
+    func len() -> Int {
+        return Int(end) - Int(start)
+    }
 }

@@ -11,7 +11,7 @@ import Foundation
 
 import UIKit
 
-class CRDTNoteViewController: UIViewController, UITextViewDelegate {
+class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorageDelegate {
 
     var textView: CRDTTextView?
     var textStorage: CRDTTextStorage?
@@ -20,7 +20,6 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(self)
 
         if let note = NoteStorage.shared.currentNote {
             navigationItem.title = note.getDisplayName()
@@ -35,7 +34,7 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate {
         // 1
         //let attrs = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body)]
         //let attrString = NSAttributedString(string: note?.crdt.to_string() ?? "", attributes: attrs)
-        textStorage = CRDTTextStorage(note?.crdt)
+        textStorage = CRDTTextStorage(note?.crdt, self)
         //textStorage!.append(NSAttributedString(string: ""))
         //textStorage!.append(attrString)
 

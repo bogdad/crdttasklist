@@ -165,6 +165,7 @@ struct View: Codable, Equatable {
         // Note: for committing plugin edits, we probably want to know the priority
         // of the delta so we can set the cursor before or after the edit, as needed.
         let new_sel = self.selection.apply_delta(delta, true, drift)
+        print("new sel \(new_sel)")
         self.set_selection_for_edit(new_sel)
     }
 

@@ -82,7 +82,6 @@ class RopeTests: XCTestCase {
         var builder = crdttasklist.TreeBuilder<RopeInfo>()
         builder.push_str(s: s[...])
         let rope = builder.build()
-        //print(rope.to_string())
         XCTAssertEqual(s, rope.to_string())
     }
 
@@ -91,7 +90,6 @@ class RopeTests: XCTestCase {
         var builder = crdttasklist.TreeBuilder<RopeInfo>()
         builder.push_str(s: s[...])
         let rope = builder.build()
-        //print(rope.to_string())
         XCTAssertEqual(s, rope.to_string())
     }
 
@@ -100,7 +98,6 @@ class RopeTests: XCTestCase {
         var builder = crdttasklist.TreeBuilder<RopeInfo>()
         builder.push_str(s: s[...])
         let rope = builder.build()
-        //print(rope.to_string())
         XCTAssertEqual(s, rope.to_string())
     }
 
@@ -156,7 +153,7 @@ class RopeTests: XCTestCase {
 
     func test_offset_of_line() {
         let rope = Rope.from_str("hi\ni'm\nfour\nlines")
-        print(rope.len())
+
         XCTAssertEqual(rope.offset_of_line(0), 0)
         XCTAssertEqual(rope.offset_of_line(1), 3)
         XCTAssertEqual(rope.line_of_offset(0), 0)
@@ -170,7 +167,6 @@ class RopeTests: XCTestCase {
 
     func test_offset_of_line_1() {
         let rope = Rope.from_str("hi\ni'm\nfour\nlines")
-        print(rope.len())
         // interior of last line should be last line
         XCTAssertEqual(rope.line_of_offset(3), 1)
     }

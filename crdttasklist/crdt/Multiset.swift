@@ -356,7 +356,6 @@ struct Subset: Codable, Equatable {
     // Map the contents of `self` into the 0-regions of `other`.
     /// Precondition: `self.count(CountMatcher::All) == other.count(CountMatcher::Zero)`
     func transform(_ other: Subset, _ union: Bool) -> Subset {
-        print("\(self.count(.All)) == \(other.count(.Zero))")
         var sb = SubsetBuilder()
         var seg_iter = self.segments.makeIterator()
         var cur_seg = Segment(0, 0)

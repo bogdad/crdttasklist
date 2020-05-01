@@ -216,6 +216,10 @@ struct SelRegion: Codable {
         // sources, but very likely not worth it.
         return SelRegion(start, end)
     }
+
+    func to_interval() -> Interval {
+        return Interval(start, end)
+    }
 }
 
 enum InsertDrift {

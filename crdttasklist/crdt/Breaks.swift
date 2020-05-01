@@ -47,7 +47,6 @@ struct BreaksLeaf: Leaf {
     }
 
     mutating func push_maybe_split(other: inout BreaksLeaf, iv: Interval) -> BreaksLeaf? {
-        //eprintln!("push_maybe_split {:?} {:?} {}", self, other, iv);
          let (start, end) = iv.start_end()
          for v in other.data {
              if start < v && v <= end {

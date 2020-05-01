@@ -216,7 +216,6 @@ class Node<N: NodeInfo> : Equatable, Codable {
         let h2 = rope2.height()
 
         if h1 < h2 {
-            //print("vvvvv concat <", h1, h2)
             return rope2.get_children(f: { (rope2_children: inout [Node<N>]) -> Node<N> in
                 if h1 == h2 - 1 && rope1.is_ok_child() {
                     return merge_nodes(children1: [rope1], children2: rope2_children)
@@ -231,7 +230,6 @@ class Node<N: NodeInfo> : Equatable, Codable {
                 }
             })
         } else if h1 == h2 {
-            //print("vvvvv concat ==", h1, h2)
             if rope1.is_ok_child() && rope2.is_ok_child() {
                 return from_nodes(nodes: [rope1, rope2])
             }
@@ -244,7 +242,6 @@ class Node<N: NodeInfo> : Equatable, Codable {
                 })
             })
         } else if h1 > h2 {
-            // print("vvvvv concat >", h1, h2)
             return rope1.get_children(f: { (rope1_children: inout [Node<N>]) -> Node<N> in
                 if h2 == h1 - 1 && rope2.is_ok_child() {
                     return merge_nodes(children1: rope1_children, children2: [rope2])
