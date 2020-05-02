@@ -12,19 +12,11 @@ import UIKit
 class CRDTTextStorage: NSTextStorage {
     let backingStore: NSTextStorage
     let serialQueue = DispatchQueue(label: "crdt text storage queue", attributes: .concurrent)
-    let controller: CRDTNoteViewController
     var _crdt: CRDT
 
-    func crdt<R>(block: (inout CRDT) -> R) -> R {
-        return serialQueue.sync(flags: .barrier) {
-            return block(&_crdt)
-        }
-    }
-
-    init(_ crdt: CRDT?, _ controller: CRDTNoteViewController) {
+    init(_ crdt: CRDT?) {
         self._crdt = crdt ?? CRDT("")
         self.backingStore = NSTextStorage(string: self._crdt.to_string())
-        self.controller = controller
         super.init()
     }
 
@@ -65,8 +57,6 @@ class CRDTTextStorage: NSTextStorage {
             } else if let str = aString as? String {
                crdt.insert(str)
             }
-            controller.textView?.selectedRange = NSRange.from_interval(crdt.position())
-            print("after edit \(controller.textView?.selectedRange)")
          }
     }
 
@@ -77,4 +67,9 @@ class CRDTTextStorage: NSTextStorage {
         endEditing()
     }
 
+    func crdt<R>(block: (inout CRDT) -> R) -> R {
+        return serialQueue.sync(flags: .barrier) {
+            return block(&_crdt)
+        }
+    }
 }
