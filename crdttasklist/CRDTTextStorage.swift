@@ -48,14 +48,12 @@ class CRDTTextStorage: NSTextStorage {
 
     func replaceCharactersInRange(_ aRange: NSRange, withText aString: AnyObject) {
         crdt { crdt in
-            crdt.set_position(aRange.to_interval())
-            for _ in 0..<aRange.length {
-                crdt.deleteBackward()
-            }
-            if let attrStr = aString as? NSAttributedString {
-               crdt.insert(attrStr.string)
+            if let str = aString as? NSAttributedString {
+                crdt.replace(aRange.to_interval(), str.string)
             } else if let str = aString as? String {
-               crdt.insert(str)
+                crdt.replace(aRange.to_interval(), str)
+            } else {
+                fatalError()
             }
          }
     }
@@ -67,7 +65,7 @@ class CRDTTextStorage: NSTextStorage {
         endEditing()
     }
 
-    func crdt<R>(block: (inout CRDT) -> R) -> R {
+    func crdt<R>(block: (inout CRDT) -> R) -> R { 
         return serialQueue.sync(flags: .barrier) {
             return block(&_crdt)
         }

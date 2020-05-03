@@ -46,6 +46,10 @@ struct Interval: Equatable, IntervalBounds {
         self.end = end
     }
 
+    init(from: Int, length: Int) {
+        self.init(UInt(from), UInt(from + length))
+    }
+
     func is_empty() -> Bool {
         return end <= start
     }
