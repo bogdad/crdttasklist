@@ -241,8 +241,8 @@ struct Editor: Codable, Equatable {
         // TODO: what is this for?
     }
 
-    mutating func merge(_ new_engine: Cow<Engine>) {
-        self.engine.value.merge(new_engine)
+    mutating func merge(_ new_engine: Cow<Engine>) -> EditorMergeResult {
+        let engineMergeResult = self.engine.value.merge(new_engine)
         self.text = self.engine.value.get_head().clone()
         // TODO: better undo semantics. This only implements separate undo
         // histories for low concurrency.
@@ -251,5 +251,11 @@ struct Editor: Codable, Equatable {
         self.commit_delta()
         //self.render();
         //FIXME: render after fuchsia sync
+        return EditorMergeResult(selfChanged: engineMergeResult.aChanged, newChanged: engineMergeResult.bChanged)
     }
+}
+
+struct EditorMergeResult {
+    let selfChanged: Bool
+    let newChanged: Bool
 }

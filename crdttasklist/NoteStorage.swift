@@ -63,11 +63,14 @@ class NoteStorage {
 
     func loadNotes() -> Bool {
         guard let notes = loadFrom(toUrl: try! Note.ArchiveURL.asURL()) else {
+            if isStorageLinked() {
+                conflictDetected()
+            }
             return false
         }
         self.notes = notes
         if isStorageLinked() {
-            //conflictDetected()
+            conflictDetected()
         }
         return true
     }
@@ -75,7 +78,7 @@ class NoteStorage {
     func saveNotes() {
         FileUtils.saveToFile(obj: self.notes, url: Note.ArchiveURL)
 
-        //conflictDetected()
+        conflictDetected()
     }
 
     private func loadFrom(toUrl: URL) -> [Note]? {
@@ -129,9 +132,6 @@ class NoteStorage {
                 }
             }
         }
-        .progress { progressData in
-            print(progressData)
-        }
     }
 
     func conflictDetected() {
@@ -142,12 +142,13 @@ class NoteStorage {
         self.downloadFromDropbox(toUrl: Note.TempArchiveURL, closure: { (otherNotes, rev) in
 
             if otherNotes != nil {
-                let (mergedNotes, wasChange) = self.mergeNotes(self.notes, otherNotes!)
+                let (mergedNotes, mergeStatus) = self.mergeNotes(self.notes, otherNotes!)
                 self.notes = mergedNotes
-                if wasChange {
-                    print("conflictDetected: was a change, uploading \(self.notes.count)")
+                if mergeStatus.needsLocalRedraw {
                     self.notesChangedRemotely()
-                    self.saveNotes()
+                }
+                if mergeStatus.needsUpload {
+                    print("conflictDetected: needs upload, uploading \(self.notes.count)")
                     let _ = client.files.upload(path: "/notes",
                                                 mode: .update(rev!),
                                                 strictConflict: true,
@@ -155,12 +156,8 @@ class NoteStorage {
                         .response { response, error in
                             self.handleUpload(response, error)
                         }
-                        .progress { progressData in
-                            print(progressData)
-                    }
                 }
             } else {
-                self.saveNotes()
                 _ = client.files.upload(path: "/notes",
                                         mode: .add,
                                         strictConflict: true,
@@ -168,9 +165,6 @@ class NoteStorage {
                     .response { response, error in
                         self.handleUpload(response, error)
                     }
-                    .progress { progressData in
-                        print(progressData)
-                }
             }
 
         });
@@ -201,26 +195,36 @@ class NoteStorage {
         }
     }
 
-    func mergeNotes(_ selfNotes: [Note], _ otherNotes: [Note]) -> ([Note], Bool) {
-        var selfDict = Dictionary(grouping: selfNotes, by: { $0.id! }).mapValues({$0[0]})
-        let otherDict = Dictionary(grouping: otherNotes, by: { $0.id! }).mapValues({$0[0]})
-        var numDiff = 0
-        selfDict.merge(otherDict, uniquingKeysWith: { (left, right) -> Note in
-            let (res, changed) = left.merge(right)
-            if changed {
-                print("mergeNotes: node \(left.id!) changed")
-                numDiff += 1
+    func mergeNotes(_ localNotes: [Note], _ remoteNotes: [Note]) -> ([Note], MergeStatus) {
+        var localDict = Dictionary(grouping: localNotes, by: { $0.id! }).mapValues({$0[0]})
+        let remoteDict = Dictionary(grouping: remoteNotes, by: { $0.id! }).mapValues({$0[0]})
+        var numRemoteNewer = 0
+        var numLocalNewer = 0
+        localDict.merge(remoteDict, uniquingKeysWith: { (left, right) -> Note in
+            let (newLocal, mergeResult) = left.merge(right)
+            if mergeResult.otherChanged {
+                print("mergeNotes: node \(left.id!) changed remotely")
+                numRemoteNewer += 1
             }
-            return res
+            if mergeResult.selfChanged {
+                print("mergeNotes: node \(left.id!) changed locally")
+                numLocalNewer += 1
+            }
+            return newLocal
         })
 
         // TODO: handle deletions
-        let res = Array(selfDict.values.sortedById())
-        let numMissingLocally = res.count - selfNotes.count
-        let numMissingRemotely = res.count - otherNotes.count
-        print("mergeNotes: before \(selfNotes.count) other \(otherNotes.count) after \(res.count)")
-        print("mergeNotes: numMissingLocally \(numMissingLocally) numMissingRemotely \(numMissingRemotely) numDiff \(numDiff) ")
-        return (res, numMissingLocally + numMissingRemotely + numDiff != 0)
+        let newLocalNotes = Array(localDict.values.sortedById())
+        let numMissingLocally = newLocalNotes.count - localNotes.count
+        let numMissingRemotely = newLocalNotes.count - remoteNotes.count
+        print("mergeNotes: local count \(localNotes.count) remote count \(remoteNotes.count) new local count \(newLocalNotes.count)")
+        print("mergeNotes: numMissingLocally \(numMissingLocally) numMissingRemotely \(numMissingRemotely)")
+        print("mergeNotes: numLocalNewer \(numLocalNewer) numRemoteNewer \(numRemoteNewer) ")
+
+        let needsUpload = numMissingRemotely > 0 || numLocalNewer > 0
+        let needsLocalRedraw = numMissingLocally > 0 || numRemoteNewer > 0
+
+        return (newLocalNotes, MergeStatus(needsUpload: needsUpload, needsLocalRedraw: needsLocalRedraw))
     }
 
     func notesChangedRemotely() {
@@ -241,6 +245,9 @@ class NoteStorage {
             print("Error: \(error.domain)")
         }
     }
+}
 
-
+struct MergeStatus {
+    let needsUpload: Bool
+    let needsLocalRedraw: Bool
 }

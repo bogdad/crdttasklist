@@ -644,7 +644,7 @@ struct Engine: Codable, Equatable {
 
 
     // Merge the new content from another Engine into this one with a CRDT merge
-    mutating func merge(_ other: Cow<Engine>) {
+    mutating func merge(_ other: Cow<Engine>) -> EngineMergeResult {
 
         let base_index:Int = Int(find_base_index(self.revs, other.value.revs))
         let a_to_merge = self.revs[base_index...]
@@ -677,8 +677,14 @@ struct Engine: Codable, Equatable {
         self.tombstones = tombstones
         self.deletes_from_union = deletes_from_union
         self.revs.append(contentsOf: new_revs)
+        return EngineMergeResult(aChanged: a_new.len() > 0, bChanged: b_new.len() > 0)
     }
 
+}
+
+struct EngineMergeResult {
+    let aChanged: Bool
+    let bChanged: Bool
 }
 
 struct GenericHelpers {

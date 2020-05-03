@@ -34,8 +34,9 @@ class CRDT: Codable, Equatable {
         view.reset_selection()
     }
 
-    func merge(_ other: CRDT) {
-        self.editor.merge(other.editor.engine)
+    func merge(_ other: CRDT) -> CRDTMergeResult {
+        let editorMerge = self.editor.merge(other.editor.engine)
+        return CRDTMergeResult(selfChanged: editorMerge.selfChanged, otherChanged: editorMerge.newChanged)
     }
 
     func replace(_ range: Interval, _ str: String) {
@@ -93,4 +94,9 @@ class CRDT: Codable, Equatable {
 
         self.update_views(delta, last_text, drift)
     }
+}
+
+struct CRDTMergeResult {
+    let selfChanged: Bool
+    let otherChanged: Bool
 }

@@ -32,8 +32,9 @@ class Note: Codable, Equatable {
         self.crdt.editing_finished()
     }
 
-    func merge(_ other: Note) -> (Note, Bool) {
-        return (self, false)
+    func merge(_ other: Note) -> (Note, CRDTMergeResult) {
+        let res = crdt.merge(other.crdt)
+        return (self, res)
     }
 
     func dedupHash() -> Int {
