@@ -34,6 +34,9 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
         // 1
         //let attrs = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body)]
         //let attrString = NSAttributedString(string: note?.crdt.to_string() ?? "", attributes: attrs)
+        if note != nil {
+            note!.crdt.new_session()
+        }
         textStorage = CRDTTextStorage(note?.crdt)
         //textStorage!.append(NSAttributedString(string: ""))
         //textStorage!.append(attrString)

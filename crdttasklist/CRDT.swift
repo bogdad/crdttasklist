@@ -27,6 +27,13 @@ struct CRDT: Codable, Equatable {
         self.lastModificationDate = Date()
     }
 
+    mutating func new_session() {
+        let u64 = UInt64.random(in: 0...UInt64.max)
+        let u32 = UInt32.random(in: 0...UInt32.max)
+        let sess = (u64, u32)
+        self.editor.set_session_id(sess)
+    }
+
     mutating func tryMigrate() -> Bool {
         var res = false
         res = res || editor.tryMigrate()
