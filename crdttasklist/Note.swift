@@ -49,6 +49,10 @@ class Note: Codable, Equatable {
         return crdt.creationDate()
     }
 
+    func modificationDate() -> Date {
+        return crdt.modificationDate()
+    }
+
     func isActive() -> Bool {
         return crdt.isActive()
     }

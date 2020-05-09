@@ -12,6 +12,7 @@ struct CRDT: Codable, Equatable {
     var editor: Editor
     var view: View
     var deletionsInsertions: DeletionsInsertions?
+    var lastModificationDate: Date?
 
     static let config = BufferItems()
 
@@ -23,6 +24,7 @@ struct CRDT: Codable, Equatable {
         self.editor.set_session_id(sess)
         self.view = View(view_id: 0, buffer_id: 0)
         self.deletionsInsertions = DeletionsInsertions()
+        self.lastModificationDate = Date()
     }
 
     mutating func tryMigrate() -> Bool {
@@ -30,6 +32,10 @@ struct CRDT: Codable, Equatable {
         res = res || editor.tryMigrate()
         if self.deletionsInsertions == nil {
             self.deletionsInsertions = DeletionsInsertions()
+            res = true
+        }
+        if self.lastModificationDate == nil {
+            self.lastModificationDate = Date()
             res = true
         }
         return res
@@ -41,6 +47,10 @@ struct CRDT: Codable, Equatable {
 
     func creationDate() -> Date {
         return self.deletionsInsertions?.creationDate() ?? Date()
+    }
+
+    func modificationDate() -> Date {
+        return self.lastModificationDate ?? Date()
     }
 
     mutating func markDeleted() {
@@ -66,9 +76,21 @@ struct CRDT: Codable, Equatable {
     mutating func merge(_ other: CRDT) -> CRDTMergeResult {
         let editorMerge = self.editor.merge(other.editor.engine)
         let deletionsMerge = self.deletionsInsertions!.merge(other.deletionsInsertions!)
+
+        var lastModificationDateSelfChanged = false
+        var lastModificationDateOtherChanged = false
+        let oldSelfDate = lastModificationDate
+        lastModificationDate = Swift.max(lastModificationDate!, other.lastModificationDate!)
+        if oldSelfDate != lastModificationDate {
+            lastModificationDateSelfChanged = true
+        }
+        if other.lastModificationDate != lastModificationDate {
+            lastModificationDateOtherChanged = true
+        }
+
         return CRDTMergeResult(
-            selfChanged: editorMerge.selfChanged || deletionsMerge.selfChanged,
-            otherChanged: editorMerge.newChanged || deletionsMerge.otherChanged)
+            selfChanged: editorMerge.selfChanged || deletionsMerge.selfChanged || lastModificationDateSelfChanged,
+            otherChanged: editorMerge.newChanged || deletionsMerge.otherChanged || lastModificationDateOtherChanged)
     }
 
     mutating func replace(_ range: Interval, _ str: String) {
@@ -79,6 +101,7 @@ struct CRDT: Codable, Equatable {
         }
 
         insert(str)
+        lastModificationDate = Date()
     }
 
     private func position() -> Interval {

@@ -19,7 +19,7 @@ class NoteStorage {
     var currentNote: Note?
 
     func notes() -> [Note] {
-        return Array(_notes.values).filter { $0.isActive() } .sorted{ $0.creationDate() < $1.creationDate() }
+        return Array(_notes.values).filter { $0.isActive() } .sorted{ $0.modificationDate() > $1.modificationDate() }
     }
 
     func noteByIndexPath(_ row: NSInteger) -> Note {
