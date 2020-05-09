@@ -47,7 +47,8 @@ class NoteTableViewController: UITableViewController {
         }
 
         let note = getNotes()[indexPath.row]
-        cell.nameLabel!.text = String(note.getDisplayName())
+
+        Design.applyToLabel(cell.nameLabel!, note.getDisplayName())
 
         return cell
     }
@@ -105,10 +106,9 @@ class NoteTableViewController: UITableViewController {
                 tableView.reloadRows(at: [selectedIndexPath, IndexPath.init(row: 0, section: 0)], with: .none)
             }
             else {
-                // Add a new note.
-                let newIndexPath = IndexPath(row: getNotes().count, section: 0)
-                NoteStorage.shared.append(&NoteStorage.shared.currentNote!)
-                tableView.insertRows(at: [newIndexPath], with: .automatic)
+                // Add a new note.w 
+                let pos = NoteStorage.shared.append(&NoteStorage.shared.currentNote!)
+                tableView.insertRows(at: [IndexPath(row: pos, section: 0)], with: .automatic)
             }
         }
     }

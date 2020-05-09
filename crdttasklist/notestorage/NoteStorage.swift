@@ -38,9 +38,10 @@ class NoteStorage {
         saveNotes()
     }
 
-    func append(_ note: inout Note) {
+    func append(_ note: inout Note) -> Int {
         _notes[note.id!] = note
         saveNotes()
+        return getNotes().firstIndex(of: note)!
     }
 
     func markDeleted(_ row: NSInteger) {

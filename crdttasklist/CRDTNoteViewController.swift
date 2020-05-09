@@ -56,6 +56,8 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
 
         // 4
         let textView: CRDTTextView = CRDTTextView(frame: newTextViewRect, textContainer: container)
+        textView.allowsEditingTextAttributes = false
+        Design.applyToTextView(textView)
         textView.delegate = self
         view.addSubview(textView)
 
@@ -68,7 +70,6 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
         textView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
-        textView.font = UIFont.systemFont(ofSize: 25)
 
         self.textView = textView
     }

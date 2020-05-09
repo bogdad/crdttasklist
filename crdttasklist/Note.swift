@@ -42,7 +42,7 @@ class Note: Codable, Equatable {
     }
 
     func getDisplayName() -> String {
-        return crdt.to_string(20)
+        return crdt.to_string(30)
     }
 
     func creationDate() -> Date {

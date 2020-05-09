@@ -101,6 +101,9 @@ struct CRDT: Codable, Equatable {
     }
 
     mutating func replace(_ range: Interval, _ str: String) {
+        if to_string() == str {
+            return
+        }
         set_position(range)
 
         if range.len() > 0 {
