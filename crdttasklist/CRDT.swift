@@ -8,7 +8,7 @@
 
 import Foundation
 
-class CRDT: Codable, Equatable {
+struct CRDT: Codable, Equatable {
     var editor: Editor
     var view: View
     var deletionsInsertions: DeletionsInsertions?
@@ -25,8 +25,14 @@ class CRDT: Codable, Equatable {
         self.deletionsInsertions = DeletionsInsertions()
     }
 
-    func tryMigrate() {
-        editor.tryMigrate()
+    mutating func tryMigrate() -> Bool {
+        var res = false
+        res = res || editor.tryMigrate()
+        if self.deletionsInsertions == nil {
+            self.deletionsInsertions = DeletionsInsertions()
+            res = true
+        }
+        return res
     }
 
     func isActive() -> Bool {
@@ -37,7 +43,7 @@ class CRDT: Codable, Equatable {
         return self.deletionsInsertions?.creationDate() ?? Date()
     }
 
-    func markDeleted() {
+    mutating func markDeleted() {
         deletionsInsertions!.markDeleted()
     }
 
@@ -53,11 +59,11 @@ class CRDT: Codable, Equatable {
         return lhs.editor == rhs.editor && lhs.view == rhs.view
     }
 
-    func editing_finished() {
+    mutating func editing_finished() {
         view.reset_selection()
     }
 
-    func merge(_ other: CRDT) -> CRDTMergeResult {
+    mutating func merge(_ other: CRDT) -> CRDTMergeResult {
         let editorMerge = self.editor.merge(other.editor.engine)
         let deletionsMerge = self.deletionsInsertions!.merge(other.deletionsInsertions!)
         return CRDTMergeResult(
@@ -65,7 +71,7 @@ class CRDT: Codable, Equatable {
             otherChanged: editorMerge.newChanged || deletionsMerge.otherChanged)
     }
 
-    func replace(_ range: Interval, _ str: String) {
+    mutating func replace(_ range: Interval, _ str: String) {
         set_position(range)
 
         if range.len() > 0 {
@@ -79,11 +85,11 @@ class CRDT: Codable, Equatable {
         return view.selection.regions[0].to_interval()
     }
 
-    private func set_position(_ r: Interval) {
+    mutating private func set_position(_ r: Interval) {
         view.set_selection_for_edit(Selection.new_simple(SelRegion.from(r)))
     }
 
-    private func update_views(_ delta: RopeDelta, _ last_text: Rope, _ drift: InsertDrift) {
+    mutating private func update_views(_ delta: RopeDelta, _ last_text: Rope, _ drift: InsertDrift) {
         // let mut width_cache = self.width_cache.borrow_mut();
         /*let iter_views = [self.view]//.chain(self.siblings.iter());
         iter_views.for_each({ v in
@@ -99,19 +105,19 @@ class CRDT: Codable, Equatable {
         self.view.after_edit(editor.get_buffer(), last_text, delta, drift)
     }
 
-    private func deleteBackward() {
+    mutating private func deleteBackward() {
         editor.delete_backward(&view, CRDT.config)
         after_edit()
     }
 
-    private func insert(_ chars: String) {
+    mutating private func insert(_ chars: String) {
         editor.insert(&view, Rope.from_str(chars))
         after_edit()
     }
 
     /// Commits any changes to the buffer, updating views and plugins as needed.
     /// This only updates internal state; it does not update the client.
-    private func after_edit() {
+    mutating private func after_edit() {
 
         let edit_info = editor.commit_delta()
         guard let (delta, last_text, drift) = edit_info else {

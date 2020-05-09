@@ -63,17 +63,20 @@ class NoteRemoteStorage {
         else {
                 fatalError("cant happen")
         }
-        self.downloadFromDropbox(toUrl: Note.TempArchiveURL, closure: { (otherNotes, rev) in
+        self.downloadFromDropbox(toUrl: Note.TempArchiveURL, closure: { arg in
 
-            if otherNotes != nil {
-                let (mergedNotes, mergeStatus) = self.noteStorage.mergeNotes(otherNotes!)
+            if arg != nil {
+                let otherNotes = arg!.0
+                let rev = arg!.1
+                let wasMigrated = arg!.2
+                let mergeStatus = self.noteStorage.mergeNotes(otherNotes)
                 if mergeStatus.needsLocalRedraw {
                     self.noteStorage.notesChangedRemotely()
                 }
-                if mergeStatus.needsUpload {
+                if mergeStatus.needsUpload || wasMigrated {
                     print("conflictDetected: needs upload, uploading \(self.noteStorage.notes().count)")
                     let _ = client.files.upload(path: "/notes",
-                                                mode: .update(rev!),
+                                                mode: .update(rev),
                                                 strictConflict: true,
                                                 input: try! Note.ArchiveURL.asURL())
                         .response { response, error in
@@ -93,8 +96,7 @@ class NoteRemoteStorage {
         });
     }
 
-
-    private func downloadFromDropbox(toUrl: URL, closure: @escaping (Notes?, String?) -> Void) {
+    private func downloadFromDropbox(toUrl: URL, closure: @escaping ((Notes, String, Bool)?) -> Void) {
         guard let client = DropboxClientsManager.authorizedClient else {
             fatalError("bad state")
         }
@@ -104,13 +106,13 @@ class NoteRemoteStorage {
         client.files.download(path: "/notes", overwrite: true, destination: destination)
         .response { response, error in
             if let response = response {
-                guard let fileNotes = self.noteStorage.loadFrom(toUrl: toUrl) else {
+                guard let (fileNotes, wasMigrated) = self.noteStorage.loadFrom(toUrl) else {
                     // TODO: what are we doing if we consistently cant download/parse from dropbox
                     return
                 }
                 print("downloadFromDropBox: downoladed \(fileNotes.count) with revision \(response.0.rev)")
                 DispatchQueue.main.async {
-                    closure(fileNotes, response.0.rev)
+                    closure((fileNotes, response.0.rev, wasMigrated))
                 }
             } else if let error = error {
                 switch error {
@@ -121,7 +123,7 @@ class NoteRemoteStorage {
                         case .notFound:
                             DispatchQueue.main.async {
                                 print("downloadFromDropBox: downolad not found")
-                                closure(nil, nil)
+                                closure(nil)
                             }
                         default:
                             fatalError("handle it!")

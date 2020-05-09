@@ -16,7 +16,6 @@ class DebugViewController: UIViewController {
     }
 
     @IBAction func proceedClicked(_ sender: Any) {
-        NoteStorage.shared.debugShown = true
         let navigationController = self.storyboard?.instantiateViewController(withIdentifier: "NavigationController")
         self.present(navigationController!, animated: true, completion: nil)
     }

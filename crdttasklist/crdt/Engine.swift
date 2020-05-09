@@ -702,8 +702,9 @@ struct Engine: Codable, Equatable {
         self.session = session
     }
 
-    mutating func tryMigrate() {
+    mutating func tryMigrate() -> Bool {
         // migration for session id
+        var res = false
         if self.session.isDefault() {
             let sess = (UInt64.random(in: 0...UInt64.max), UInt32.random(in: 0...UInt32.max))
             self.set_session_id(SessionId.from(sess))
@@ -711,9 +712,11 @@ struct Engine: Codable, Equatable {
                 if i > 0 {
                     rev.rev_id.session1 = sess.0
                     rev.rev_id.session2 = sess.1
+                    res = true
                 }
             }
         }
+        return res
     }
 }
 

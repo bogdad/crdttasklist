@@ -62,8 +62,8 @@ class Note: Codable, Equatable {
         return note
     }
 
-    func tryMigrate() {
-        crdt.tryMigrate()
+    func tryMigrate() -> Bool {
+        return crdt.tryMigrate()
     }
 }
 

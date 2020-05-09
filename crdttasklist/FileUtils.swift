@@ -19,7 +19,7 @@ class FileUtils {
         guard let loadData = NSKeyedUnarchiver.unarchiveObject(withFile: url.path) as? Data else {
             return nil
         }
-        let fileObj = try! PropertyListDecoder().decode(type, from: loadData)
+        let fileObj = try? PropertyListDecoder().decode(type, from: loadData)
         return fileObj
     }
 }

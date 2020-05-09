@@ -114,8 +114,8 @@ struct Editor: Codable, Equatable {
         self.last_synced_rev = last_rev_id
     }
 
-    mutating func tryMigrate() {
-        self.engine.value.tryMigrate()
+    mutating func tryMigrate() -> Bool {
+        return self.engine.value.tryMigrate()
     }
 
     mutating func insert(_ view: inout View, _ rope: Rope) {

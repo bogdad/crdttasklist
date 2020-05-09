@@ -17,10 +17,7 @@ class NoteTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if !NoteStorage.shared.debugShown {
-            let debugViewCountroller = self.storyboard?.instantiateViewController(withIdentifier: "DebugViewController")
-            present(debugViewCountroller!, animated: true, completion: nil)
-        } else if !NoteStorage.shared.isStorageLinked() {
+        if !NoteStorage.shared.isStorageLinked() {
             let linkToSorageViewController = self.storyboard?.instantiateViewController(withIdentifier: "LinkToStorageViewController")
             present(linkToSorageViewController!, animated: true, completion: nil)
         } else {
