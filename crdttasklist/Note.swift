@@ -53,6 +53,10 @@ class Note: Codable, Equatable {
         return crdt.isActive()
     }
 
+    func markDeleted() {
+        crdt.markDeleted()
+    }
+
     static func newNote() -> Note {
         let note = Note(IdGenerator.shared.generate(), CRDT(""))
         return note

@@ -37,6 +37,10 @@ class CRDT: Codable, Equatable {
         return self.deletionsInsertions?.creationDate() ?? Date()
     }
 
+    func markDeleted() {
+        deletionsInsertions!.markDeleted()
+    }
+
     func to_string(_ prefix: Int) -> String {
         return editor.get_buffer().slice_to_cow(range: Interval(0, UInt(prefix)))
     }
@@ -55,7 +59,10 @@ class CRDT: Codable, Equatable {
 
     func merge(_ other: CRDT) -> CRDTMergeResult {
         let editorMerge = self.editor.merge(other.editor.engine)
-        return CRDTMergeResult(selfChanged: editorMerge.selfChanged, otherChanged: editorMerge.newChanged)
+        let deletionsMerge = self.deletionsInsertions!.merge(other.deletionsInsertions!)
+        return CRDTMergeResult(
+            selfChanged: editorMerge.selfChanged || deletionsMerge.selfChanged,
+            otherChanged: editorMerge.newChanged || deletionsMerge.otherChanged)
     }
 
     func replace(_ range: Interval, _ str: String) {
@@ -115,7 +122,3 @@ class CRDT: Codable, Equatable {
     }
 }
 
-struct CRDTMergeResult {
-    let selfChanged: Bool
-    let otherChanged: Bool
-}

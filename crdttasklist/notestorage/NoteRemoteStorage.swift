@@ -94,7 +94,7 @@ class NoteRemoteStorage {
     }
 
 
-    private func downloadFromDropbox(toUrl: URL, closure: @escaping ([Note]?, String?) -> Void) {
+    private func downloadFromDropbox(toUrl: URL, closure: @escaping (Notes?, String?) -> Void) {
         guard let client = DropboxClientsManager.authorizedClient else {
             fatalError("bad state")
         }

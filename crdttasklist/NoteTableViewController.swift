@@ -58,7 +58,7 @@ class NoteTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
-            NoteStorage.shared.remove(indexPath.row)
+            NoteStorage.shared.markDeleted(indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
@@ -68,16 +68,12 @@ class NoteTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        return true
+        return false
     }
 
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
         return true
-    }
-
-    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        NoteStorage.shared.move(sourceIndexPath.row, destinationIndexPath.row)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -108,7 +104,7 @@ class NoteTableViewController: UITableViewController {
         if var note = NoteStorage.shared.currentNote {
             if let selectedIndexPath = tableView.indexPathForSelectedRow {
                 // Update an existing meal.
-                NoteStorage.shared.setNote(selectedIndexPath.row, &note)
+                NoteStorage.shared.update(&note)
                 tableView.reloadRows(at: [selectedIndexPath], with: .none)
             }
             else {

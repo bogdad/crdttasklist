@@ -8,16 +8,23 @@
 
 import Foundation
 
+typealias Notes = [String: Note]
+
 class NoteStorage {
     static let shared = NoteStorage()
 
-    var _notes: [Note] = []
+
+    var _notes: Notes = [:]
     var rev: String?
     var debugShown = false
     var currentNote: Note?
 
     func notes() -> [Note] {
-        return _notes
+        return Array(_notes.values).filter { $0.isActive() } .sorted{ $0.creationDate() < $1.creationDate() }
+    }
+
+    func noteByIndexPath(_ row: NSInteger) -> Note {
+        return self.notes()[row]
     }
 
     func editingFinished(_ crdt: CRDT) {
@@ -27,42 +34,28 @@ class NoteStorage {
         currentNote?.update(crdt)
     }
 
-
-    func update(note: inout Note, newName: String, newText: String) {
-
-    }
-
-    func setNote(_ row: NSInteger, _ note: inout Note) {
-        _notes[row] = note
+    func update(_ note: inout Note) {
+        _notes[note.id!] = note
         saveNotes()
     }
 
     func append(_ note: inout Note) {
-        _notes.append(note)
+        _notes[note.id!] = note
         saveNotes()
     }
 
-    func remove(_ row: NSInteger) {
-        _notes.remove(at: row)
-        saveNotes()
-    }
-
-
-
-    func move(_ sourceIndex: NSInteger, _ destinationIndex: NSInteger) {
-        let itemToMove = _notes[sourceIndex]
-        _notes.remove(at: sourceIndex)
-        _notes.insert(itemToMove, at: destinationIndex)
+    func markDeleted(_ row: NSInteger) {
+        noteByIndexPath(row).markDeleted()
         saveNotes()
     }
 
     func getNotes() -> [Note] {
-        return _notes
+        return notes()
     }
 
     func loadNotes() -> Bool {
         guard let notes = loadFrom(toUrl: try! Note.ArchiveURL.asURL()) else {
-            self._notes = []
+            self._notes = [:]
             saveNotes()
             NoteRemoteStorage.shared.conflictDetected()
             return false
@@ -77,26 +70,26 @@ class NoteStorage {
         NoteRemoteStorage.shared.conflictDetected()
     }
 
-    func loadFrom(toUrl: URL) -> [Note]? {
+    func loadFrom(toUrl: URL) -> Notes? {
         let fileNotes = FileUtils.loadFromFile(type: [Note].self, url: toUrl)
         guard let n = fileNotes else {
             return nil
         }
-        for fileNotes in _notes {
+        for fileNotes in n {
             fileNotes.tryMigrate()
         }
-        let byId: [Note] = Array(Dictionary(grouping: n, by: { $0.id!} ).mapValues({ $0[0] }).values)
-        return Array(Dictionary(grouping: byId, by: { $0.dedupHash() }).mapValues({ $0[0] }).values.sortedById())
+        let byId = Dictionary(grouping: n, by: { $0.id!} ).mapValues { $0[0] }
+        return byId
     }
 
 
 
 
 
-    func mergeNotes(_ remoteNotes: [Note]) -> ([Note], MergeStatus) {
-        let localNotes = self.notes()
-        var localDict = Dictionary(grouping: localNotes, by: { $0.id! }).mapValues({$0[0]})
-        let remoteDict = Dictionary(grouping: remoteNotes, by: { $0.id! }).mapValues({$0[0]})
+    func mergeNotes(_ remoteNotes: Notes) -> (Notes, MergeStatus) {
+        let localNotes = self._notes
+        var localDict = localNotes
+        let remoteDict = remoteNotes
         var numRemoteNewer = 0
         var numLocalNewer = 0
         localDict.merge(remoteDict, uniquingKeysWith: { (left, right) -> Note in
@@ -113,7 +106,7 @@ class NoteStorage {
         })
 
         // TODO: handle deletions
-        let newLocalNotes = Array(localDict.values.sortedById())
+        let newLocalNotes = localDict
         let numMissingLocally = newLocalNotes.count - localNotes.count
         let numMissingRemotely = newLocalNotes.count - remoteNotes.count
         print("mergeNotes: local count \(localNotes.count) remote count \(remoteNotes.count) new local count \(newLocalNotes.count)")
@@ -139,7 +132,7 @@ class NoteStorage {
     }
 
     func eraseAllData() {
-        self._notes = []
+        self._notes = [:]
         do {
             try FileManager.default.removeItem(at: Note.ArchiveURL)
         } catch let error as NSError {

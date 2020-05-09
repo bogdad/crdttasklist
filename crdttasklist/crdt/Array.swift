@@ -8,6 +8,24 @@
 
 import Foundation
 
+extension Array where Element: Equatable {
+    func longestCommon(_ other: [Element]) -> ArraySlice<Element> {
+        var i = 0
+        while true {
+            if i >= self.len() {
+                return self[0...i]
+            }
+            if i >= other.len() {
+                return self[0...i]
+            }
+            if self[i] != other[i] {
+                return self[0...i]
+            }
+            i+=1
+        }
+    }
+}
+
 extension Array where Element: Comparable & Equatable {
 
     struct IntError: Error {
@@ -52,6 +70,7 @@ extension Array where Element: Comparable & Equatable {
         }
         return self
     }
+
 }
 
 extension Array {
@@ -101,4 +120,5 @@ extension Array {
         res.reserveCapacity(len)
         return res
     }
+
 }
