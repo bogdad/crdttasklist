@@ -114,6 +114,10 @@ struct Editor: Codable, Equatable {
         self.last_synced_rev = last_rev_id
     }
 
+    mutating func tryMigrate() {
+        self.engine.value.tryMigrate()
+    }
+
     mutating func insert(_ view: inout View, _ rope: Rope) {
         var builder = DeltaBuilder<RopeInfo>(self.text.len())
         for region in view.sel_regions() {
@@ -252,6 +256,11 @@ struct Editor: Codable, Equatable {
         //self.render();
         //FIXME: render after fuchsia sync
         return EditorMergeResult(selfChanged: engineMergeResult.aChanged, newChanged: engineMergeResult.bChanged)
+    }
+
+    // See `Engine::set_session_id`. Only useful for Fuchsia sync.
+    mutating func set_session_id(_ session: (UInt64, UInt32)) {
+        self.engine.value.set_session_id(SessionId.from(session))
     }
 }
 

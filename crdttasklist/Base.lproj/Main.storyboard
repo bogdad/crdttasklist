@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pGY-bO-o13">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pGY-bO-o13">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -62,7 +62,7 @@
                                             <rect key="frame" x="20" y="11" width="374" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" identifier="nameLabel" label="name"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="23"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -87,7 +87,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="zqu-lk-Wnj">
                             <connections>
-                                <segue destination="mYc-UL-kBC" kind="presentation" identifier="AddItem" id="rgw-dv-uf4"/>
+                                <segue destination="iZE-Um-twB" kind="show" identifier="AddItem" id="vfV-OV-MJf"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -173,27 +173,8 @@
             </objects>
             <point key="canvasLocation" x="36" y="277"/>
         </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="zWY-xq-UE6">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mYc-UL-kBC" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationItem key="navigationItem" id="1i1-cB-bV1"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="jwm-yJ-R0j">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="iZE-Um-twB" kind="relationship" relationship="rootViewController" id="L69-8T-thL"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="5fX-2m-DwR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2170" y="-178"/>
-        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="bBV-LA-sBX"/>
+        <segue reference="vfV-OV-MJf"/>
     </inferredMetricsTieBreakers>
 </document>

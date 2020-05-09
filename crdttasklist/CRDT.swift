@@ -11,11 +11,30 @@ import Foundation
 class CRDT: Codable, Equatable {
     var editor: Editor
     var view: View
+    var deletionsInsertions: DeletionsInsertions?
+
     static let config = BufferItems()
 
     init(_ s: String) {
         self.editor = Editor(s)
+        let u64 = UInt64.random(in: 0...UInt64.max)
+        let u32 = UInt32.random(in: 0...UInt32.max)
+        let sess = (u64, u32)
+        self.editor.set_session_id(sess)
         self.view = View(view_id: 0, buffer_id: 0)
+        self.deletionsInsertions = DeletionsInsertions()
+    }
+
+    func tryMigrate() {
+        editor.tryMigrate()
+    }
+
+    func isActive() -> Bool {
+        return self.deletionsInsertions?.isActive() ?? true
+    }
+
+    func creationDate() -> Date {
+        return self.deletionsInsertions?.creationDate() ?? Date()
     }
 
     func to_string(_ prefix: Int) -> String {

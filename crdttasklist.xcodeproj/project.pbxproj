@@ -12,6 +12,8 @@
 		BAD28DFEE190D8F0686C9D39 /* libPods-crdttasklistTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAE0F9C15F1BE26A7C8D160E /* libPods-crdttasklistTests.a */; };
 		E70B862A23DC9A3300C48E3C /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70B862923DC9A3300C48E3C /* Note.swift */; };
 		E70B862C23DCB3AF00C48E3C /* CRDTNoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70B862B23DCB3AF00C48E3C /* CRDTNoteViewController.swift */; };
+		E715898D24669179007AD153 /* DeletionsInsertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E715898C24669179007AD153 /* DeletionsInsertions.swift */; };
+		E71589902466BD2B007AD153 /* NoteRemoteStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E715898F2466BD2B007AD153 /* NoteRemoteStorage.swift */; };
 		E716D56A2413F6FE002F7652 /* LineWrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E716D5692413F6FE002F7652 /* LineWrap.swift */; };
 		E716D56C24156885002F7652 /* Breaks.swift in Sources */ = {isa = PBXBuildFile; fileRef = E716D56B24156885002F7652 /* Breaks.swift */; };
 		E716D56E24156C04002F7652 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = E716D56D24156C04002F7652 /* Array.swift */; };
@@ -99,6 +101,8 @@
 		CBC63A97996E075536225CAE /* Pods-crdttasklistTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklistTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests.release.xcconfig"; sourceTree = "<group>"; };
 		E70B862923DC9A3300C48E3C /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		E70B862B23DCB3AF00C48E3C /* CRDTNoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTNoteViewController.swift; sourceTree = "<group>"; };
+		E715898C24669179007AD153 /* DeletionsInsertions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionsInsertions.swift; sourceTree = "<group>"; };
+		E715898F2466BD2B007AD153 /* NoteRemoteStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteRemoteStorage.swift; sourceTree = "<group>"; };
 		E716D5692413F6FE002F7652 /* LineWrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrap.swift; sourceTree = "<group>"; };
 		E716D56B24156885002F7652 /* Breaks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Breaks.swift; sourceTree = "<group>"; };
 		E716D56D24156C04002F7652 /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
@@ -216,6 +220,15 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		E715898E24669933007AD153 /* notestorage */ = {
+			isa = PBXGroup;
+			children = (
+				E7A895D323DF807D008626EA /* NoteStorage.swift */,
+				E715898F2466BD2B007AD153 /* NoteRemoteStorage.swift */,
+			);
+			path = notestorage;
+			sourceTree = "<group>";
+		};
 		E7B05EE12298223300D2A094 = {
 			isa = PBXGroup;
 			children = (
@@ -244,6 +257,7 @@
 		E7B05EEC2298223300D2A094 /* crdttasklist */ = {
 			isa = PBXGroup;
 			children = (
+				E715898E24669933007AD153 /* notestorage */,
 				E7F465E92315AF5500030F3A /* crdt */,
 				E7B05EF42298223400D2A094 /* Assets.xcassets */,
 				E7B05EF12298223300D2A094 /* Main.storyboard */,
@@ -258,7 +272,6 @@
 				E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */,
 				E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */,
 				E70B862923DC9A3300C48E3C /* Note.swift */,
-				E7A895D323DF807D008626EA /* NoteStorage.swift */,
 				E7F88FD623EF2F77005EE3FD /* FileUtils.swift */,
 			);
 			path = crdttasklist;
@@ -303,6 +316,7 @@
 				E7B5D57222F34EC90020AFAC /* Collections.swift */,
 				E763DF9D22E4CD2E003572EC /* Cow.swift */,
 				E79E1F8622C7ED06007099E5 /* Delta.swift */,
+				E715898C24669179007AD153 /* DeletionsInsertions.swift */,
 				E71F38AA22D231B8007FC0E8 /* Editor.swift */,
 				E74D187C241EB75000EE3815 /* EmojiTable.swift */,
 				E74C3DBF22D23620001B9CA7 /* Engine.swift */,
@@ -555,6 +569,7 @@
 				E7F0326022BD26F300D0BF2D /* Utils.swift in Sources */,
 				E70B862C23DCB3AF00C48E3C /* CRDTNoteViewController.swift in Sources */,
 				E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */,
+				E715898D24669179007AD153 /* DeletionsInsertions.swift in Sources */,
 				E763DF9E22E4CD2E003572EC /* Cow.swift in Sources */,
 				E7B05F202298284100D2A094 /* Event.swift in Sources */,
 				E7B62C182299B8D1000143C6 /* Rope.swift in Sources */,
@@ -564,6 +579,7 @@
 				E74D187F241EC31E00EE3815 /* CRDT.swift in Sources */,
 				E72FC386240BFF4F00611A75 /* Config.swift in Sources */,
 				E7A895D423DF807D008626EA /* NoteStorage.swift in Sources */,
+				E71589902466BD2B007AD153 /* NoteRemoteStorage.swift in Sources */,
 				E74D187D241EB75000EE3815 /* EmojiTable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

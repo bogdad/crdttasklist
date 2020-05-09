@@ -84,6 +84,7 @@ class NoteTableViewController: UITableViewController {
         super.prepare(for: segue, sender: sender)
         switch(segue.identifier ?? "") {
         case "AddItem":
+            NoteStorage.shared.currentNote = nil
             break
         case "ShowDetail":
             guard let noteViewController = segue.destination as? CRDTNoteViewController else {

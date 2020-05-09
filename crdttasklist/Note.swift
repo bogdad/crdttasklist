@@ -45,9 +45,21 @@ class Note: Codable, Equatable {
         return crdt.to_string(20)
     }
 
+    func creationDate() -> Date {
+        return crdt.creationDate()
+    }
+
+    func isActive() -> Bool {
+        return crdt.isActive()
+    }
+
     static func newNote() -> Note {
         let note = Note(IdGenerator.shared.generate(), CRDT(""))
         return note
+    }
+
+    func tryMigrate() {
+        crdt.tryMigrate()
     }
 }
 

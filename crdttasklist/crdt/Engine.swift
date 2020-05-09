@@ -45,6 +45,14 @@ struct SessionId: Codable, Comparable, Equatable {
         self.f = f
         self.s = s
     }
+
+    func isDefault() -> Bool {
+        return f == 1 && s == 0
+    }
+
+    static func from(_ sess: (UInt64, UInt32)) -> SessionId {
+        return SessionId(sess.0, sess.1)
+    }
 }
 
 typealias RevToken = UInt64
@@ -680,6 +688,33 @@ struct Engine: Codable, Equatable {
         return EngineMergeResult(aChanged: a_new.len() > 0, bChanged: b_new.len() > 0)
     }
 
+    // When merging between multiple concurrently-editing sessions, each session should have a unique ID
+    // set with this function, which will make the revisions they create not have colliding IDs.
+    // For safety, this will panic if any revisions have already been added to the Engine.
+    //
+    // Merge may panic or return incorrect results if session IDs collide, which is why they can be
+    // 96 bits which is more than sufficient for this to never happen.
+    mutating func set_session_id(_ session: SessionId) {
+        //assert(
+        //    1 == self.revs.len(),
+        //    "Revisions were added to an Engine before set_session_id, these may collide."
+        //)
+        self.session = session
+    }
+
+    mutating func tryMigrate() {
+        // migration for session id
+        if self.session.isDefault() {
+            let sess = (UInt64.random(in: 0...UInt64.max), UInt32.random(in: 0...UInt32.max))
+            self.set_session_id(SessionId.from(sess))
+            for (i, var rev) in self.revs.enumerated() {
+                if i > 0 {
+                    rev.rev_id.session1 = sess.0
+                    rev.rev_id.session2 = sess.1
+                }
+            }
+        }
+    }
 }
 
 struct EngineMergeResult {

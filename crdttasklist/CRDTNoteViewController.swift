@@ -64,10 +64,10 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
         textView.topAnchor.constraint(equalTo: view.topAnchor),
         textView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+
+        textView.font = UIFont.systemFont(ofSize: 25)
+
         self.textView = textView
-        if note != nil {
-            textView.text.append("")
-        }
     }
 
     @IBAction func dismissPressed(_ sender:Any) {
