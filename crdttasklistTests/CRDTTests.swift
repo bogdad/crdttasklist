@@ -19,7 +19,7 @@ class CRDTTests: XCTestCase {
     }
 
     func testIosSuggestReplace() {
-        let crdt = CRDT("Hi rndown")
+        var crdt = CRDT("Hi rndown")
         let range = Interval(from: 3, length: 6)
         let str = "randown"
         crdt.replace(range, str)
@@ -27,7 +27,7 @@ class CRDTTests: XCTestCase {
     }
 
     func testReplaceWorks() {
-        let crdt = CRDT("aBc")
+        var crdt = CRDT("aBc")
         let range = Interval(from: 1, length: 1)
         let str = "12345"
         crdt.replace(range, str)
@@ -35,7 +35,7 @@ class CRDTTests: XCTestCase {
     }
 
     func testInsertWorks() {
-        let crdt = CRDT("")
+        var crdt = CRDT("")
         let range = Interval(from: 0, length: 0)
         let str = "1"
         crdt.replace(range, str)
@@ -46,7 +46,7 @@ class CRDTTests: XCTestCase {
     }
 
     func testBackspaceWorks() {
-        let crdt = CRDT("aBc")
+        var crdt = CRDT("aBc")
         let range = Interval(from: 1, length: 1)
         let str = ""
         crdt.replace(range, str)
