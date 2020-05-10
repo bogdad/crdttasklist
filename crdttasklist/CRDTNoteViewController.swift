@@ -28,6 +28,8 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
         } else {
             createTextView(nil)
         }
+        registerForKeyboard()
+
     }
 
     func createTextView(_ note: Note?) {
@@ -70,8 +72,35 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
         textView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
+        textView.isScrollEnabled = true
+        textView.scrollRangeToVisible(NSMakeRange(0, 0))
+        textView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
 
         self.textView = textView
+        self.textView?.becomeFirstResponder()
+
+    }
+
+    @objc func keyboardWasShown(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo else {
+            return
+        }
+        let rect = userInfo[UIResponder.keyboardFrameEndUserInfoKey]! as! CGRect
+        let kbSize = rect.size
+        let contentInsets = UIEdgeInsets(top: 0, left: 0.0, bottom: kbSize.height, right: 0.0)
+        self.textView!.contentInset = contentInsets
+    }
+
+    @objc func keyboardWasHidden(_ notification: NSNotification) {
+        let contentInsets = UIEdgeInsets.zero
+        self.textView!.contentInset = contentInsets
+    }
+
+    func registerForKeyboard() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasShown),
+                                               name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasHidden(_:)),
+                                               name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
     @IBAction func dismissPressed(_ sender:Any) {

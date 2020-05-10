@@ -17,7 +17,5 @@ class CRDTTextView: UITextView {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-
-
 }
 

@@ -13,7 +13,7 @@ struct Design {
 
     static func applyToLabel(_ label: UILabel, _ string: String) {
         var attributes:[NSAttributedString.Key: Any] = [:]
-        attributes[.kern] = 0.8
+        attributes[.kern] = 0.6
         label.font = UIFont.systemFont(ofSize: 22, weight: .regular)
         label.attributedText = NSAttributedString(string: string, attributes: attributes)
     }
@@ -21,7 +21,7 @@ struct Design {
     static func applyToTextView(_ textView: UITextView) {
         let font = UIFont.systemFont(ofSize: 22, weight: .regular)
         var attributes:[NSAttributedString.Key: Any] = [:]
-        attributes[.kern] = 0.8
+        attributes[.kern] = 0.6
         let style = NSMutableParagraphStyle()
         style.lineSpacing = 8
         attributes[.paragraphStyle] = style
