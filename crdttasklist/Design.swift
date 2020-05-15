@@ -26,8 +26,12 @@ struct Design {
         style.lineSpacing = 8
         attributes[.paragraphStyle] = style
         attributes[.font] = font
-        attributes[.foregroundColor] = UIColor.label
-        attributes[.backgroundColor] = UIColor.systemBackground
+        if #available(iOS 13.0, *) {
+            attributes[.foregroundColor] = UIColor.label
+            attributes[.backgroundColor] = UIColor.systemBackground
+        } else {
+            // Fallback on earlier versions
+        }
         textView.font = font
         textView.typingAttributes = attributes
         textView.attributedText = NSAttributedString(string: textView.text, attributes: attributes)
