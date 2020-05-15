@@ -74,8 +74,12 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
         textView.isScrollEnabled = true
         textView.scrollRangeToVisible(NSMakeRange(0, 0))
         textView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
-        textView.textColor = UIColor.label
-        textView.backgroundColor = UIColor.systemBackground
+        if #available(iOS 13.0, *) {
+            textView.textColor = UIColor.label
+            textView.backgroundColor = UIColor.systemBackground
+        } else {
+            // Fallback on earlier versions
+        }
 
         self.textView = textView
         self.textView?.becomeFirstResponder()
