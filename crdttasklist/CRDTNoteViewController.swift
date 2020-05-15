@@ -29,7 +29,6 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
             createTextView(nil)
         }
         registerForKeyboard()
-
     }
 
     func createTextView(_ note: Note?) {
@@ -75,6 +74,8 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
         textView.isScrollEnabled = true
         textView.scrollRangeToVisible(NSMakeRange(0, 0))
         textView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
+        textView.textColor = UIColor.label
+        textView.backgroundColor = UIColor.systemBackground
 
         self.textView = textView
         self.textView?.becomeFirstResponder()

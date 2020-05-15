@@ -67,7 +67,8 @@ class Note: Codable, Equatable {
     }
 
     func tryMigrate() -> Bool {
-        return crdt.tryMigrate()
+        var res = crdt.tryMigrate()
+        return res
     }
 }
 

@@ -81,11 +81,13 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Notes" id="N7E-O2-7Bn">
                         <barButtonItem key="leftBarButtonItem" systemItem="edit" id="UaJ-sE-oDb">
+                            <color key="tintColor" systemColor="linkColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <action selector="startEditing:" destination="knq-3P-Pf0" id="vUy-KE-pGu"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="zqu-lk-Wnj">
+                            <color key="tintColor" systemColor="linkColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="iZE-Um-twB" kind="show" identifier="AddItem" id="vfV-OV-MJf"/>
                             </connections>

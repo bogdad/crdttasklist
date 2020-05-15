@@ -12,7 +12,8 @@ struct CRDT: Codable, Equatable {
     var editor: Editor
     var view: View
     var deletionsInsertions: DeletionsInsertions?
-    var lastModificationDate: Date?
+
+    var lastModificationDateTimeInterval: Double?
 
     static let config = BufferItems()
 
@@ -24,7 +25,7 @@ struct CRDT: Codable, Equatable {
         self.editor.set_session_id(sess)
         self.view = View(view_id: 0, buffer_id: 0)
         self.deletionsInsertions = DeletionsInsertions()
-        self.lastModificationDate = Date()
+        self.lastModificationDateTimeInterval = Date().timeIntervalSince1970
     }
 
     mutating func new_session() {
@@ -35,14 +36,15 @@ struct CRDT: Codable, Equatable {
     }
 
     mutating func tryMigrate() -> Bool {
-        var res = false
-        res = res || editor.tryMigrate()
+        var res = editor.tryMigrate()
         if self.deletionsInsertions == nil {
             self.deletionsInsertions = DeletionsInsertions()
             res = true
         }
-        if self.lastModificationDate == nil {
-            self.lastModificationDate = Date()
+        if let lastModificationDateTimeInterval = self.lastModificationDateTimeInterval {
+            print(Date(timeIntervalSince1970: lastModificationDateTimeInterval).debugDescription)
+        } else {
+            self.lastModificationDateTimeInterval = Date().timeIntervalSince1970
             res = true
         }
         return res
@@ -57,7 +59,7 @@ struct CRDT: Codable, Equatable {
     }
 
     func modificationDate() -> Date {
-        return self.lastModificationDate ?? Date()
+        return Date(timeIntervalSince1970: self.lastModificationDateTimeInterval ?? Date().timeIntervalSince1970)
     }
 
     mutating func markDeleted() {
@@ -86,12 +88,12 @@ struct CRDT: Codable, Equatable {
 
         var lastModificationDateSelfChanged = false
         var lastModificationDateOtherChanged = false
-        let oldSelfDate = lastModificationDate
-        lastModificationDate = Swift.max(lastModificationDate!, other.lastModificationDate!)
-        if oldSelfDate != lastModificationDate {
+        let oldSelfDate = lastModificationDateTimeInterval
+        lastModificationDateTimeInterval = Swift.max(lastModificationDateTimeInterval!, other.lastModificationDateTimeInterval!)
+        if oldSelfDate != lastModificationDateTimeInterval {
             lastModificationDateSelfChanged = true
         }
-        if other.lastModificationDate != lastModificationDate {
+        if other.lastModificationDateTimeInterval != lastModificationDateTimeInterval {
             lastModificationDateOtherChanged = true
         }
 
@@ -111,7 +113,7 @@ struct CRDT: Codable, Equatable {
         }
 
         insert(str)
-        lastModificationDate = Date()
+        lastModificationDateTimeInterval = Date().timeIntervalSince1970
     }
 
     private func position() -> Interval {
