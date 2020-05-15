@@ -16,9 +16,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-
-        let dropboxAppKey = "yp4guugaz0yyawo"
-        DropboxClientsManager.setupWithAppKey(dropboxAppKey)
+        if UIDevice.current.userInterfaceIdiom == .pad ||
+            UIDevice.current.userInterfaceIdiom == .phone {
+            let dropboxAppKey = "yp4guugaz0yyawo"
+            DropboxClientsManager.setupWithAppKey(dropboxAppKey)
+        } else {
+            let dropboxAppKey = "yp4guugaz0yyawo"
+            DropboxClientsManager.setupWithAppKey(dropboxAppKey)
+        }
         // Override point for customization after application launch.
         return true
     }

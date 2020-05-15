@@ -102,6 +102,7 @@
 		A9CFA45FEAC5D7758FB9BB17 /* libPods-crdttasklist.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-crdttasklist.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AAE0F9C15F1BE26A7C8D160E /* libPods-crdttasklistTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-crdttasklistTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CBC63A97996E075536225CAE /* Pods-crdttasklistTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklistTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklistTests/Pods-crdttasklistTests.release.xcconfig"; sourceTree = "<group>"; };
+		E705C49A24683D8A00D5363F /* crdttasklist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = crdttasklist.entitlements; sourceTree = "<group>"; };
 		E70B862923DC9A3300C48E3C /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		E70B862B23DCB3AF00C48E3C /* CRDTNoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTNoteViewController.swift; sourceTree = "<group>"; };
 		E7112DE62466CC9A00F884D8 /* CRDTMergeResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTMergeResult.swift; sourceTree = "<group>"; };
@@ -263,6 +264,7 @@
 		E7B05EEC2298223300D2A094 /* crdttasklist */ = {
 			isa = PBXGroup;
 			children = (
+				E705C49A24683D8A00D5363F /* crdttasklist.entitlements */,
 				E715898E24669933007AD153 /* notestorage */,
 				E7F465E92315AF5500030F3A /* crdt */,
 				E7B05EF42298223400D2A094 /* Assets.xcassets */,
@@ -769,6 +771,8 @@
 			baseConfigurationReference = A8C17A7DCE3E0DA110C218A2 /* Pods-crdttasklist.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = crdttasklist/crdttasklist.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = W9WX9VGYS8;
 				INFOPLIST_FILE = crdttasklist/Info.plist;
@@ -778,6 +782,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = vs.crdttasklist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -788,6 +793,8 @@
 			baseConfigurationReference = F25EA82BD8892AE33DAF952B /* Pods-crdttasklist.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = crdttasklist/crdttasklist.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = W9WX9VGYS8;
 				INFOPLIST_FILE = crdttasklist/Info.plist;
@@ -797,6 +804,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = vs.crdttasklist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
