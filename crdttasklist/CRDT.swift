@@ -44,7 +44,7 @@ struct CRDT: Codable, Equatable {
             res = true
         }
         if let lastModificationDateTimeInterval = self.lastModificationDateTimeInterval {
-            //print(Date(timeIntervalSince1970: lastModificationDateTimeInterval).debugDescription)
+            //
         } else {
             self.lastModificationDateTimeInterval = Date().timeIntervalSince1970
             res = true
