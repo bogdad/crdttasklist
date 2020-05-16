@@ -35,6 +35,8 @@ struct CRDT: Codable, Equatable {
         self.editor.set_session_id(sess)
     }
 
+
+
     mutating func tryMigrate() -> Bool {
         var res = editor.tryMigrate()
         if self.deletionsInsertions == nil {
@@ -42,7 +44,7 @@ struct CRDT: Codable, Equatable {
             res = true
         }
         if let lastModificationDateTimeInterval = self.lastModificationDateTimeInterval {
-            print(Date(timeIntervalSince1970: lastModificationDateTimeInterval).debugDescription)
+            //print(Date(timeIntervalSince1970: lastModificationDateTimeInterval).debugDescription)
         } else {
             self.lastModificationDateTimeInterval = Date().timeIntervalSince1970
             res = true

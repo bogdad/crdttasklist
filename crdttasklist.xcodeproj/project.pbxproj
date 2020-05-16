@@ -40,6 +40,7 @@
 		E763DF9E22E4CD2E003572EC /* Cow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9D22E4CD2E003572EC /* Cow.swift */; };
 		E76A859E23478EDB0094EBBF /* NoteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */; };
 		E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76E278522A0120C00E86AB2 /* RopeTests.swift */; };
+		E776E3D2246FE6F400738B66 /* NoteLocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E776E3D1246FE6F400738B66 /* NoteLocalStorage.swift */; };
 		E778F217238C8A0E0036EB29 /* NoteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */; };
 		E78674DA23E7626100728436 /* CRDTTextStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78674D923E7626100728436 /* CRDTTextStorage.swift */; };
 		E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8622C7ED06007099E5 /* Delta.swift */; };
@@ -133,6 +134,7 @@
 		E763DF9D22E4CD2E003572EC /* Cow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cow.swift; sourceTree = "<group>"; };
 		E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewCell.swift; sourceTree = "<group>"; };
 		E76E278522A0120C00E86AB2 /* RopeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RopeTests.swift; sourceTree = "<group>"; };
+		E776E3D1246FE6F400738B66 /* NoteLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteLocalStorage.swift; sourceTree = "<group>"; };
 		E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewController.swift; sourceTree = "<group>"; };
 		E78674D923E7626100728436 /* CRDTTextStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTTextStorage.swift; sourceTree = "<group>"; };
 		E79E1F8622C7ED06007099E5 /* Delta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delta.swift; sourceTree = "<group>"; };
@@ -232,6 +234,7 @@
 			children = (
 				E7A895D323DF807D008626EA /* NoteStorage.swift */,
 				E715898F2466BD2B007AD153 /* NoteRemoteStorage.swift */,
+				E776E3D1246FE6F400738B66 /* NoteLocalStorage.swift */,
 			);
 			path = notestorage;
 			sourceTree = "<group>";
@@ -590,6 +593,7 @@
 				E7F465E82315AC4200030F3A /* CRDTTextView.swift in Sources */,
 				E7BD0E0A22FC366300B14710 /* TestHelpers.swift in Sources */,
 				E76A859E23478EDB0094EBBF /* NoteTableViewCell.swift in Sources */,
+				E776E3D2246FE6F400738B66 /* NoteLocalStorage.swift in Sources */,
 				E74D187F241EC31E00EE3815 /* CRDT.swift in Sources */,
 				E72FC386240BFF4F00611A75 /* Config.swift in Sources */,
 				E7A895D423DF807D008626EA /* NoteStorage.swift in Sources */,

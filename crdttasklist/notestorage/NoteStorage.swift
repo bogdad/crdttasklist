@@ -54,7 +54,7 @@ class NoteStorage {
     }
 
     func loadNotes() -> Bool {
-        guard let (notes, wasMigrated) = loadFrom(try! Note.ArchiveURL.asURL()) else {
+        guard let (notes, wasMigrated) = NoteLocalStorage.loadFrom(try! Note.ArchiveURL.asURL()) else {
             self._notes = [:]
             saveNotes()
             NoteRemoteStorage.shared.conflictDetected()
@@ -74,36 +74,6 @@ class NoteStorage {
         NoteRemoteStorage.shared.conflictDetected()
     }
 
-    func loadFromUrlInnerArray(_ toUrl: URL) -> [Note]? {
-        return FileUtils.loadFromFile(type: [Note].self, url: toUrl)
-    }
-    func loadFromUrlInnerMap(_ toUrl: URL) -> Notes? {
-        return FileUtils.loadFromFile(type: Notes.self, url: toUrl)
-    }
-
-    func loadFrom(_ toUrl: URL) -> (Notes, Bool)? {
-        guard let fileNotes = loadFromUrlInnerArray(toUrl) else {
-            guard var dict = loadFromUrlInnerMap(toUrl) else {
-                return nil
-            }
-            var wasMigrated = false
-            for note in dict.values {
-                let newV = note.tryMigrate()
-                wasMigrated = wasMigrated || newV
-                dict[note.id!] = note
-            }
-            return (dict, wasMigrated)
-        }
-        var wasMigrated = false
-        var migrated: [Note] = []
-        for n in fileNotes {
-            let newW = n.tryMigrate()
-            wasMigrated = wasMigrated || newW
-            migrated.append(n)
-        }
-        let byId = Dictionary(grouping: migrated, by: { $0.id!} ).mapValues { $0[0] }
-        return (byId, wasMigrated)
-    }
 
     func mergeNotes(_ remoteNotes: Notes) -> MergeStatus {
         let localNotes = self._notes

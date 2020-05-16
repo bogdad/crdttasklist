@@ -106,7 +106,7 @@ class NoteRemoteStorage {
         client.files.download(path: "/notes", overwrite: true, destination: destination)
         .response { response, error in
             if let response = response {
-                guard let (fileNotes, wasMigrated) = self.noteStorage.loadFrom(toUrl) else {
+                guard let (fileNotes, wasMigrated) = NoteLocalStorage.loadFrom(toUrl) else {
                     // TODO: what are we doing if we consistently cant download/parse from dropbox
                     return
                 }
