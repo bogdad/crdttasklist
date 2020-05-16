@@ -8,6 +8,12 @@
 
 import Foundation
 class NoteLocalStorage {
+
+    static func saveNotes() {
+        FileUtils.saveToFile(obj: Array(NoteStorage.shared._notes.values), url: Note.ArchiveURL)
+        NoteRemoteStorage.shared.conflictDetected()
+    }
+
     static func loadFrom(_ toUrl: URL) -> (Notes, Bool)? {
         guard let fileNotes = loadFromUrlInnerArray(toUrl) else {
             guard let dict = loadFromUrlInnerMap(toUrl) else {

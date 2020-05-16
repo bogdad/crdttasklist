@@ -35,18 +35,18 @@ class NoteStorage {
 
     func update(_ note: inout Note) {
         _notes[note.id!] = note
-        saveNotes()
+        NoteLocalStorage.saveNotes()
     }
 
     func append(_ note: inout Note) -> Int {
         _notes[note.id!] = note
-        saveNotes()
+        NoteLocalStorage.saveNotes()
         return getNotes().firstIndex(of: note)!
     }
 
     func markDeleted(_ row: NSInteger) {
         noteByIndexPath(row).markDeleted()
-        saveNotes()
+        NoteLocalStorage.saveNotes()
     }
 
     func getNotes() -> [Note] {
@@ -56,24 +56,18 @@ class NoteStorage {
     func loadNotes() -> Bool {
         guard let (notes, wasMigrated) = NoteLocalStorage.loadFrom(try! Note.ArchiveURL.asURL()) else {
             self._notes = [:]
-            saveNotes()
+            NoteLocalStorage.saveNotes()
             NoteRemoteStorage.shared.conflictDetected()
             return false
         }
         self._notes = notes
         if wasMigrated {
-            saveNotes()
+            NoteLocalStorage.saveNotes()
         }
         NoteRemoteStorage.shared.conflictDetected()
 
         return true
     }
-
-    func saveNotes() {
-        FileUtils.saveToFile(obj: Array(self._notes.values), url: Note.ArchiveURL)
-        NoteRemoteStorage.shared.conflictDetected()
-    }
-
 
     func mergeNotes(_ remoteNotes: Notes) -> MergeStatus {
         let localNotes = self._notes

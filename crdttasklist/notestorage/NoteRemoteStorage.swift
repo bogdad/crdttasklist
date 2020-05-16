@@ -74,7 +74,7 @@ class NoteRemoteStorage {
                     self.noteStorage.notesChangedRemotely()
                 }
                 if mergeStatus.needsUpload || wasMigrated {
-                    NoteStorage.shared.saveNotes()
+                    NoteLocalStorage.saveNotes()
                     print("conflictDetected: needs upload, uploading \(self.noteStorage.notes().count)")
                     let _ = client.files.upload(path: "/notes",
                                                 mode: .update(rev),
