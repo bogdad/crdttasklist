@@ -97,4 +97,12 @@ class DeltaTests: XCTestCase {
             d4.apply_to_string(str1andstuff)
         )
     }
+
+    func test_inserted_subset() {
+        let d = Delta.simple_edit(Interval(1, 9), Rope.from_str("era"), 11)
+        let (d1, _) = d.factor()
+        XCTAssertEqual("hello world", d1.inserted_subset().delete_from_string("heraello world"))
+    }
+
+    
 }

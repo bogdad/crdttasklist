@@ -8,6 +8,12 @@
 
 import Foundation
 
+extension Array {
+    func split_at(_ ai: Int) -> (ArraySlice<Element>, ArraySlice<Element>) {
+        return (self[0..<ai], self[ai...])
+    }
+}
+
 extension Array where Element: Equatable {
     func longestCommon(_ other: [Element]) -> ArraySlice<Element> {
         var i = 0

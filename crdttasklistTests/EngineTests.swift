@@ -9,6 +9,60 @@ import XCTest
 
 @testable import crdttasklist
 
+enum MergeTestOp {
+    case Merge(Int, Int)
+    case Assert(Int, String)
+    case AssertAll(String)
+    case AssertMaxUndoSoFar(Int, UInt)
+    case Edit(ei: Int, p: UInt, u: UInt, d: Delta<RopeInfo>)
+}
+
+struct MergeTestState {
+    var peers: [Cow<Engine>]
+
+    static func new(_ count: Int) -> MergeTestState {
+        var peers:[Cow<Engine>] = []
+        for i in 0..<count {
+            var peer = Cow(Engine())
+            peer.value.set_session_id(SessionId.from(((UInt64(i)*1000) as UInt64, UInt32(0))))
+            peers.append(peer)
+        }
+        return MergeTestState(peers: peers)
+    }
+
+    mutating func run_op(_ op: MergeTestOp) {
+        switch op {
+        case .Merge(let ai, let bi):
+            if bi < ai {
+                peers[ai].value.merge(peers[bi])
+            } else {
+                // start: [0 ai)
+                // rest: [ai ...)
+                peers[ai].value.merge(peers[bi - 1])
+            }
+        case .Assert(let ei, let correct):
+            XCTAssertEqual(correct, self.peers[ei].value.get_head().to_string())
+        case .AssertMaxUndoSoFar(let ei, let correct):
+            XCTAssertEqual(correct, self.peers[ei].value.max_undo_group_id())
+        case .AssertAll(let correct):
+            for (_, e) in self.peers.enumerated() {
+                XCTAssertEqual(correct, e.value.get_head().to_string())
+            }
+        case .Edit(let ei, let p, let u, let d):
+            let head = self.peers[ei].value.get_head_rev_id().token()
+            self.peers[ei].value.edit_rev(p, u, head, d)
+        }
+    }
+
+    mutating func run_script(_ script: [MergeTestOp]) {
+        for (i, op) in script.enumerated() {
+            print("running \(op) at index \(i)")
+            run_op(op)
+        }
+    }
+}
+
+
 class EngineTests: XCTestCase {
 
     let TEST_STR = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -202,4 +256,29 @@ class EngineTests: XCTestCase {
         XCTAssertEqual("-#-----", deletes_from_union_2.dbg())
     }
 
+    func test_merge_insert_only_whiteboard() {
+        let script: [MergeTestOp] = [
+            .Edit(ei: 2, p: 1, u: 1, d: TestHelpers.parse_delta("ab")),
+            .Merge(0, 2),
+            .Merge(1, 2),
+            .Assert(0, "ab"),
+            .Assert(1, "ab"),
+            .Assert(2, "ab"),
+            .Edit(ei: 0, p: 3, u: 1, d: TestHelpers.parse_delta("-c-")),
+            .Edit(ei: 0, p: 3, u: 1, d: TestHelpers.parse_delta("---d")),
+            .Assert(0, "acbd"),
+            .Edit(ei: 1, p: 5, u: 1, d: TestHelpers.parse_delta("-p-")),
+            .Edit(ei: 1, p: 5, u: 1, d: TestHelpers.parse_delta("---j")),
+            .Assert(1, "apbj"),
+            .Edit(ei: 2, p: 1, u: 1, d: TestHelpers.parse_delta("z--")),
+            .Merge(0,2),
+            .Merge(1, 2),
+            .Assert(0, "zacbd"),
+            .Assert(1, "zapbj"),
+            .Merge(0, 1),
+            .Assert(0, "zacpbdj"),
+        ]
+        var state = MergeTestState.new(3)
+        state.run_script(script)
+    }
 }

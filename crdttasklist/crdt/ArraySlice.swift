@@ -13,7 +13,7 @@ extension ArraySlice {
     func split_first() -> (ArraySlice<Element>, ArraySlice<Element>)? {
         if count > 0 {
             if count > 1 {
-                return (self[0...0], self[1...])
+                return (self[0..<0], self[1...])
             }
             return (self[0...0], [])
         }
@@ -34,5 +34,9 @@ extension ArraySlice {
 
     func len() -> Int {
         return count
+    }
+
+    func split_at(_ ai: Int) -> (ArraySlice<Element>, ArraySlice<Element>) {
+        return (self[0..<ai], self[ai...])
     }
 }

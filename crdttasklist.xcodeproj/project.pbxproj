@@ -301,8 +301,8 @@
 			children = (
 				E725DC9E245EABA600F091D2 /* CRDTTests.swift */,
 				E79E1F8822C7F237007099E5 /* DeltaTests.swift */,
-				E7B05F042298223400D2A094 /* Info.plist */,
 				E763DF9B22DA6FF4003572EC /* EngineTests.swift */,
+				E7B05F042298223400D2A094 /* Info.plist */,
 				E7BD0E0722FC352D00B14710 /* MultisetTests.swift */,
 				E7F88FD423EF2CC8005EE3FD /* NoteTests.swift */,
 				E76E278522A0120C00E86AB2 /* RopeTests.swift */,

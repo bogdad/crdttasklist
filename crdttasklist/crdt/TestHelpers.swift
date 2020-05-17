@@ -76,4 +76,29 @@ class TestHelpers {
             print("\(s.dbg())");
         }
     }
+
+    static func parse_delta(_ s: String) -> Delta<RopeInfo> {
+        let minus: Character = "-"
+        let exc: Character = "!"
+        let base_len = s
+            .chars()
+            .filter{ $0 == minus.asciiValue! || $0 == exc.asciiValue! }
+            .count
+        var b = DeltaBuilder<RopeInfo>(UInt(base_len))
+
+        var i = 0
+        for c in s {
+            if c == minus {
+                i += 1
+            } else if c == exc {
+                b.delete(Interval(UInt(i), UInt(i + 1)))
+                i += 1
+            } else {
+                let inserted = "\(c)"
+                b.replace(Interval(UInt(i), UInt(i)), Rope.from_str(inserted))
+            }
+        }
+
+        return b.build()
+    }
 }
