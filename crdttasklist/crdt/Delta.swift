@@ -66,10 +66,10 @@ class Delta<N: NodeInfo> {
         return b.build()
     }
 
-    /// Returns the length of the new document. In other words, the length of
-    /// the transformed string after this Delta is applied.
-    ///
-    /// `d.apply(r).len() == d.new_document_len()`
+    // Returns the length of the new document. In other words, the length of
+    // the transformed string after this Delta is applied.
+    //
+    // `d.apply(r).len() == d.new_document_len()`
     func new_document_len() -> UInt {
         return Delta.total_element_len(self.els[...])
     }
@@ -115,33 +115,33 @@ class Delta<N: NodeInfo> {
         return (InsertDelta(elem: Delta(ins, self.base_len)), sb.build())
     }
 
-    /// Synthesize a delta from a "union string" and two subsets: an old set
-    /// of deletions and a new set of deletions from the union. The Delta is
-    /// from text to text, not union to union; anything in both subsets will
-    /// be assumed to be missing from the Delta base and the new text. You can
-    /// also think of these as a set of insertions and one of deletions, with
-    /// overlap doing nothing. This is basically the inverse of `factor`.
-    ///
-    /// Since only the deleted portions of the union string are necessary,
-    /// instead of requiring a union string the function takes a `tombstones`
-    /// rope which contains the deleted portions of the union string. The
-    /// `from_dels` subset must be the interleaving of `tombstones` into the
-    /// union string.
-    ///
-    /// ```no_run
-    /// # use xi_rope::rope::{Rope, RopeInfo};
-    /// # use xi_rope::delta::Delta;
-    /// # use std::str::FromStr;
-    /// fn test_synthesize(d : &Delta<RopeInfo>, r : &Rope) {
-    ///     let (ins_d, del) = d.clone().factor();
-    ///     let ins = ins_d.inserted_subset();
-    ///     let del2 = del.transform_expand(&ins);
-    ///     let r2 = ins_d.apply(&r);
-    ///     let tombstones = ins.complement().delete_from(&r2);
-    ///     let d2 = Delta::synthesize(&tombstones, &ins, &del);
-    ///     assert_eq!(String::from(d2.apply(r)), String::from(d.apply(r)));
-    /// }
-    /// ```
+    // Synthesize a delta from a "union string" and two subsets: an old set
+    // of deletions and a new set of deletions from the union. The Delta is
+    // from text to text, not union to union; anything in both subsets will
+    // be assumed to be missing from the Delta base and the new text. You can
+    // also think of these as a set of insertions and one of deletions, with
+    // overlap doing nothing. This is basically the inverse of `factor`.
+    //
+    // Since only the deleted portions of the union string are necessary,
+    // instead of requiring a union string the function takes a `tombstones`
+    // rope which contains the deleted portions of the union string. The
+    // `from_dels` subset must be the interleaving of `tombstones` into the
+    // union string.
+    //
+    // ```no_run
+    // # use xi_rope::rope::{Rope, RopeInfo};
+    // # use xi_rope::delta::Delta;
+    // # use std::str::FromStr;
+    // fn test_synthesize(d : &Delta<RopeInfo>, r : &Rope) {
+    //     let (ins_d, del) = d.clone().factor();
+    //     let ins = ins_d.inserted_subset();
+    //     let del2 = del.transform_expand(&ins);
+    //     let r2 = ins_d.apply(&r);
+    //     let tombstones = ins.complement().delete_from(&r2);
+    //     let d2 = Delta::synthesize(&tombstones, &ins, &del);
+    //     assert_eq!(String::from(d2.apply(r)), String::from(d.apply(r)));
+    // }
+    // ```
     static func synthesize(_ tombstones: Node<N>, _ from_dels: Subset, _ to_dels: Subset) -> Delta<N> {
         let base_len = from_dels.len_after_delete()
         var els = [DeltaElement<N>]()
@@ -213,18 +213,19 @@ class Delta<N: NodeInfo> {
                 }
             }
         }
+        print("syntesize: tombstones = \(tombstones.len())")
         return Delta(els, base_len)
     }
 
-    /// Produce a summary of the delta. Everything outside the returned interval
-    /// is unchanged, and the old contents of the interval are replaced by new
-    /// contents of the returned length. Equations:
-    ///
-    /// `(iv, new_len) = self.summary()`
-    ///
-    /// `new_s = self.apply(s)`
-    ///
-    /// `new_s = simple_edit(iv, new_s.subseq(iv.start(), iv.start() + new_len), s.len()).apply(s)`
+    // Produce a summary of the delta. Everything outside the returned interval
+    // is unchanged, and the old contents of the interval are replaced by new
+    // contents of the returned length. Equations:
+    //
+    // `(iv, new_len) = self.summary()`
+    //
+    // `new_s = self.apply(s)`
+    //
+    // `new_s = simple_edit(iv, new_s.subseq(iv.start(), iv.start() + new_len), s.len()).apply(s)`
     func summary() -> (Interval, UInt) {
         var iv_start = 0
         var els = ArraySlice(self.els)
@@ -259,9 +260,9 @@ struct InsertDelta<N: NodeInfo> {
         }
     }
 
-    /// Do a coordinate transformation on an insert-only delta. The `after` parameter
-    /// controls whether the insertions in `self` come after those specific in the
-    /// coordinate transform.
+    // Do a coordinate transformation on an insert-only delta. The `after` parameter
+    // controls whether the insertions in `self` come after those specific in the
+    // coordinate transform.
     //
     // TODO: write accurate equations
     func transform_expand(_ xform: Subset, _ after: Bool) -> InsertDelta<N> {
@@ -356,9 +357,9 @@ struct InsertDelta<N: NodeInfo> {
         return b.build()
     }
 
-    /// Return a Subset containing the inserted ranges.
-    ///
-    /// `d.inserted_subset().delete_from_string(d.apply_to_string(s)) == s`
+    // Return a Subset containing the inserted ranges.
+    //
+    // `d.inserted_subset().delete_from_string(d.apply_to_string(s)) == s`
     func inserted_subset() -> Subset {
         var sb = SubsetBuilder()
         for elem in self.elem.els {

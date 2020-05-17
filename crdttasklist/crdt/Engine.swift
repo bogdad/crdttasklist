@@ -379,6 +379,7 @@ struct Engine: Codable, Equatable {
             self.revs.append(new_rev)
             self.text = new_text
             self.tombstones = new_tombstones
+            print("try_edit_rev: tombstones \(self.tombstones.len())")
             self.deletes_from_union = new_deletes_from_union
         }
         return .success(())
@@ -444,8 +445,10 @@ struct Engine: Codable, Equatable {
         let new_deletes_from_union = rebased_deletes_from_union.union(to_delete)
 
         // move deleted or undone-inserted things from text to tombstones
+        print("mk_new_rev: before tombstones = \(self.tombstones.len())")
         let (new_text, new_tombstones) = GenericHelpers.shuffle(
         text_with_inserts, self.tombstones, rebased_deletes_from_union, new_deletes_from_union)
+        print("mk_new_rev: after tombstones = \(self.tombstones.len()) new_tombstones = \(new_tombstones.len())")
 
         let head_rev = self.revs[revs.count - 1]
         return .success((
@@ -487,7 +490,7 @@ struct Engine: Codable, Equatable {
         // invert the changes to deletes_from_union starting in the present and working backwards
         for rev in self.revs[Int(rev_index)...].makeIterator().reversed() {
             switch rev.edit {
-            case .Edit(_, let undo_group, var inserts, var deletes):
+            case .Edit(_, let undo_group, let inserts, let deletes):
                 if undone_groups.value.contains(undo_group) {
                     // no need to un-delete undone inserts since we'll just shrink them out
                     deletes_from_union = deletes_from_union.transform_shrink(inserts)
@@ -495,7 +498,7 @@ struct Engine: Codable, Equatable {
                     let un_deleted = deletes_from_union.subtract(deletes)
                     deletes_from_union = un_deleted.transform_shrink(inserts)
                 }
-            case .Undo(let toggled_groups, var deletes_bitxor):
+            case .Undo(let toggled_groups, let deletes_bitxor):
                 if invert_undos {
                     let new_undone =
                         undone_groups.value.symmetricDifference(toggled_groups)
@@ -737,10 +740,16 @@ struct GenericHelpers {
         // Taking the complement of deletes_from_union leads to an interleaving valid for swapped text and tombstones,
         // allowing us to use the same method to insert the text into the tombstones.
         let inverse_tombstones_map = old_deletes_from_union.complement()
-        var new_deletes_from_union_complement = new_deletes_from_union.complement()
+        let new_deletes_from_union_complement = new_deletes_from_union.complement()
         let move_delta =
             Delta.synthesize(text, inverse_tombstones_map, new_deletes_from_union_complement)
-        return move_delta.apply(tombstones)
+        print("shuffle_tombstones: text = \(text.len()) inverse_tombstones_map = \(inverse_tombstones_map.len())")
+        print("shuffle_tombstones: new_deletes_from_union_complement = \(new_deletes_from_union_complement.len())")
+        print("shuffle_tombstones: rope base.len() = \(tombstones.len()) delta base_len = \(move_delta.base_len)")
+        let res = move_delta.apply(tombstones)
+        print("shuffle_tombstones: tombstones = \(tombstones.len())")
+        print()
+        return res
     }
 
 
@@ -754,8 +763,10 @@ struct GenericHelpers {
     ) -> (Rope, Rope) {
         // Delta that deletes the right bits from the text
         let del_delta = Delta.synthesize(tombstones, old_deletes_from_union, new_deletes_from_union)
+        print("shuffle: rope base.len() = \(text.len()) delta base_len = \(del_delta.base_len)")
         let new_text = del_delta.apply(text)
-        return (new_text, shuffle_tombstones(text, tombstones, old_deletes_from_union, new_deletes_from_union))
+        let new_tombstones = shuffle_tombstones(text, tombstones, old_deletes_from_union, new_deletes_from_union)
+        return (new_text, new_tombstones)
     }
 }
 

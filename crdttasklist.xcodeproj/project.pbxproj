@@ -41,6 +41,8 @@
 		E76A859E23478EDB0094EBBF /* NoteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */; };
 		E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76E278522A0120C00E86AB2 /* RopeTests.swift */; };
 		E776E3D2246FE6F400738B66 /* NoteLocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E776E3D1246FE6F400738B66 /* NoteLocalStorage.swift */; };
+		E776E3D4246FFF7100738B66 /* Optional.swift in Sources */ = {isa = PBXBuildFile; fileRef = E776E3D3246FFF7100738B66 /* Optional.swift */; };
+		E776E3D62470022600738B66 /* ChecklistCRDT.swift in Sources */ = {isa = PBXBuildFile; fileRef = E776E3D52470022600738B66 /* ChecklistCRDT.swift */; };
 		E778F217238C8A0E0036EB29 /* NoteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */; };
 		E78674DA23E7626100728436 /* CRDTTextStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78674D923E7626100728436 /* CRDTTextStorage.swift */; };
 		E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8622C7ED06007099E5 /* Delta.swift */; };
@@ -135,6 +137,8 @@
 		E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewCell.swift; sourceTree = "<group>"; };
 		E76E278522A0120C00E86AB2 /* RopeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RopeTests.swift; sourceTree = "<group>"; };
 		E776E3D1246FE6F400738B66 /* NoteLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteLocalStorage.swift; sourceTree = "<group>"; };
+		E776E3D3246FFF7100738B66 /* Optional.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Optional.swift; sourceTree = "<group>"; };
+		E776E3D52470022600738B66 /* ChecklistCRDT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCRDT.swift; sourceTree = "<group>"; };
 		E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewController.swift; sourceTree = "<group>"; };
 		E78674D923E7626100728436 /* CRDTTextStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTTextStorage.swift; sourceTree = "<group>"; };
 		E79E1F8622C7ED06007099E5 /* Delta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delta.swift; sourceTree = "<group>"; };
@@ -274,7 +278,7 @@
 				E7B05EF12298223300D2A094 /* Main.storyboard */,
 				E7B05EF92298223400D2A094 /* Info.plist */,
 				E7B05EED2298223300D2A094 /* AppDelegate.swift */,
-				E7A2E22F23DF3D1E00C65976 /* LinkToStorageController.swift */,
+				E776E3D52470022600738B66 /* ChecklistCRDT.swift */,
 				E74D187E241EC31E00EE3815 /* CRDT.swift */,
 				E70B862B23DCB3AF00C48E3C /* CRDTNoteViewController.swift */,
 				E7F465E72315AC4200030F3A /* CRDTTextView.swift */,
@@ -282,10 +286,12 @@
 				E74D1880241ECCD600EE3815 /* DebugViewController.swift */,
 				E7FFF0AD24671D42006713E9 /* Design.swift */,
 				E7F88FD623EF2F77005EE3FD /* FileUtils.swift */,
+				E7A2E22F23DF3D1E00C65976 /* LinkToStorageController.swift */,
+				E70B862923DC9A3300C48E3C /* Note.swift */,
 				E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */,
 				E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */,
-				E70B862923DC9A3300C48E3C /* Note.swift */,
 				E7FFF0AB246716BD006713E9 /* UIFont.swift */,
+				E776E3D3246FFF7100738B66 /* Optional.swift */,
 			);
 			path = crdttasklist;
 			sourceTree = "<group>";
@@ -561,6 +567,7 @@
 				E74D187B241D3FFC00EE3815 /* Iterator.swift in Sources */,
 				E7D05487245C06260097E298 /* Character.swift in Sources */,
 				E70B862A23DC9A3300C48E3C /* Note.swift in Sources */,
+				E776E3D4246FFF7100738B66 /* Optional.swift in Sources */,
 				E716D56A2413F6FE002F7652 /* LineWrap.swift in Sources */,
 				E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */,
 				E7DD4EB4242E87DE00E2B5B9 /* IndexSet.swift in Sources */,
@@ -571,6 +578,7 @@
 				E7F0325E22BD261F00D0BF2D /* Tree.swift in Sources */,
 				E72FC388240C00C600611A75 /* Backspace.swift in Sources */,
 				E7112DE72466CC9A00F884D8 /* CRDTMergeResult.swift in Sources */,
+				E776E3D62470022600738B66 /* ChecklistCRDT.swift in Sources */,
 				E7FFF0AC246716BD006713E9 /* UIFont.swift in Sources */,
 				E778F217238C8A0E0036EB29 /* NoteTableViewController.swift in Sources */,
 				E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */,

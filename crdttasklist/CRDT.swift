@@ -61,7 +61,7 @@ struct CRDT: Codable, Equatable {
     }
 
     func modificationDate() -> Date {
-        return Date(timeIntervalSince1970: self.lastModificationDateTimeInterval ?? Date().timeIntervalSince1970)
+        return Date(timeIntervalSince1970: self.lastModificationDateTimeInterval ?? Date.distantPast.timeIntervalSince1970)
     }
 
     mutating func markDeleted() {
@@ -105,6 +105,7 @@ struct CRDT: Codable, Equatable {
     }
 
     mutating func replace(_ range: Interval, _ str: String) {
+        print("crdt replace \(range) \(str)")
         if to_string() == str {
             return
         }

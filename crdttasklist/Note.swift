@@ -21,10 +21,12 @@ class Note: Codable, Equatable {
 
     var id: String?
     var crdt: CRDT
+    var checklistCRDT: ChecklistCRDT?
 
-    init(_ id: String, _ crdt: CRDT) {
+    init(_ id: String, _ crdt: CRDT, _ checklistCRDT: ChecklistCRDT) {
         self.id = id
         self.crdt = crdt
+        self.checklistCRDT = checklistCRDT
     }
 
     func update(_ crdt: CRDT) {
@@ -33,7 +35,8 @@ class Note: Codable, Equatable {
     }
 
     func merge(_ other: Note) -> (Note, CRDTMergeResult) {
-        let res = crdt.merge(other.crdt)
+        var res = crdt.merge(other.crdt)
+        res.merge(checklistCRDT.merge(other.checklistCRDT))
         return (self, res)
     }
 
@@ -42,7 +45,7 @@ class Note: Codable, Equatable {
     }
 
     func getDisplayName() -> String {
-        return crdt.to_string(30)
+        return crdt.to_string(25)
     }
 
     func creationDate() -> Date {
@@ -50,7 +53,7 @@ class Note: Codable, Equatable {
     }
 
     func modificationDate() -> Date {
-        return crdt.modificationDate()
+        return Swift.max(crdt.modificationDate(), checklistCRDT?.modificationDate() ?? Date.distantPast)
     }
 
     func isActive() -> Bool {
@@ -62,7 +65,7 @@ class Note: Codable, Equatable {
     }
 
     static func newNote() -> Note {
-        let note = Note(IdGenerator.shared.generate(), CRDT(""))
+        let note = Note(IdGenerator.shared.generate(), CRDT(""), ChecklistCRDT())
         return note
     }
 

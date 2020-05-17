@@ -17,6 +17,7 @@ class CRDTTextStorage: NSTextStorage {
     init(_ crdt: CRDT?) {
         self._crdt = crdt ?? CRDT("")
         self.backingStore = NSTextStorage(string: self._crdt.to_string())
+        self._crdt.new_session()
         super.init()
     }
 

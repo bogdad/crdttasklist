@@ -9,6 +9,10 @@
 import Foundation
 
 struct CRDTMergeResult {
-    let selfChanged: Bool
-    let otherChanged: Bool
+    var selfChanged: Bool
+    var otherChanged: Bool
+    mutating func merge(_ other: CRDTMergeResult) {
+        selfChanged = selfChanged || other.selfChanged
+        otherChanged = otherChanged || other.otherChanged
+    }
 }
