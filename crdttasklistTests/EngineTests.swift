@@ -362,4 +362,80 @@ class EngineTests: XCTestCase {
         var state = MergeTestState.new(6)
         state.run_script(script)
     }
+
+    func test_merge_simple_delete_1() {
+        let script: [MergeTestOp] = [
+            .Edit(ei: 0, p: 1, u: 1, d: parse_delta("abc")),
+            .Merge(1,0),
+            .Assert(0, "abc"),
+            .Assert(1, "abc"),
+            .Edit(ei: 0, p: 1, u: 1, d: parse_delta("!-d-")),
+            .Assert(0, "bdc"),
+            .Edit(ei: 1, p: 3, u: 1, d: parse_delta("--efg!")),
+            .Assert(1, "abefg"),
+            .Merge(1,0),
+            .Assert(1, "bdefg"),
+        ];
+        var state = MergeTestState.new(2)
+        state.run_script(script)
+    }
+
+    func test_merge_simple_delete_2() {
+        let script: [MergeTestOp] = [
+            .Edit(ei: 0, p: 1, u: 1, d: parse_delta("ab")),
+            .Merge(1,0),
+            .Assert(0, "ab"),
+            .Assert(1, "ab"),
+            .Edit(ei: 0, p: 1, u: 1, d: parse_delta("!-")),
+            .Assert(0, "b"),
+            .Edit(ei: 1, p: 3, u: 1, d: parse_delta("-c-")),
+            .Assert(1, "acb"),
+            .Merge(1,0),
+            .Assert(1, "cb")
+        ]
+        var state = MergeTestState.new(2)
+        state.run_script(script)
+    }
+
+    func test_merge_max_undo_so_far() {
+        let script: [MergeTestOp] = [
+            .Edit(ei: 0, p: 1, u: 1, d: parse_delta("ab")),
+            .Merge(1,0), .Merge(2,0),
+            .AssertMaxUndoSoFar(1,1),
+            .Edit(ei: 0, p: 1, u: 2, d: parse_delta("!-")),
+            .Edit(ei: 1, p: 3, u: 3, d: parse_delta("-!")),
+            .Merge(1,0),
+            .AssertMaxUndoSoFar(1,3),
+            .AssertMaxUndoSoFar(0,2),
+            .Merge(0,1),
+            .AssertMaxUndoSoFar(0,3),
+            .Edit(ei: 2, p: 1, u: 1, d: parse_delta("!!")),
+            .Merge(1,2),
+            .AssertMaxUndoSoFar(1,3),
+        ];
+        var state = MergeTestState.new(3)
+        state.run_script(script)
+    }
+
+    func test_merge_session_priorities() {
+        let script: [MergeTestOp] = [
+            .Edit(ei: 0, p: 1, u: 1, d: parse_delta("ac")),
+            .Merge(1,0),
+            .Merge(2,0),
+            .AssertAll("ac"),
+            .Edit(ei: 0, p: 1, u: 1, d: parse_delta("-d-")),
+            .Assert(0, "adc"),
+            .Edit(ei: 1, p: 1, u: 1, d: parse_delta("-f-")),
+            .Merge(2,1),
+            .Assert(1, "afc"),
+            .Assert(2, "afc"),
+            .Merge(2,0),
+            .Merge(0,1),
+            // These two will be different without using session IDs
+            .Assert(2, "adfc"),
+            .Assert(0, "adfc"),
+        ];
+        var state = MergeTestState.new(3)
+        state.run_script(script)
+    }
 }
