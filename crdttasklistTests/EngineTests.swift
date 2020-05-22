@@ -35,12 +35,12 @@ struct MergeTestState {
         case .Merge(let ai, let bi):
             peers[ai].value.merge(peers[bi])
         case .Assert(let ei, let correct):
-            assert(correct == self.peers[ei].value.get_head().to_string())
+            XCTAssertTrue(correct == self.peers[ei].value.get_head().to_string())
         case .AssertMaxUndoSoFar(let ei, let correct):
-            assert(correct == self.peers[ei].value.max_undo_group_id())
+            XCTAssertTrue(correct == self.peers[ei].value.max_undo_group_id())
         case .AssertAll(let correct):
             for (_, e) in self.peers.enumerated() {
-                assert(correct == e.value.get_head().to_string())
+                XCTAssertTrue(correct == e.value.get_head().to_string())
             }
         case .Edit(let ei, let priority, let undo, let delta):
             let head = self.peers[ei].value.get_head_rev_id().token()
@@ -56,6 +56,9 @@ struct MergeTestState {
     }
 }
 
+func parse_delta(_ str: String) -> RopeDelta {
+    return TestHelpers.parse_delta(str)
+}
 
 class EngineTests: XCTestCase {
 
@@ -273,6 +276,90 @@ class EngineTests: XCTestCase {
             .Assert(0, "zacpbdj"),
         ]
         var state = MergeTestState.new(3)
+        state.run_script(script)
+    }
+
+    func test_merge_priorities() {
+        let script: [MergeTestOp] = [
+            .Edit(ei: 2, p: 1, u: 1, d: TestHelpers.parse_delta("ab")),
+            .Merge(0, 2),
+            .Merge(1, 2),
+            .Assert(0, "ab"),
+            .Assert(1, "ab"),
+            .Assert(2, "ab"),
+            .Edit(ei: 0, p: 3, u: 1, d: TestHelpers.parse_delta("-c-")),
+            .Edit(ei: 0, p: 3, u: 1, d: TestHelpers.parse_delta("---d")),
+            .Assert(0, "acbd"),
+            .Edit(ei: 1, p: 5, u: 1, d: TestHelpers.parse_delta("-p-")),
+            .Assert(1, "apb"),
+            .Edit(ei: 2, p: 4, u: 1, d: TestHelpers.parse_delta("-r-")),
+            .Merge(0, 2),
+            .Merge(1, 2),
+            .Assert(0, "acrbd"),
+            .Assert(1, "arpb"),
+            .Edit(ei: 1, p: 5, u: 1, d: TestHelpers.parse_delta("----j")),
+            .Assert(1, "arpbj"),
+            .Edit(ei: 2, p: 4, u: 1, d: TestHelpers.parse_delta("---z")),
+            .Merge(0, 2),
+            .Merge(1, 2),
+            .Assert(0, "acrbdz"),
+            .Assert(1, "arpbzj"),
+            .Merge(0, 1),
+            .Assert(0, "acrpbdzj")
+        ]
+        var state = MergeTestState.new(3)
+        state.run_script(script)
+    }
+
+    func test_merge_idempotent() {
+        let script: [MergeTestOp] = [
+            .Edit(ei: 2, p: 1, u: 1, d: TestHelpers.parse_delta("ab")),
+            .Merge(0, 2),
+            .Merge(1, 2),
+            .Assert(0, "ab"),
+            .Assert(1, "ab"),
+            .Assert(2, "ab"),
+            .Edit(ei: 0, p: 3, u: 1, d: TestHelpers.parse_delta("-c-")),
+            .Edit(ei: 0, p: 3, u: 1, d: TestHelpers.parse_delta("---d")),
+            .Assert(0, "acbd"),
+            .Edit(ei: 1, p: 5, u: 1, d: TestHelpers.parse_delta("-p-")),
+            .Edit(ei: 1, p: 5, u: 1, d: TestHelpers.parse_delta("---j")),
+            .Merge(0, 1),
+            .Assert(0, "acpbdj"),
+            .Merge(0, 1),
+            .Merge(1, 0),
+            .Merge(0, 1),
+            .Merge(1, 0),
+            .Assert(0, "acpbdj"),
+            .Assert(1, "acpbdj")
+        ]
+        var state = MergeTestState.new(3)
+        state.run_script(script)
+    }
+
+    func test_merge_associative() {
+        let script: [MergeTestOp] = [
+            .Edit(ei: 2, p: 1, u: 1, d: parse_delta("ab")),
+            .Merge(0,2), .Merge(1, 2),
+            .Edit(ei: 0, p: 3, u: 1, d: parse_delta("-c-")),
+            .Edit(ei: 1, p: 5, u: 1, d: parse_delta("-p-")),
+            .Edit(ei: 2, p: 2, u: 1, d: parse_delta("z--")),
+            // copy the current state
+            .Merge(3, 0), .Merge(4, 1), .Merge(5, 2),
+            // Do the merge one direction
+            .Merge(1,2),
+            .Merge(0,1),
+            .Assert(0, "zacpb"),
+            // Do it the other way on the copy
+            .Merge(4,3),
+            .Merge(5,4),
+            .Assert(5, "zacpb"),
+            // Go crazy
+            .Merge(0,5), .Merge(2,5), .Merge(4,5), .Merge(1,4),
+            .Merge(3,1), .Merge(5,3),
+            .AssertAll("zacpb")
+        ]
+        var state = MergeTestState.new(6)
         state.run_script(script)
     }
 }
