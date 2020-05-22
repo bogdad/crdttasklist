@@ -2,6 +2,6 @@ language: swift
 osx_image: xcode11
 xcode_workspace: crdttasklist.xcworkspace
 xcode_scheme: crdttasklist
-xcode_destination: platform=iOS Simulator,name=iPhone Xs,OS=13.0
+xcode_destination: platform=iOS Simulator,name=iPhone 11,OS=13.0
 after_success:
 - bash <(curl -s https://codecov.io/bash)
