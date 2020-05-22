@@ -33,24 +33,18 @@ struct MergeTestState {
     mutating func run_op(_ op: MergeTestOp) {
         switch op {
         case .Merge(let ai, let bi):
-            if bi < ai {
-                peers[ai].value.merge(peers[bi])
-            } else {
-                // start: [0 ai)
-                // rest: [ai ...)
-                peers[ai].value.merge(peers[bi - 1])
-            }
+            peers[ai].value.merge(peers[bi])
         case .Assert(let ei, let correct):
-            XCTAssertEqual(correct, self.peers[ei].value.get_head().to_string())
+            assert(correct == self.peers[ei].value.get_head().to_string())
         case .AssertMaxUndoSoFar(let ei, let correct):
-            XCTAssertEqual(correct, self.peers[ei].value.max_undo_group_id())
+            assert(correct == self.peers[ei].value.max_undo_group_id())
         case .AssertAll(let correct):
             for (_, e) in self.peers.enumerated() {
-                XCTAssertEqual(correct, e.value.get_head().to_string())
+                assert(correct == e.value.get_head().to_string())
             }
-        case .Edit(let ei, let p, let u, let d):
+        case .Edit(let ei, let priority, let undo, let delta):
             let head = self.peers[ei].value.get_head_rev_id().token()
-            self.peers[ei].value.edit_rev(p, u, head, d)
+            self.peers[ei].value.edit_rev(priority, undo, head, delta)
         }
     }
 
