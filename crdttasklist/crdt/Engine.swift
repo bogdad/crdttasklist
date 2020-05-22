@@ -379,7 +379,7 @@ struct Engine: Codable, Equatable {
             self.revs.append(new_rev)
             self.text = new_text
             self.tombstones = new_tombstones
-            print("try_edit_rev: tombstones \(self.tombstones.len())")
+            // print("try_edit_rev: tombstones \(self.tombstones.len())")
             self.deletes_from_union = new_deletes_from_union
         }
         return .success(())
@@ -445,10 +445,10 @@ struct Engine: Codable, Equatable {
         let new_deletes_from_union = rebased_deletes_from_union.union(to_delete)
 
         // move deleted or undone-inserted things from text to tombstones
-        print("mk_new_rev: before tombstones = \(self.tombstones.len())")
+        //print("mk_new_rev: before tombstones = \(self.tombstones.len())")
         let (new_text, new_tombstones) = GenericHelpers.shuffle(
         text_with_inserts, self.tombstones, rebased_deletes_from_union, new_deletes_from_union)
-        print("mk_new_rev: after tombstones = \(self.tombstones.len()) new_tombstones = \(new_tombstones.len())")
+        //print("mk_new_rev: after tombstones = \(self.tombstones.len()) new_tombstones = \(new_tombstones.len())")
 
         let head_rev = self.revs[revs.count - 1]
         return .success((
@@ -743,12 +743,12 @@ struct GenericHelpers {
         let new_deletes_from_union_complement = new_deletes_from_union.complement()
         let move_delta =
             Delta.synthesize(text, inverse_tombstones_map, new_deletes_from_union_complement)
-        print("shuffle_tombstones: text = \(text.len()) inverse_tombstones_map = \(inverse_tombstones_map.len())")
-        print("shuffle_tombstones: new_deletes_from_union_complement = \(new_deletes_from_union_complement.len())")
-        print("shuffle_tombstones: rope base.len() = \(tombstones.len()) delta base_len = \(move_delta.base_len)")
+        //print("shuffle_tombstones: text = \(text.len()) inverse_tombstones_map = \(inverse_tombstones_map.len())")
+        //print("shuffle_tombstones: new_deletes_from_union_complement = \(new_deletes_from_union_complement.len())")
+        //print("shuffle_tombstones: rope base.len() = \(tombstones.len()) delta base_len = \(move_delta.base_len)")
         let res = move_delta.apply(tombstones)
-        print("shuffle_tombstones: tombstones = \(tombstones.len())")
-        print()
+        //print("shuffle_tombstones: tombstones = \(tombstones.len())")
+        //sprint()
         return res
     }
 
@@ -763,7 +763,7 @@ struct GenericHelpers {
     ) -> (Rope, Rope) {
         // Delta that deletes the right bits from the text
         let del_delta = Delta.synthesize(tombstones, old_deletes_from_union, new_deletes_from_union)
-        print("shuffle: rope base.len() = \(text.len()) delta base_len = \(del_delta.base_len)")
+        //print("shuffle: rope base.len() = \(text.len()) delta base_len = \(del_delta.base_len)")
         let new_text = del_delta.apply(text)
         let new_tombstones = shuffle_tombstones(text, tombstones, old_deletes_from_union, new_deletes_from_union)
         return (new_text, new_tombstones)
