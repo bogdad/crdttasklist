@@ -21,4 +21,8 @@ class NoteTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
+    func setIntensity(_ note: Note) {
+       backgroundColor = UIColor.systemPink.withAlphaComponent(255*CGFloat(note.intensity()))
+    }
+
 }

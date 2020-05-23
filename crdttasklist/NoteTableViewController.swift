@@ -47,8 +47,8 @@ class NoteTableViewController: UITableViewController {
         }
 
         let note = getNotes()[indexPath.row]
-
         Design.applyToLabel(cell.nameLabel!, note.getDisplayName())
+        cell.setIntensity(note)
 
         return cell
     }
@@ -101,17 +101,11 @@ class NoteTableViewController: UITableViewController {
             NoteStorage.shared.currentNote = nil
             break
         case "ShowDetail":
-            guard let noteViewController = segue.destination as? CRDTNoteViewController else {
-                fatalError("Unexpected destination: \(segue.destination)")
-            }
             let selectedNote = noteForSender(sender)
             NoteStorage.shared.currentNote = selectedNote
         case "ShowChecklistEditor":
-            guard let checklistViewController = segue.destination as? ChecklistViewController else {
-                fatalError("Unexpected destination: \(segue.destination)")
-            }
             let selectedNote = noteForSender(sender)
-            checklistViewController.note = selectedNote
+            NoteStorage.shared.currentNote = selectedNote
         default:
             fatalError("Unexpected Segue Identifier; \(segue.identifier ?? "???")")
         }
@@ -119,17 +113,27 @@ class NoteTableViewController: UITableViewController {
 
 
     @IBAction func unwindToNoteList(sender: UIStoryboardSegue) {
-        if var note = NoteStorage.shared.currentNote {
-            if let selectedIndexPath = tableView.indexPathForSelectedRow {
-                // Update an existing meal.
-                NoteStorage.shared.update(&note)
-                tableView.reloadRows(at: [selectedIndexPath, IndexPath.init(row: 0, section: 0)], with: .none)
+        if sender.identifier == "unwindNote" {
+            if var note = NoteStorage.shared.currentNote {
+                if let selectedIndexPath = tableView.indexPathForSelectedRow {
+                    // Update an existing meal.
+                    NoteStorage.shared.update(&note)
+                    tableView.reloadRows(at: [selectedIndexPath, IndexPath.init(row: 0, section: 0)], with: .none)
+                }
+                else {
+                    // Add a new note.w
+                    let pos = NoteStorage.shared.append(&NoteStorage.shared.currentNote!)
+                    tableView.insertRows(at: [IndexPath(row: pos, section: 0)], with: .automatic)
+                }
             }
-            else {
-                // Add a new note.w 
-                let pos = NoteStorage.shared.append(&NoteStorage.shared.currentNote!)
-                tableView.insertRows(at: [IndexPath(row: pos, section: 0)], with: .automatic)
-            }
+        } else if sender.identifier == "unwindChecklist" {
+                if var note = NoteStorage.shared.currentNote {
+                    NoteStorage.shared.update(&note)
+                    let indexPath = indexNote(note)
+                    let cell = tableView.cellForRow(at: IndexPath(item: indexPath, section: 0))! as! NoteTableViewCell
+                    cell.setIntensity(note)
+                    tableView.reloadRows(at: [], with: .none)
+                }
         }
     }
 
@@ -141,6 +145,9 @@ class NoteTableViewController: UITableViewController {
         }
     }
 
+    func indexNote(_ note: Note) -> Int {
+        return getNotes().firstIndex(where: {$0.id! == note.id!})!
+    }
 
     private func getNotes() -> [Note] {
         return NoteStorage.shared.getNotes()

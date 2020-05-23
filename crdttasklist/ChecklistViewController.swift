@@ -12,12 +12,11 @@ import UIKit
 
 class ChecklistViewController: UIViewController {
 
+    @IBOutlet weak var titleLabel: UINavigationItem!
     @IBOutlet weak var enabledButton: UIButton!
-    @IBOutlet var navBar: UIView!
     @IBOutlet weak var tomePicker: UIDatePicker!
     @IBOutlet weak var notePreview: UITextView!
-    @IBOutlet weak var nb: UINavigationBar!
-    @IBOutlet weak var ttl: UINavigationItem!
+
     var note: Note?
 
     var enabled: Bool = false
@@ -27,15 +26,19 @@ class ChecklistViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        note = NoteStorage.shared.currentNote!
+
         navigationItem.title = note?.getDisplayName()
 
-        checklist = note!.checklistCRDT!
+        checklist = ChecklistCRDT()
         checklist?.newSession()
 
+        checklist?.merge(note!.checklistCRDT!)
+
+        print("checkist \(checklist?.to_string() ?? "??")")
         let daily = checklist!.getDaily() ?? (23, 59)
         tomePicker.setDate(fromDailyToDate(daily), animated: true)
         notePreview.text = note!.crdt.to_string()
-        ttl.title = note!.crdt.to_string()
 
         enabled = checklist!.isSet()
         handleEnabled()
@@ -60,12 +63,14 @@ class ChecklistViewController: UIViewController {
             tomePicker.isEnabled = true
             checklist?.setDaily(fromDateToDaily(tomePicker.date))
             Design.applyToSelectedCheckbox(enabledButton)
-            enabledButton.titleLabel?.text = "Enabled"
+            enabledButton.setTitle("Daily check: enabled", for: .normal)
         } else {
             Design.applyToSelectedCheckbox(enabledButton)
             tomePicker.isEnabled = false
+            print("\(checklist?.to_string() ?? "??")")
             checklist?.clear()
-            enabledButton.titleLabel?.text = "Not a checklist"
+            print("\(checklist?.to_string() ?? "??")")
+            enabledButton.setTitle("Daily check: nah", for: .normal)
         }
     }
 
@@ -79,7 +84,20 @@ class ChecklistViewController: UIViewController {
 
     func fromDateToDaily(_ date: Date) -> (Int, Int) {
         let calendar:Calendar = NSCalendar.current
-        let components = calendar.dateComponents([.hour, .minute], from: Date())
+        let components = calendar.dateComponents([.hour, .minute], from: date)
         return (components.hour!, components.minute!)
+    }
+    @IBAction func done(_ sender: Any) {
+
+    }
+    @IBOutlet weak var doneButton: UIBarButtonItem!
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        guard let button = sender as? UIBarButtonItem, button === doneButton else {
+            return
+        }
+        print("checklist \(checklist?.to_string() ?? "??")")
+        NoteStorage.shared.editingFinished(checklist!)
     }
 }

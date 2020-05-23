@@ -37,8 +37,8 @@ class NoteLocalStorage {
         for note in notes.sorted(by: { $0.modificationDate() > $1.modificationDate() } ) {
             //print("note \(note.id!) modified \(note.modificationDate())")
         }
-        for note in notes {
-            let newV = note.tryMigrate()
+        for i in 0..<notes.count {
+            let newV = notes[i].tryMigrate()
             wasMigrated = wasMigrated || newV
         }
         return wasMigrated

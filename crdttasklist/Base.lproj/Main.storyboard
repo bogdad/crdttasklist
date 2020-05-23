@@ -50,11 +50,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Sg-sn-0Ov">
+                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Fe-K0-Nkh">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <items>
-                                    <navigationItem title="Title" id="ELi-7i-CI0"/>
+                                    <navigationItem title="Title" id="cin-yb-vLY">
+                                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="mII-UX-NdI">
+                                            <connections>
+                                                <action selector="done:" destination="jU9-rk-lr2" id="DE1-Ss-AhZ"/>
+                                                <segue destination="Eg7-JY-xDw" kind="unwind" identifier="unwindChecklist" unwindAction="unwindToNoteListWithSender:" id="5QW-Fb-jZQ"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
                                 </items>
                             </navigationBar>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Kki-tT-H75">
@@ -69,6 +76,9 @@
                             <datePicker contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="ZdT-F2-ONe">
                                 <rect key="frame" x="0.0" y="227" width="414" height="162"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="timePicked:" destination="jU9-rk-lr2" eventType="valueChanged" id="UWj-wY-5N5"/>
+                                </connections>
                             </datePicker>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p92-XI-iAN">
                                 <rect key="frame" x="31" y="130" width="352" height="34"/>
@@ -85,15 +95,14 @@
                         <viewLayoutGuide key="safeArea" id="UkN-BM-tgL"/>
                     </view>
                     <connections>
+                        <outlet property="doneButton" destination="mII-UX-NdI" id="VVc-NC-2Fn"/>
                         <outlet property="enabledButton" destination="p92-XI-iAN" id="yqQ-QV-63J"/>
-                        <outlet property="navBar" destination="qCB-n0-5ln" id="Snw-7Z-aQL"/>
-                        <outlet property="nb" destination="6Sg-sn-0Ov" id="6KY-Bd-Ajl"/>
                         <outlet property="notePreview" destination="Kki-tT-H75" id="TSZ-Gm-a3h"/>
                         <outlet property="tomePicker" destination="ZdT-F2-ONe" id="RE0-td-syR"/>
-                        <outlet property="ttl" destination="ELi-7i-CI0" id="bsE-ff-aXH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5L5-cf-6ri" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="Eg7-JY-xDw" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="2047.826086956522" y="991.74107142857133"/>
         </scene>
@@ -174,8 +183,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="done" id="gX0-Jw-6PX">
                             <connections>
-                                <action selector="saveButton:" destination="iZE-Um-twB" id="sdA-4f-50V"/>
-                                <segue destination="UQa-7E-zK9" kind="unwind" unwindAction="unwindToNoteListWithSender:" id="fr0-fC-Ykq"/>
+                                <segue destination="UQa-7E-zK9" kind="unwind" identifier="unwindNote" unwindAction="unwindToNoteListWithSender:" id="fr0-fC-Ykq"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

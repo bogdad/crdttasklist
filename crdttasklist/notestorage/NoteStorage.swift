@@ -33,6 +33,17 @@ class NoteStorage {
         currentNote?.update(crdt)
     }
 
+    func editingFinished(_ crdt: ChecklistCRDT) {
+        if currentNote == nil {
+            currentNote = Note.newNote()
+        }
+        currentNote?.update(crdt)
+    }
+
+    func update() {
+        NoteLocalStorage.saveNotes()
+    }
+
     func update(_ note: inout Note) {
         _notes[note.id!] = note
         NoteLocalStorage.saveNotes()

@@ -40,6 +40,7 @@ class NoteRemoteStorage {
                     switch uploadError.reason {
                     case .conflict(_):
                         DispatchQueue.main.async {
+                            print("dropbox: conflict")
                             self.conflictDetected()
                         }
                     default:
@@ -75,7 +76,7 @@ class NoteRemoteStorage {
                 }
                 if mergeStatus.needsUpload || wasMigrated {
                     NoteLocalStorage.justSaveNotes()
-                    print("conflictDetected: needs upload, uploading \(self.noteStorage.notes().count)")
+                    print("conflictDetected: needs upload, uploading \(self.noteStorage._notes.count)")
                     let _ = client.files.upload(path: "/notes",
                                                 mode: .update(rev),
                                                 strictConflict: true,

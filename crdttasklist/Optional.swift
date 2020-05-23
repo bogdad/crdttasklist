@@ -39,7 +39,7 @@ extension Optional where Wrapped == ChecklistCRDT {
             case .none:
                 return CRDTMergeResult(selfChanged: false, otherChanged: false)
             case .some(let otherCrdt):
-                self = otherCrdt
+                self! = otherCrdt
                 return CRDTMergeResult(selfChanged: true, otherChanged: false)
             }
         case .some(_):

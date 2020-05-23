@@ -34,9 +34,26 @@ class Note: Codable, Equatable {
         self.crdt.editing_finished()
     }
 
+    func update(_ checklistCRDT: ChecklistCRDT) {
+        self.checklistCRDT!.merge(checklistCRDT)
+        self.checklistCRDT!.editing_finished()
+        print("checklist \(self.checklistCRDT?.to_string() ?? "??")")
+    }
+
     func merge(_ other: Note) -> (Note, CRDTMergeResult) {
         var res = crdt.merge(other.crdt)
-        res.merge(checklistCRDT.merge(other.checklistCRDT))
+        if let sf = checklistCRDT {
+            if let ot = other.checklistCRDT {
+                res.merge(self.checklistCRDT!.merge(ot))
+            } else {
+                res.selfChanged = true
+            }
+        } else {
+            if let ot = other.checklistCRDT {
+                self.checklistCRDT = ot
+                res.otherChanged = true
+            }
+        }
         return (self, res)
     }
 
@@ -60,6 +77,10 @@ class Note: Codable, Equatable {
         return crdt.isActive()
     }
 
+    func intensity() -> Double {
+        return checklistCRDT!.intensity();
+    }
+
     func markDeleted() {
         crdt.markDeleted()
     }
@@ -71,11 +92,13 @@ class Note: Codable, Equatable {
 
     func tryMigrate() -> Bool {
         var res = crdt.tryMigrate()
-        if checklistCRDT == nil {
-            checklistCRDT = ChecklistCRDT()
-        }
-        if (checklistCRDT != nil && checklistCRDT!.tryMigrate()) {
+        if let _ = checklistCRDT {
+            if checklistCRDT!.tryMigrate() {
+                res = true
+            }
+        } else {
             res = true
+            checklistCRDT = ChecklistCRDT()
         }
         return res
     }

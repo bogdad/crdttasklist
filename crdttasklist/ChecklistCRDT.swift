@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ChecklistCRDT: Codable {
+struct ChecklistCRDT: Codable, Equatable {
 
     static let dailyRegEx = try! NSRegularExpression(pattern: "daily: ([0-9]{2}):([0-9]{2})")
 
@@ -29,11 +29,44 @@ struct ChecklistCRDT: Codable {
     }
 
     mutating func merge(_ other: ChecklistCRDT) -> CRDTMergeResult {
-        return CRDTMergeResult(selfChanged: false, otherChanged: false)
+        let storageMerge = storage.merge(other.storage)
+        var res = CRDTMergeResult(selfChanged: false, otherChanged: false)
+        res.merge(storageMerge)
+        return res
     }
 
     func modificationDate() -> Date {
-        return lastModificationDate
+        return Swift.max(lastModificationDate, storage.modificationDate())
+    }
+
+    func intensity() -> Double {
+        if !isSet() {
+            return 0
+        }
+        let calendar = Calendar.current
+        let curDate = Date()
+        var endComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: curDate)
+        let daily = getDaily()!
+        endComponents.hour = daily.0
+        endComponents.minute = daily.1
+        let endDate = calendar.date(from: endComponents)!
+        var startComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: curDate)
+        startComponents.hour = 0
+        startComponents.minute = 0
+        let dayStartDate = calendar.date(from: startComponents)!
+        if dayStartDate < lastCheckTime! && lastCheckTime! < endDate {
+            return 0
+        } else {
+            var start = lastCheckTime!
+            if start > endDate {
+                return 1
+            }
+            start = curDate
+            let secondsLeft: Double = endDate.timeIntervalSince1970 - start.timeIntervalSince1970
+            let secondsTotal: Double = Double((daily.0*60 + daily.1) * 60)
+            let interval: Double = (secondsTotal - secondsLeft) / secondsTotal
+            return interval
+        }
     }
 
     func isSet() -> Bool {
@@ -75,6 +108,10 @@ struct ChecklistCRDT: Codable {
         return "daily: \(hour.pad_to(2)):\(minute.pad_to(2))"
     }
 
+    func to_string() -> String {
+        return storage.to_string()
+    }
+
     mutating func setDaily(_ daily: (Int, Int)) {
         if !isSet() {
             storage.replace(Interval(0, 0), dailyAsString(daily.0, daily.1))
@@ -87,9 +124,14 @@ struct ChecklistCRDT: Codable {
         storage.new_session()
     }
 
+    mutating func editing_finished() {
+        storage.editing_finished()
+    }
+
     mutating func tryMigrate() -> Bool {
         var res = false
-        if lastCheckTime == nil {
+        if let _ = lastCheckTime {
+        } else {
             lastCheckTime = Date.distantPast
             res = true
         }
