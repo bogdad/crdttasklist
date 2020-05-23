@@ -213,7 +213,6 @@ class Delta<N: NodeInfo> {
                 }
             }
         }
-        print("syntesize: tombstones = \(tombstones.len())")
         return Delta(els, base_len)
     }
 

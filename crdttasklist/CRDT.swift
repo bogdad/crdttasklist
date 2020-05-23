@@ -105,7 +105,7 @@ struct CRDT: Codable, Equatable {
     }
 
     mutating func replace(_ range: Interval, _ str: String) {
-        print("crdt replace \(range) \(str)")
+        //print("crdt replace \(range) \(str)")
         if to_string() == str {
             return
         }
