@@ -22,7 +22,7 @@ class NoteTableViewCell: UITableViewCell {
     }
 
     func setIntensity(_ note: Note) {
-       backgroundColor = UIColor.systemPink.withAlphaComponent(255*CGFloat(note.intensity()))
+       backgroundColor = UIColor.systemPink.withAlphaComponent(CGFloat(note.intensity()))
     }
 
 }
