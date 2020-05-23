@@ -68,6 +68,10 @@ struct CRDT: Codable, Equatable {
         deletionsInsertions!.markDeleted()
     }
 
+    func len() -> UInt {
+        return editor.get_buffer().len()
+    }
+
     func to_string(_ prefix: Int) -> String {
         return editor.get_buffer().slice_to_cow(range: Interval(0, UInt(prefix)))
     }

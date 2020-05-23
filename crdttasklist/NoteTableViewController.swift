@@ -74,6 +74,26 @@ class NoteTableViewController: UITableViewController {
         return true
     }
 
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let setChecklistAction = UIContextualAction(style: .normal, title: "Checklist") { (action, sourceView, completionHandler) in
+            let cell = tableView.cellForRow(at: indexPath)
+            self.performSegue(withIdentifier: "ShowChecklistEditor", sender: cell)
+            completionHandler(true)
+        }
+        let swipeConfig = UISwipeActionsConfiguration(actions: [setChecklistAction])
+        return swipeConfig
+    }
+
+    func noteForSender(_ sender: Any?) -> Note {
+        guard let selectedNoteCell = sender as? NoteTableViewCell else {
+            fatalError("Unexpected sender: \(sender ?? "???")")
+        }
+        guard let indexPath = tableView.indexPath(for: selectedNoteCell) else {
+            fatalError("The selected cell is not being displayed by the table")
+        }
+        return getNotes()[indexPath.row]
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
         switch(segue.identifier ?? "") {
@@ -84,16 +104,16 @@ class NoteTableViewController: UITableViewController {
             guard let noteViewController = segue.destination as? CRDTNoteViewController else {
                 fatalError("Unexpected destination: \(segue.destination)")
             }
-            guard let selectedNoteCell = sender as? NoteTableViewCell else {
-                fatalError("Unexpected sender: \(sender)")
-            }
-            guard let indexPath = tableView.indexPath(for: selectedNoteCell) else {
-                fatalError("The selected cell is not being displayed by the table")
-            }
-            let selectedNote = getNotes()[indexPath.row]
+            let selectedNote = noteForSender(sender)
             NoteStorage.shared.currentNote = selectedNote
+        case "ShowChecklistEditor":
+            guard let checklistViewController = segue.destination as? ChecklistViewController else {
+                fatalError("Unexpected destination: \(segue.destination)")
+            }
+            let selectedNote = noteForSender(sender)
+            checklistViewController.note = selectedNote
         default:
-            fatalError("Unexpected Segue Identifier; \(segue.identifier)")
+            fatalError("Unexpected Segue Identifier; \(segue.identifier ?? "???")")
         }
     }
 

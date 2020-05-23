@@ -74,7 +74,7 @@ class NoteRemoteStorage {
                     self.noteStorage.notesChangedRemotely()
                 }
                 if mergeStatus.needsUpload || wasMigrated {
-                    NoteLocalStorage.saveNotes()
+                    NoteLocalStorage.justSaveNotes()
                     print("conflictDetected: needs upload, uploading \(self.noteStorage.notes().count)")
                     let _ = client.files.upload(path: "/notes",
                                                 mode: .update(rev),
@@ -85,6 +85,7 @@ class NoteRemoteStorage {
                         }
                 }
             } else {
+                NoteLocalStorage.justSaveNotes()
                 _ = client.files.upload(path: "/notes",
                                         mode: .add,
                                         strictConflict: true,

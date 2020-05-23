@@ -10,6 +10,17 @@ import Foundation
 
 extension String {
 
+    func repeate(_ c: Int) -> String {
+        if c == 0 {
+            return ""
+        }
+        var res = self
+        for _ in 1..<c {
+            res += self
+        }
+        return res
+    }
+
     func chars() -> [Int8] {
         var res = [Int8] (repeating: 0, count: count)
         self.withCString({ body in

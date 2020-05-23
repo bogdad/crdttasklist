@@ -11,6 +11,16 @@ import UIKit
 
 struct Design {
 
+    static func applyToSelectedCheckbox(_ checkBox: UIButton) {
+        let font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        checkBox.titleLabel?.font = font
+    }
+
+    static func applyToUnselectedCheckbox(_ checkBox: UIButton) {
+        let font = UIFont.systemFont(ofSize: 22, weight: .light)
+        checkBox.titleLabel?.font = font
+    }
+
     static func applyToLabel(_ label: UILabel, _ string: String) {
         var attributes:[NSAttributedString.Key: Any] = [:]
         attributes[.kern] = 0.7

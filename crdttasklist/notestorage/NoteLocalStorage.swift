@@ -9,8 +9,12 @@
 import Foundation
 class NoteLocalStorage {
 
-    static func saveNotes() {
+    static func justSaveNotes() {
         FileUtils.saveToFile(obj: Array(NoteStorage.shared._notes.values), url: Note.ArchiveURL)
+    }
+
+    static func saveNotes() {
+        justSaveNotes()
         NoteRemoteStorage.shared.conflictDetected()
     }
 
