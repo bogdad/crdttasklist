@@ -71,6 +71,12 @@ class Note: Codable, Equatable {
 
     func tryMigrate() -> Bool {
         var res = crdt.tryMigrate()
+        if checklistCRDT == nil {
+            checklistCRDT = ChecklistCRDT()
+        }
+        if (checklistCRDT != nil && checklistCRDT!.tryMigrate()) {
+            res = true
+        }
         return res
     }
 }

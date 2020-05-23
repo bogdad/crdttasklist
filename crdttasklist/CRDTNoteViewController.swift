@@ -123,7 +123,7 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
         guard let button = sender as? UIBarButtonItem, button === saveButton else {
             return
         }
-        textStorage?.crdt { NoteStorage.shared.editingFinished($0) }
+        NoteStorage.shared.editingFinished(textStorage!.crdt)
     }
 
     @IBAction func cancel(_ sender: UIBarButtonItem) {

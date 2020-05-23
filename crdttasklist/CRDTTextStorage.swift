@@ -11,13 +11,13 @@ import UIKit
 
 class CRDTTextStorage: NSTextStorage {
     let backingStore: NSTextStorage
-    let serialQueue = DispatchQueue(label: "crdt text storage queue", attributes: .concurrent)
-    var _crdt: CRDT
+    //let serialQueue = DispatchQueue(label: "crdt text storage queue", attributes: .concurrent)
+    var crdt: CRDT
 
     init(_ crdt: CRDT?) {
-        self._crdt = crdt ?? CRDT("")
-        self.backingStore = NSTextStorage(string: self._crdt.to_string())
-        self._crdt.new_session()
+        self.crdt = crdt ?? CRDT("")
+        self.backingStore = NSTextStorage(string: self.crdt.to_string())
+        self.crdt.new_session()
         super.init()
     }
 
@@ -48,15 +48,13 @@ class CRDTTextStorage: NSTextStorage {
     }
 
     func replaceCharactersInRange(_ aRange: NSRange, withText aString: AnyObject) {
-        crdt { crdt in
-            if let str = aString as? NSAttributedString {
-                crdt.replace(aRange.to_interval(), str.string)
-            } else if let str = aString as? String {
-                crdt.replace(aRange.to_interval(), str)
-            } else {
-                fatalError()
-            }
-         }
+        if let str = aString as? NSAttributedString {
+            crdt.replace(aRange.to_interval(), str.string)
+        } else if let str = aString as? String {
+            crdt.replace(aRange.to_interval(), str)
+        } else {
+            fatalError()
+        }
     }
 
     override func setAttributes(_ attrs: [NSAttributedString.Key: Any]?, range: NSRange) {
@@ -66,9 +64,9 @@ class CRDTTextStorage: NSTextStorage {
         endEditing()
     }
 
-    func crdt<R>(block: (inout CRDT) -> R) -> R { 
+    /*func crdt<R>(block: (inout CRDT) -> R) -> R {
         return serialQueue.sync(flags: .barrier) {
             return block(&_crdt)
         }
-    }
+    }*/
 }

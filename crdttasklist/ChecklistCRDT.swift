@@ -25,4 +25,8 @@ struct ChecklistCRDT: Codable {
     func modificationDate() -> Date {
         return lastModificationDate
     }
+
+    mutating func tryMigrate() -> Bool {
+        return false
+    }
 }
