@@ -54,7 +54,7 @@ struct ChecklistCRDT: Codable, Equatable {
         startComponents.hour = 0
         startComponents.minute = 0
         let dayStartDate = calendar.date(from: startComponents)!
-        print("\(dayStartDate) \(endDate) \(lastCheckTime) ")
+        print("\(dayStartDate) \(endDate) \(lastCheckTime?.description ?? "??") ")
         if dayStartDate < lastCheckTime! && lastCheckTime! < endDate {
             return 0
         } else {
@@ -64,7 +64,11 @@ struct ChecklistCRDT: Codable, Equatable {
             }
             start = curDate
             let secondsLeft: Double = endDate.timeIntervalSince1970 - start.timeIntervalSince1970
-            let secondsTotal: Double = Double((daily.0*60 + daily.1) * 60)
+            var hours = daily.0
+            if hours > 8 {
+                hours -= 8
+            }
+            let secondsTotal: Double = Double((hours * 60 + daily.1) * 60)
             let interval: Double = (secondsTotal - secondsLeft) / secondsTotal
             print("\(start) \(secondsLeft) \(secondsTotal) \(interval)")
             return interval

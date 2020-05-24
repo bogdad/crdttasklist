@@ -80,7 +80,12 @@ class NoteTableViewController: UITableViewController {
             self.performSegue(withIdentifier: "ShowChecklistEditor", sender: cell)
             completionHandler(true)
         }
-        let swipeConfig = UISwipeActionsConfiguration(actions: [setChecklistAction])
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (_, _, completionHandler) in
+            NoteStorage.shared.markDeleted(indexPath.row)
+            self.tableView.deleteRows(at: [indexPath], with: .fade)
+            completionHandler(true)
+        }
+        let swipeConfig = UISwipeActionsConfiguration(actions: [deleteAction, setChecklistAction])
         return swipeConfig
     }
 

@@ -247,6 +247,16 @@
 			path = notestorage;
 			sourceTree = "<group>";
 		};
+		E7235CAA247AB1CA0062FDE8 /* featurenote */ = {
+			isa = PBXGroup;
+			children = (
+				E78674D923E7626100728436 /* CRDTTextStorage.swift */,
+				E7F465E72315AC4200030F3A /* CRDTTextView.swift */,
+				E70B862B23DCB3AF00C48E3C /* CRDTNoteViewController.swift */,
+			);
+			path = featurenote;
+			sourceTree = "<group>";
+		};
 		E7B05EE12298223300D2A094 = {
 			isa = PBXGroup;
 			children = (
@@ -275,6 +285,7 @@
 		E7B05EEC2298223300D2A094 /* crdttasklist */ = {
 			isa = PBXGroup;
 			children = (
+				E7235CAA247AB1CA0062FDE8 /* featurenote */,
 				E705C49A24683D8A00D5363F /* crdttasklist.entitlements */,
 				E715898E24669933007AD153 /* notestorage */,
 				E7F465E92315AF5500030F3A /* crdt */,
@@ -285,9 +296,6 @@
 				E776E3D52470022600738B66 /* ChecklistCRDT.swift */,
 				E78F4AD82479210700DB0A69 /* ChecklistViewController.swift */,
 				E74D187E241EC31E00EE3815 /* CRDT.swift */,
-				E70B862B23DCB3AF00C48E3C /* CRDTNoteViewController.swift */,
-				E7F465E72315AC4200030F3A /* CRDTTextView.swift */,
-				E78674D923E7626100728436 /* CRDTTextStorage.swift */,
 				E74D1880241ECCD600EE3815 /* DebugViewController.swift */,
 				E7FFF0AD24671D42006713E9 /* Design.swift */,
 				E78F4ADA24792AB100DB0A69 /* Int.swift */,
