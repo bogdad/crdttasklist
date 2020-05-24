@@ -82,12 +82,14 @@ class ChecklistViewController: UIViewController {
             tomePicker.isEnabled = true
             checklist?.setDaily(fromDateToDaily(tomePicker.date))
             complete.isEnabled = true
+            onSwitch.isOn = true
         } else {
             tomePicker.isEnabled = false
             print("\(checklist?.to_string() ?? "??")")
             checklist?.clear()
             print("\(checklist?.to_string() ?? "??")")
             complete.isEnabled = false
+            onSwitch.isOn = false
             checklist!.uncomplete()
         }
     }

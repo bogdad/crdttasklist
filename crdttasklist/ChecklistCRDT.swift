@@ -43,50 +43,56 @@ struct ChecklistCRDT: Codable, Equatable {
         return Swift.max(lastModificationDate, storage.modificationDate())
     }
 
-    func intensityInt() -> Int {
+    func intensity() -> Double {
         if !isSet() {
             return 0
         }
-        let calendar = Calendar.current
         let curDate = Date()
-        var endComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: curDate)
-        let daily = getDaily()!
-        endComponents.hour = daily.0
-        endComponents.minute = daily.1
-        let endDate = calendar.date(from: endComponents)!
-        var startComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: curDate)
-        startComponents.hour = 0
-        startComponents.minute = 0
-        let dayStartDate = calendar.date(from: startComponents)!
-
+        let dayStartDate = dateStartDay(curDate)
+        let endDate = dateEnd(curDate)
         let checkTime = checks!.lastCreatedDate() ?? Date.distantPast
 
         print("\(dayStartDate) \(endDate) \(checkTime) ")
-        if dayStartDate < checkTime && checkTime < endDate {
+        if dayStartDate < checkTime {
             return 0
         } else {
-            if checkTime > dayStartDate {
-                return 0
-            }
             let start = curDate
             if start > endDate {
                 return 1
             }
             let secondsLeft: Double = endDate.timeIntervalSince1970 - start.timeIntervalSince1970
+            let daily = getDaily()!
             var hours = daily.0
             if hours > 8 {
                 hours -= 8
             }
             let secondsTotal: Double = Double((hours * 60 + daily.1) * 60)
             let interval: Double = (secondsTotal - secondsLeft) / secondsTotal
+            if interval < 0 {
+                return 0
+            }
             print("\(start) \(secondsLeft) \(secondsTotal) \(interval)")
-            let mult = interval * 100
-            return Int(mult)
+            return interval
         }
     }
 
-    func intensity() -> Double {
-        return Double(intensityInt()) / 100
+    func dateStartDay(_ curDate: Date) -> Date {
+        let calendar = Calendar.current
+        var startComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: curDate)
+        startComponents.hour = 0
+        startComponents.minute = 0
+        let dayStartDate = calendar.date(from: startComponents)!
+        return dayStartDate
+    }
+
+    func dateEnd(_ curDate: Date) -> Date {
+        let calendar = Calendar.current
+        var endComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: curDate)
+        let daily = getDaily()!
+        endComponents.hour = daily.0
+        endComponents.minute = daily.1
+        let endDate = calendar.date(from: endComponents)!
+        return endDate
     }
 
     func isSet() -> Bool {
@@ -97,7 +103,8 @@ struct ChecklistCRDT: Codable, Equatable {
         if !isSet() {
             return false
         }
-        return intensityInt() == 0
+        let completeDate = checks?.lastCreatedDate() ?? Date.distantPast
+        return completeDate > dateStartDay(Date())
     }
 
     mutating func complete() {
