@@ -98,6 +98,7 @@
                         <outlet property="doneButton" destination="mII-UX-NdI" id="VVc-NC-2Fn"/>
                         <outlet property="enabledButton" destination="p92-XI-iAN" id="yqQ-QV-63J"/>
                         <outlet property="notePreview" destination="Kki-tT-H75" id="TSZ-Gm-a3h"/>
+                        <outlet property="titleLab" destination="cin-yb-vLY" id="ITq-PQ-vty"/>
                         <outlet property="tomePicker" destination="ZdT-F2-ONe" id="RE0-td-syR"/>
                     </connections>
                 </viewController>

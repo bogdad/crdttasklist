@@ -17,6 +17,7 @@ class ChecklistViewController: UIViewController {
     @IBOutlet weak var tomePicker: UIDatePicker!
     @IBOutlet weak var notePreview: UITextView!
 
+    @IBOutlet weak var titleLab: UINavigationItem!
     var note: Note?
 
     var enabled: Bool = false
@@ -39,6 +40,7 @@ class ChecklistViewController: UIViewController {
         let daily = checklist!.getDaily() ?? (23, 59)
         tomePicker.setDate(fromDailyToDate(daily), animated: true)
         notePreview.text = note!.crdt.to_string()
+        titleLab.title = note?.getDisplayName()
 
         enabled = checklist!.isSet()
         handleEnabled()

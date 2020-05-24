@@ -74,18 +74,23 @@ class NoteTableViewController: UITableViewController {
         return true
     }
 
+    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (_, _, completionHandler) in
+            NoteStorage.shared.markDeleted(indexPath.row)
+            self.tableView.deleteRows(at: [indexPath], with: .fade)
+            completionHandler(true)
+        }
+        let swipeConfig = UISwipeActionsConfiguration(actions: [deleteAction])
+        return swipeConfig
+    }
+
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let setChecklistAction = UIContextualAction(style: .normal, title: "Checklist") { (action, sourceView, completionHandler) in
             let cell = tableView.cellForRow(at: indexPath)
             self.performSegue(withIdentifier: "ShowChecklistEditor", sender: cell)
             completionHandler(true)
         }
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (_, _, completionHandler) in
-            NoteStorage.shared.markDeleted(indexPath.row)
-            self.tableView.deleteRows(at: [indexPath], with: .fade)
-            completionHandler(true)
-        }
-        let swipeConfig = UISwipeActionsConfiguration(actions: [deleteAction, setChecklistAction])
+        let swipeConfig = UISwipeActionsConfiguration(actions: [setChecklistAction])
         return swipeConfig
     }
 
