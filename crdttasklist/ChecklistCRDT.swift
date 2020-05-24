@@ -65,7 +65,10 @@ struct ChecklistCRDT: Codable, Equatable {
         if dayStartDate < checkTime && checkTime < endDate {
             return 0
         } else {
-            var start = curDate
+            if checkTime > dayStartDate {
+                return 0
+            }
+            let start = curDate
             if start > endDate {
                 return 1
             }
