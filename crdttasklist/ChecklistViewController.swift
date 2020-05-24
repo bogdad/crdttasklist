@@ -12,10 +12,10 @@ import UIKit
 
 class ChecklistViewController: UIViewController {
 
-    @IBOutlet weak var titleLabel: UINavigationItem!
-    @IBOutlet weak var enabledButton: UIButton!
+    @IBOutlet weak var onSwitch: UISwitch!
     @IBOutlet weak var tomePicker: UIDatePicker!
     @IBOutlet weak var notePreview: UITextView!
+    @IBOutlet weak var complete: UISwitch!
 
     @IBOutlet weak var titleLab: UINavigationItem!
     var note: Note?
@@ -44,6 +44,19 @@ class ChecklistViewController: UIViewController {
 
         enabled = checklist!.isSet()
         handleEnabled()
+        handleComplete()
+    }
+    @IBAction func onChanged(_ sender: Any) {
+        enabled = !enabled
+        handleEnabled()
+    }
+    @IBAction func completeChanged(_ sender: Any) {
+        if !checklist!.isCompleted() {
+            checklist!.complete()
+        } else {
+            checklist!.uncomplete()
+        }
+        handleComplete()
     }
     @IBAction func timePicked(_ sender: Any) {
         if enabled {
@@ -56,6 +69,10 @@ class ChecklistViewController: UIViewController {
         handleEnabled()
     }
 
+    func handleComplete() {
+        complete.setOn(checklist!.isCompleted(), animated: true)
+    }
+
     func handleEnabled() {
         if enabled {
             if checklist?.getDaily() == nil {
@@ -64,15 +81,14 @@ class ChecklistViewController: UIViewController {
             }
             tomePicker.isEnabled = true
             checklist?.setDaily(fromDateToDaily(tomePicker.date))
-            Design.applyToSelectedCheckbox(enabledButton)
-            enabledButton.setTitle("Daily check: enabled", for: .normal)
+            complete.isEnabled = true
         } else {
-            Design.applyToSelectedCheckbox(enabledButton)
             tomePicker.isEnabled = false
             print("\(checklist?.to_string() ?? "??")")
             checklist?.clear()
             print("\(checklist?.to_string() ?? "??")")
-            enabledButton.setTitle("Daily check: nah", for: .normal)
+            complete.isEnabled = false
+            checklist!.uncomplete()
         }
     }
 

@@ -9,12 +9,16 @@
 import Foundation
 import BTree
 
-enum DeletionsInsertionsType: Int, Codable {
+enum DeletionsInsertionsType: Int, Codable, Equatable {
     case Insert
     case Delete
 }
 
-struct DeletionsInsertions: Codable {
+struct DeletionsInsertions: Codable, Equatable {
+    static func == (lhs: DeletionsInsertions, rhs: DeletionsInsertions) -> Bool {
+        return lhs.items == rhs.items
+    }
+
     var items: BTree<Date, DeletionsInsertionsType>
 
     init() {
@@ -34,6 +38,17 @@ struct DeletionsInsertions: Codable {
     func isActive() -> Bool {
         assert(items.first!.1 == .Insert)
         return items.last!.1 == .Insert
+    }
+
+    func lastCreatedDate() -> Date? {
+        if items.last!.1 == .Insert {
+            return items.last!.0
+        }
+        return nil
+    }
+
+    mutating func markCreated() {
+        self.items.insert((Date(), .Insert))
     }
 
     mutating func markDeleted() {

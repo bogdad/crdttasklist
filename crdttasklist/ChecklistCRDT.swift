@@ -22,16 +22,20 @@ struct ChecklistCRDT: Codable, Equatable {
     var storage: CRDT
     var lastCheckTime: Date?
 
+    var checks: DeletionsInsertions?
+
     init() {
         lastModificationDate = Date()
         lastCheckTime = Date.distantPast
         storage = CRDT("")
+        checks = DeletionsInsertions(Date.distantPast)
     }
 
     mutating func merge(_ other: ChecklistCRDT) -> CRDTMergeResult {
         let storageMerge = storage.merge(other.storage)
         var res = CRDTMergeResult(selfChanged: false, otherChanged: false)
         res.merge(storageMerge)
+        res.merge(checks!.merge(other.checks!))
         return res
     }
 
@@ -39,7 +43,7 @@ struct ChecklistCRDT: Codable, Equatable {
         return Swift.max(lastModificationDate, storage.modificationDate())
     }
 
-    func intensity() -> Double {
+    func intensityInt() -> Int {
         if !isSet() {
             return 0
         }
@@ -54,15 +58,17 @@ struct ChecklistCRDT: Codable, Equatable {
         startComponents.hour = 0
         startComponents.minute = 0
         let dayStartDate = calendar.date(from: startComponents)!
-        print("\(dayStartDate) \(endDate) \(lastCheckTime?.description ?? "??") ")
-        if dayStartDate < lastCheckTime! && lastCheckTime! < endDate {
+
+        let checkTime = checks!.lastCreatedDate() ?? Date.distantPast
+
+        print("\(dayStartDate) \(endDate) \(checkTime) ")
+        if dayStartDate < checkTime && checkTime < endDate {
             return 0
         } else {
-            var start = lastCheckTime!
+            var start = curDate
             if start > endDate {
                 return 1
             }
-            start = curDate
             let secondsLeft: Double = endDate.timeIntervalSince1970 - start.timeIntervalSince1970
             var hours = daily.0
             if hours > 8 {
@@ -71,12 +77,36 @@ struct ChecklistCRDT: Codable, Equatable {
             let secondsTotal: Double = Double((hours * 60 + daily.1) * 60)
             let interval: Double = (secondsTotal - secondsLeft) / secondsTotal
             print("\(start) \(secondsLeft) \(secondsTotal) \(interval)")
-            return interval
+            let mult = interval * 100
+            return Int(mult)
         }
+    }
+
+    func intensity() -> Double {
+        return Double(intensityInt()) / 100
     }
 
     func isSet() -> Bool {
         return storage.editor.get_buffer().len() > 0
+    }
+
+    func isCompleted() -> Bool {
+        if !isSet() {
+            return false
+        }
+        return intensityInt() == 0
+    }
+
+    mutating func complete() {
+        if !isCompleted() {
+            checks!.markCreated()
+        }
+    }
+
+    mutating func uncomplete() {
+        if isCompleted() {
+            checks!.markDeleted()
+        }
     }
 
     func getDaily() -> (Int, Int)? {
@@ -139,6 +169,11 @@ struct ChecklistCRDT: Codable, Equatable {
         if let _ = lastCheckTime {
         } else {
             lastCheckTime = Date.distantPast
+            res = true
+        }
+        if let _ = checks {
+        } else {
+            checks = DeletionsInsertions(Date.distantPast)
             res = true
         }
         return res
