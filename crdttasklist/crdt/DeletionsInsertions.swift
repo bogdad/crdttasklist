@@ -47,6 +47,10 @@ struct DeletionsInsertions: Codable, Equatable {
         return nil
     }
 
+    func modificationDate() -> Date {
+        return items.last!.0
+    }
+
     mutating func markCreated() {
         self.items.insert((Date(), .Insert))
     }

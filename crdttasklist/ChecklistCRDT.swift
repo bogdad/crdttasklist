@@ -12,6 +12,7 @@ struct ChecklistCRDT: Codable, Equatable {
 
     static let dailyRegEx = try! NSRegularExpression(pattern: "daily: ([0-9]{2}):([0-9]{2})")
 
+    // not used
     var lastModificationDate: Date
     /*
      Storage:
@@ -40,7 +41,7 @@ struct ChecklistCRDT: Codable, Equatable {
     }
 
     func modificationDate() -> Date {
-        return Swift.max(lastModificationDate, storage.modificationDate())
+        return Swift.max(checks!.modificationDate(), storage.modificationDate())
     }
 
     func intensity() -> Double {
@@ -175,12 +176,7 @@ struct ChecklistCRDT: Codable, Equatable {
     }
 
     mutating func tryMigrate() -> Bool {
-        var res = false
-        if let _ = lastCheckTime {
-        } else {
-            lastCheckTime = Date.distantPast
-            res = true
-        }
+        var res = storage.tryMigrate()
         if let _ = checks {
         } else {
             checks = DeletionsInsertions(Date.distantPast)

@@ -245,7 +245,7 @@ struct Editor: Codable, Equatable {
         // TODO: what is this for?
     }
 
-    mutating func merge(_ new_engine: Cow<Engine>) -> EditorMergeResult {
+    mutating func merge(_ new_engine: Cow<Engine>) -> CRDTMergeResult {
         let engineMergeResult = self.engine.value.merge(new_engine)
         self.text = self.engine.value.get_head().clone()
         // TODO: better undo semantics. This only implements separate undo
@@ -255,7 +255,7 @@ struct Editor: Codable, Equatable {
         self.commit_delta()
         //self.render();
         //FIXME: render after fuchsia sync
-        return EditorMergeResult(selfChanged: engineMergeResult.aChanged, newChanged: engineMergeResult.bChanged)
+        return CRDTMergeResult(selfChanged: engineMergeResult.aChanged, otherChanged: engineMergeResult.bChanged)
     }
 
     // See `Engine::set_session_id`. Only useful for Fuchsia sync.

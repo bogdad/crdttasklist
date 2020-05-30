@@ -14,6 +14,7 @@ struct CRDT: Codable, Equatable {
     var deletionsInsertions: DeletionsInsertions?
 
     var lastModificationDateTimeInterval: Double?
+    var lastModificationDate: Date?
 
     static let config = BufferItems()
 
@@ -26,16 +27,8 @@ struct CRDT: Codable, Equatable {
         self.view = View(view_id: 0, buffer_id: 0)
         self.deletionsInsertions = DeletionsInsertions()
         self.lastModificationDateTimeInterval = Date().timeIntervalSince1970
+        self.lastModificationDate = Date()
     }
-
-    mutating func new_session() {
-        let u64 = UInt64.random(in: 0...UInt64.max)
-        let u32 = UInt32.random(in: 0...UInt32.max)
-        let sess = (u64, u32)
-        self.editor.set_session_id(sess)
-    }
-
-
 
     mutating func tryMigrate() -> Bool {
         var res = editor.tryMigrate()
@@ -43,13 +36,28 @@ struct CRDT: Codable, Equatable {
             self.deletionsInsertions = DeletionsInsertions()
             res = true
         }
-        if let lastModificationDateTimeInterval = self.lastModificationDateTimeInterval {
+        if let _ = self.lastModificationDateTimeInterval {
             //
         } else {
             self.lastModificationDateTimeInterval = Date().timeIntervalSince1970
             res = true
         }
+
+        if let _ = self.lastModificationDate {
+        } else {
+            self.lastModificationDate = Date(timeIntervalSince1970: lastModificationDateTimeInterval!)
+            res = true
+        }
+
         return res
+    }
+
+
+    mutating func new_session() {
+        let u64 = UInt64.random(in: 0...UInt64.max)
+        let u32 = UInt32.random(in: 0...UInt32.max)
+        let sess = (u64, u32)
+        self.editor.set_session_id(sess)
     }
 
     func isActive() -> Bool {
@@ -61,7 +69,7 @@ struct CRDT: Codable, Equatable {
     }
 
     func modificationDate() -> Date {
-        return Date(timeIntervalSince1970: self.lastModificationDateTimeInterval ?? Date.distantPast.timeIntervalSince1970)
+        return lastModificationDate ?? Date.distantPast
     }
 
     mutating func markDeleted() {
@@ -91,21 +99,12 @@ struct CRDT: Codable, Equatable {
     mutating func merge(_ other: CRDT) -> CRDTMergeResult {
         let editorMerge = self.editor.merge(other.editor.engine)
         let deletionsMerge = self.deletionsInsertions!.merge(other.deletionsInsertions!)
-
-        var lastModificationDateSelfChanged = false
-        var lastModificationDateOtherChanged = false
-        let oldSelfDate = lastModificationDateTimeInterval
-        lastModificationDateTimeInterval = Swift.max(lastModificationDateTimeInterval!, other.lastModificationDateTimeInterval!)
-        if oldSelfDate != lastModificationDateTimeInterval {
-            lastModificationDateSelfChanged = true
-        }
-        if other.lastModificationDateTimeInterval != lastModificationDateTimeInterval {
-            lastModificationDateOtherChanged = true
-        }
-
-        return CRDTMergeResult(
-            selfChanged: editorMerge.selfChanged || deletionsMerge.selfChanged || lastModificationDateSelfChanged,
-            otherChanged: editorMerge.newChanged || deletionsMerge.otherChanged || lastModificationDateOtherChanged)
+        let lastModificationDateMerge = self.lastModificationDate!.merge(other.lastModificationDate!)
+        var res = CRDTMergeResult(selfChanged: false, otherChanged: false)
+        res.merge(editorMerge)
+        res.merge(deletionsMerge)
+        res.merge(lastModificationDateMerge)
+        return res
     }
 
     mutating func replace(_ range: Interval, _ str: String) {

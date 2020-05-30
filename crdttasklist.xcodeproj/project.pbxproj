@@ -24,6 +24,8 @@
 		E72FC388240C00C600611A75 /* Backspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FC387240C00C600611A75 /* Backspace.swift */; };
 		E737A29322FEDB1600E5AAD8 /* TestHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */; };
 		E737A29522FEE1AE00E5AAD8 /* EditorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */; };
+		E73DB37224827FCF004AABB8 /* Mergeable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E73DB37124827FCF004AABB8 /* Mergeable.swift */; };
+		E73DB37424828083004AABB8 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = E73DB37324828083004AABB8 /* Date.swift */; };
 		E74C3DC022D23620001B9CA7 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74C3DBF22D23620001B9CA7 /* Engine.swift */; };
 		E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74C3DC122D23E7F001B9CA7 /* View.swift */; };
 		E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74C3DC522D24086001B9CA7 /* Selection.swift */; };
@@ -122,6 +124,8 @@
 		E72FC387240C00C600611A75 /* Backspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backspace.swift; sourceTree = "<group>"; };
 		E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpersTests.swift; sourceTree = "<group>"; };
 		E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTests.swift; sourceTree = "<group>"; };
+		E73DB37124827FCF004AABB8 /* Mergeable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mergeable.swift; sourceTree = "<group>"; };
+		E73DB37324828083004AABB8 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		E74C3DBF22D23620001B9CA7 /* Engine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 		E74C3DC122D23E7F001B9CA7 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		E74C3DC522D24086001B9CA7 /* Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
@@ -296,10 +300,12 @@
 				E776E3D52470022600738B66 /* ChecklistCRDT.swift */,
 				E78F4AD82479210700DB0A69 /* ChecklistViewController.swift */,
 				E74D187E241EC31E00EE3815 /* CRDT.swift */,
+				E73DB37324828083004AABB8 /* Date.swift */,
 				E74D1880241ECCD600EE3815 /* DebugViewController.swift */,
 				E7FFF0AD24671D42006713E9 /* Design.swift */,
 				E78F4ADA24792AB100DB0A69 /* Int.swift */,
 				E7F88FD623EF2F77005EE3FD /* FileUtils.swift */,
+				E73DB37124827FCF004AABB8 /* Mergeable.swift */,
 				E7A2E22F23DF3D1E00C65976 /* LinkToStorageController.swift */,
 				E70B862923DC9A3300C48E3C /* Note.swift */,
 				E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */,
@@ -578,6 +584,7 @@
 				E7F88FD723EF2F77005EE3FD /* FileUtils.swift in Sources */,
 				E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */,
 				E716D56E24156C04002F7652 /* Array.swift in Sources */,
+				E73DB37224827FCF004AABB8 /* Mergeable.swift in Sources */,
 				E74D187B241D3FFC00EE3815 /* Iterator.swift in Sources */,
 				E7D05487245C06260097E298 /* Character.swift in Sources */,
 				E70B862A23DC9A3300C48E3C /* Note.swift in Sources */,
@@ -610,6 +617,7 @@
 				E70B862C23DCB3AF00C48E3C /* CRDTNoteViewController.swift in Sources */,
 				E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */,
 				E78F4ADB24792AB100DB0A69 /* Int.swift in Sources */,
+				E73DB37424828083004AABB8 /* Date.swift in Sources */,
 				E715898D24669179007AD153 /* DeletionsInsertions.swift in Sources */,
 				E763DF9E22E4CD2E003572EC /* Cow.swift in Sources */,
 				E7B05F202298284100D2A094 /* Event.swift in Sources */,
