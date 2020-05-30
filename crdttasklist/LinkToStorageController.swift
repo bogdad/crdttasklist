@@ -14,6 +14,8 @@ class LinkToStorageViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        Design.applyToUIView(view)
         // Check if the user is logged in
         // If so, display photo view controller
         NotificationCenter.default.addObserver(self, selector: #selector(onDropboxAvailable), name: NSNotification.Name("DropboxLogin"), object: nil)

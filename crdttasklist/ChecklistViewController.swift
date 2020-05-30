@@ -27,6 +27,8 @@ class ChecklistViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        Design.applyToUIView(self.view)
+
         note = NoteStorage.shared.currentNote!
 
         navigationItem.title = note?.getDisplayName()

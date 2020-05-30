@@ -55,14 +55,37 @@ class NoteRemoteStorage {
         }
     }
 
+    func uploadInBackground(_ rev: String?) {
+
+        DispatchQueue(label: "uploading").async {
+            guard let client = DropboxClientsManager.authorizedClient else {
+                return
+            }
+            
+            NoteLocalStorage.justSaveNotes()
+            if let rev = rev {
+                let _ = client.files.upload(path: "/notes",
+                                        mode: .update(rev),
+                                        strictConflict: true,
+                                        input: try! Note.ArchiveURL.asURL())
+                .response { response, error in
+                    self.handleUpload(response, error)
+                }
+            } else {
+                _ = client.files.upload(path: "/notes",
+                                    mode: .add,
+                                    strictConflict: true,
+                                    input: try! Note.ArchiveURL.asURL())
+                    .response { response, error in
+                        self.handleUpload(response, error)
+                    }
+            }
+        }
+    }
 
     func conflictDetected() {
         if !isStorageLinked() {
             return
-        }
-        guard let client = DropboxClientsManager.authorizedClient
-        else {
-                fatalError("cant happen")
         }
         self.downloadFromDropbox(toUrl: Note.TempArchiveURL, closure: { arg in
 
@@ -77,23 +100,10 @@ class NoteRemoteStorage {
                 if mergeStatus.needsUpload || wasMigrated {
                     NoteLocalStorage.justSaveNotes()
                     print("conflictDetected: needs upload, uploading \(self.noteStorage._notes.count)")
-                    let _ = client.files.upload(path: "/notes",
-                                                mode: .update(rev),
-                                                strictConflict: true,
-                                                input: try! Note.ArchiveURL.asURL())
-                        .response { response, error in
-                            self.handleUpload(response, error)
-                        }
+                    self.uploadInBackground(rev)
                 }
             } else {
-                NoteLocalStorage.justSaveNotes()
-                _ = client.files.upload(path: "/notes",
-                                        mode: .add,
-                                        strictConflict: true,
-                                        input: try! Note.ArchiveURL.asURL())
-                    .response { response, error in
-                        self.handleUpload(response, error)
-                    }
+                self.uploadInBackground(nil)
             }
 
         });

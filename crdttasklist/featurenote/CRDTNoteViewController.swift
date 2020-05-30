@@ -21,6 +21,8 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        Design.applyToUIView(view)
+
         if let note = NoteStorage.shared.currentNote {
             navigationItem.title = note.getDisplayName()
             //textView!.text = note.text_snapshot()
@@ -57,6 +59,7 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
 
         // 4
         let textView: CRDTTextView = CRDTTextView(frame: newTextViewRect, textContainer: container)
+        Design.applyToUIView(textView)
         textView.allowsEditingTextAttributes = false
         Design.applyToTextView(textView)
         textView.delegate = self
@@ -76,14 +79,12 @@ class CRDTNoteViewController: UIViewController, UITextViewDelegate, NSTextStorag
         textView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
         if #available(iOS 13.0, *) {
             textView.textColor = UIColor.label
-            textView.backgroundColor = UIColor.systemBackground
         } else {
             // Fallback on earlier versions
         }
 
         self.textView = textView
         self.textView?.becomeFirstResponder()
-
     }
 
     @objc func keyboardWasShown(_ notification: NSNotification) {
