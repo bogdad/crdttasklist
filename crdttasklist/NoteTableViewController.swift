@@ -141,10 +141,11 @@ class NoteTableViewController: UITableViewController {
         } else if sender.identifier == "unwindChecklist" {
                 if var note = NoteStorage.shared.currentNote {
                     NoteStorage.shared.update(&note)
-                    let indexPath = indexNote(note)
-                    let cell = tableView.cellForRow(at: IndexPath(item: indexPath, section: 0))! as! NoteTableViewCell
+                    let index = indexNote(note)
+                    let indexPath =  IndexPath(item: index, section: 0)
+                    let cell = tableView.cellForRow(at: indexPath)! as! NoteTableViewCell
                     cell.setIntensity(note)
-                    tableView.reloadRows(at: [], with: .none)
+                    tableView.reloadRows(at: [indexPath, IndexPath(item: 0, section: 0)], with: .none)
                 }
         }
     }
