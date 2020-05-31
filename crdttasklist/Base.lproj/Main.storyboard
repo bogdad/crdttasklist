@@ -42,30 +42,67 @@
             </objects>
             <point key="canvasLocation" x="728.98550724637687" y="671.65178571428567"/>
         </scene>
-        <!--Checklist view controller-->
-        <scene sceneID="kQy-T7-BAV">
+        <!--Item 2-->
+        <scene sceneID="Hnp-F0-uew">
             <objects>
-                <viewController storyboardIdentifier="ChecklistViewController" title="Checklist view controller" id="jU9-rk-lr2" customClass="ChecklistViewController" customModule="crdttasklist" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="qCB-n0-5ln">
+                <viewController id="Zv9-aa-IZV" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="XY4-bv-WN0">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="J6S-fe-gHP"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Item 2" id="d7V-ND-OTS"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZCQ-KA-Z9l" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2225" y="1404"/>
+        </scene>
+        <!--Item 1-->
+        <scene sceneID="G9a-GB-PkT">
+            <objects>
+                <viewController id="by7-Qd-DWS" customClass="ChecklistViewController" customModule="crdttasklist" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="XhW-Dn-CRQ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Fe-K0-Nkh">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Enabled" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b7k-br-r3p">
+                                <rect key="frame" x="145" y="164" width="124" height="40"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="33"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2EN-bb-e5U">
+                                <rect key="frame" x="277" y="169" width="49" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="onChanged:" destination="by7-Qd-DWS" eventType="valueChanged" id="I4Z-kI-3tU"/>
+                                </connections>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Complete" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ieu-Uz-P6g">
+                                <rect key="frame" x="131" y="252" width="138" height="40"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="33"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="leading" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bF2-1h-mXJ">
+                                <rect key="frame" x="277" y="257" width="49" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="completeChanged:" destination="by7-Qd-DWS" eventType="valueChanged" id="X2G-At-eVr"/>
+                                </connections>
+                            </switch>
+                            <datePicker contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="ZdT-F2-ONe">
+                                <rect key="frame" x="0.0" y="325" width="414" height="181"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                <items>
-                                    <navigationItem title="Title" id="cin-yb-vLY">
-                                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="mII-UX-NdI">
-                                            <connections>
-                                                <action selector="done:" destination="jU9-rk-lr2" id="DE1-Ss-AhZ"/>
-                                                <segue destination="Eg7-JY-xDw" kind="unwind" identifier="unwindChecklist" unwindAction="unwindToNoteListWithSender:" id="5QW-Fb-jZQ"/>
-                                            </connections>
-                                        </barButtonItem>
-                                    </navigationItem>
-                                </items>
-                            </navigationBar>
+                                <connections>
+                                    <action selector="timePicked:" destination="by7-Qd-DWS" eventType="valueChanged" id="Ucl-UD-5Ba"/>
+                                </connections>
+                            </datePicker>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Kki-tT-H75">
-                                <rect key="frame" x="20" y="504" width="374" height="304"/>
+                                <rect key="frame" x="58" y="514" width="349" height="304"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
@@ -73,43 +110,21 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <datePicker contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="ZdT-F2-ONe">
-                                <rect key="frame" x="0.0" y="315" width="414" height="181"/>
+                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Fe-K0-Nkh">
+                                <rect key="frame" x="-7" y="23" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <action selector="timePicked:" destination="jU9-rk-lr2" eventType="valueChanged" id="UWj-wY-5N5"/>
-                                </connections>
-                            </datePicker>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Complete" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ieu-Uz-P6g">
-                                <rect key="frame" x="140" y="238" width="138" height="40"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="33"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="leading" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bF2-1h-mXJ">
-                                <rect key="frame" x="296" y="247" width="49" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <action selector="completeChanged:" destination="jU9-rk-lr2" eventType="valueChanged" id="vQq-Ot-ce9"/>
-                                </connections>
-                            </switch>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2EN-bb-e5U">
-                                <rect key="frame" x="296" y="165" width="49" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <action selector="onChanged:" destination="jU9-rk-lr2" eventType="valueChanged" id="TYv-nl-DiJ"/>
-                                </connections>
-                            </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Enabled" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b7k-br-r3p">
-                                <rect key="frame" x="140" y="160" width="124" height="40"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="33"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                                <items>
+                                    <navigationItem title="Title" id="cin-yb-vLY">
+                                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="mII-UX-NdI">
+                                            <connections>
+                                                <segue destination="q4v-w3-B4w" kind="unwind" identifier="unwindChecklist" unwindAction="unwindToNoteListWithSender:" id="eIH-Q6-Krf"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Daily check" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="y7p-RA-I3l">
-                                <rect key="frame" x="140" y="83" width="169" height="41"/>
+                                <rect key="frame" x="116" y="91" width="169" height="41"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="34"/>
                                 <nil key="textColor"/>
@@ -117,21 +132,41 @@
                             </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <viewLayoutGuide key="safeArea" id="UkN-BM-tgL"/>
+                        <viewLayoutGuide key="safeArea" id="ndH-Qg-EC5"/>
                     </view>
+                    <tabBarItem key="tabBarItem" title="Item 1" id="gOL-rN-LMp"/>
                     <connections>
-                        <outlet property="complete" destination="bF2-1h-mXJ" id="2Db-3K-l3b"/>
-                        <outlet property="doneButton" destination="mII-UX-NdI" id="VVc-NC-2Fn"/>
-                        <outlet property="notePreview" destination="Kki-tT-H75" id="TSZ-Gm-a3h"/>
-                        <outlet property="onSwitch" destination="2EN-bb-e5U" id="Bqt-nn-jQM"/>
-                        <outlet property="titleLab" destination="cin-yb-vLY" id="ITq-PQ-vty"/>
-                        <outlet property="tomePicker" destination="ZdT-F2-ONe" id="RE0-td-syR"/>
+                        <outlet property="bar" destination="1Fe-K0-Nkh" id="6Vv-F9-yw3"/>
+                        <outlet property="complete" destination="bF2-1h-mXJ" id="3hn-uE-vpR"/>
+                        <outlet property="doneButton" destination="mII-UX-NdI" id="bhL-15-Wik"/>
+                        <outlet property="notePreview" destination="Kki-tT-H75" id="pkv-dd-Oaz"/>
+                        <outlet property="onSwitch" destination="2EN-bb-e5U" id="Hdm-RL-Tt2"/>
+                        <outlet property="timePicker" destination="ZdT-F2-ONe" id="XGT-U3-y6r"/>
+                        <outlet property="titleLab" destination="cin-yb-vLY" id="qVf-Ur-BPw"/>
                     </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="5L5-cf-6ri" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-                <exit id="Eg7-JY-xDw" userLabel="Exit" sceneMemberID="exit"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nn1-qt-TIg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="q4v-w3-B4w" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="2047.826086956522" y="991.74107142857133"/>
+            <point key="canvasLocation" x="2263.768115942029" y="815.625"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="qVc-bN-4iS">
+            <objects>
+                <tabBarController storyboardIdentifier="ChecklistViewController" id="0qA-Hj-5B5" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="CMP-KO-kiC">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="by7-Qd-DWS" kind="relationship" relationship="viewControllers" id="bZT-BQ-Fre"/>
+                        <segue destination="Zv9-aa-IZV" kind="relationship" relationship="viewControllers" id="l9Q-Xh-Cfd"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9xz-VY-JiZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1459" y="994"/>
         </scene>
         <!--Notes-->
         <scene sceneID="C2w-7r-fyB">
@@ -185,7 +220,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <segue destination="jU9-rk-lr2" kind="presentation" identifier="ShowChecklistEditor" id="und-rA-Xmv"/>
+                        <segue destination="0qA-Hj-5B5" kind="presentation" identifier="checklistSegue" id="VB2-Kp-n40"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="osm-ho-Ssr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -270,6 +305,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="bBV-LA-sBX"/>
+        <segue reference="vfV-OV-MJf"/>
     </inferredMetricsTieBreakers>
 </document>

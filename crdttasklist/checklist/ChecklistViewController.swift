@@ -13,11 +13,14 @@ import UIKit
 class ChecklistViewController: UIViewController {
 
     @IBOutlet weak var onSwitch: UISwitch!
-    @IBOutlet weak var tomePicker: UIDatePicker!
+    @IBOutlet weak var timePicker: UIDatePicker!
     @IBOutlet weak var notePreview: UITextView!
     @IBOutlet weak var complete: UISwitch!
-
     @IBOutlet weak var titleLab: UINavigationItem!
+    @IBOutlet weak var bar: UINavigationBar!
+    @IBOutlet weak var doneButton: UIBarButtonItem!
+
+
     var note: Note?
 
     var enabled: Bool = false
@@ -28,6 +31,7 @@ class ChecklistViewController: UIViewController {
         super.viewDidLoad()
 
         Design.applyToUIView(self.view)
+        Design.applyToUIView(bar)
 
         note = NoteStorage.shared.currentNote!
 
@@ -40,7 +44,7 @@ class ChecklistViewController: UIViewController {
 
         print("checkist \(checklist?.to_string() ?? "??")")
         let daily = checklist!.getDaily() ?? (23, 59)
-        tomePicker.setDate(fromDailyToDate(daily), animated: true)
+        timePicker.setDate(fromDailyToDate(daily), animated: true)
         notePreview.text = note!.crdt.to_string()
         titleLab.title = note?.getDisplayName()
 
@@ -62,13 +66,9 @@ class ChecklistViewController: UIViewController {
     }
     @IBAction func timePicked(_ sender: Any) {
         if enabled {
-            let date = tomePicker.date
+            let date = timePicker.date
             checklist?.setDaily(fromDateToDaily(date))
         }
-    }
-    @IBAction func checkedCliecked(_ sender: Any) {
-        enabled = !enabled
-        handleEnabled()
     }
 
     func handleComplete() {
@@ -79,14 +79,14 @@ class ChecklistViewController: UIViewController {
         if enabled {
             if checklist?.getDaily() == nil {
                 let daily = checklist!.getDaily() ?? (23, 59)
-                tomePicker.setDate(fromDailyToDate(daily), animated: true)
+                timePicker.setDate(fromDailyToDate(daily), animated: true)
             }
-            tomePicker.isEnabled = true
-            checklist?.setDaily(fromDateToDaily(tomePicker.date))
+            timePicker.isEnabled = true
+            checklist?.setDaily(fromDateToDaily(timePicker.date))
             complete.isEnabled = true
             onSwitch.isOn = true
         } else {
-            tomePicker.isEnabled = false
+            timePicker.isEnabled = false
             print("\(checklist?.to_string() ?? "??")")
             checklist?.clearDaily()
             print("\(checklist?.to_string() ?? "??")")
@@ -109,10 +109,6 @@ class ChecklistViewController: UIViewController {
         let components = calendar.dateComponents([.hour, .minute], from: date)
         return (components.hour!, components.minute!)
     }
-    @IBAction func done(_ sender: Any) {
-
-    }
-    @IBOutlet weak var doneButton: UIBarButtonItem!
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)

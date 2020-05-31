@@ -89,7 +89,7 @@ class NoteTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let setChecklistAction = UIContextualAction(style: .normal, title: "Checklist") { (action, sourceView, completionHandler) in
             let cell = tableView.cellForRow(at: indexPath)
-            self.performSegue(withIdentifier: "ShowChecklistEditor", sender: cell)
+            self.performSegue(withIdentifier: "checklistSegue", sender: cell)
             completionHandler(true)
         }
         let swipeConfig = UISwipeActionsConfiguration(actions: [setChecklistAction])
@@ -115,7 +115,7 @@ class NoteTableViewController: UITableViewController {
         case "ShowDetail":
             let selectedNote = noteForSender(sender)
             NoteStorage.shared.currentNote = selectedNote
-        case "ShowChecklistEditor":
+        case "checklistSegue":
             let selectedNote = noteForSender(sender)
             NoteStorage.shared.currentNote = selectedNote
         default:

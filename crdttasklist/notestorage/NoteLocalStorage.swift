@@ -34,9 +34,6 @@ class NoteLocalStorage {
     static func migrate(_ notes: [Note]) -> Bool {
         var wasMigrated = false
         //print("debugging lastModificationDate")
-        for note in notes.sorted(by: { $0.modificationDate() > $1.modificationDate() } ) {
-            //print("note \(note.id!) modified \(note.modificationDate())")
-        }
         for i in 0..<notes.count {
             let newV = notes[i].tryMigrate()
             wasMigrated = wasMigrated || newV
