@@ -51,6 +51,14 @@ struct Design {
         }
     }
 
+    static func applyToTableView(_ t: UITableView) {
+        if #available(iOS 13.0, *) {
+            t.backgroundColor = grayBackround()
+        } else {
+            // Fallback on earlier versions
+        }
+    }
+
     static func applyToNavigationController(_ navController: UINavigationController) {
         applyToUIView(navController.view)
         if #available(iOS 13.0, *) {
@@ -60,8 +68,11 @@ struct Design {
         }
     }
 
-    @available(iOS 13.0, *)
     static func grayBackround() -> UIColor {
-        return UIColor.systemGray5
+        if #available(iOS 13.0, *) {
+            return UIColor.systemGray5
+        } else {
+            return UIColor.gray
+        }
     }
 }

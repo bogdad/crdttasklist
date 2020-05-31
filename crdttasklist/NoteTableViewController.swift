@@ -18,6 +18,7 @@ class NoteTableViewController: UITableViewController {
         super.viewDidLoad()
 
         Design.applyToUIView(view)
+        Design.applyToTableView(tableView)
 
         if !NoteStorage.shared.isStorageLinked() {
             let linkToSorageViewController = self.storyboard?.instantiateViewController(withIdentifier: "LinkToStorageViewController")

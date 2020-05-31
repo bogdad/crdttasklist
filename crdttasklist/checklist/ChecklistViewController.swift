@@ -90,10 +90,10 @@ class ChecklistViewController: UIViewController {
             timePicker.isEnabled = false
             print("\(checklist?.to_string() ?? "??")")
             checklist?.clearDaily()
+            checklist?.uncompleteDaily()
             print("\(checklist?.to_string() ?? "??")")
             complete.isEnabled = false
             onSwitch.isOn = false
-            checklist!.uncompleteDaily()
         }
     }
 

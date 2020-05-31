@@ -22,7 +22,17 @@ class NoteTableViewCell: UITableViewCell {
     }
 
     func setIntensity(_ note: Note) {
-       backgroundColor = UIColor.systemPink.withAlphaComponent(CGFloat(note.intensity()))
+        let int1 = note.intensity1()
+        let int2 = note.intensity2()
+        if int1 > 0 && int2 > 0 {
+            backgroundColor = UIColor.systemRed.withAlphaComponent(CGFloat(int1 + int2))
+        } else if int1 > 0 {
+            backgroundColor = UIColor.systemPink.withAlphaComponent(CGFloat(int1))
+        } else if int2 > 0 {
+            backgroundColor = UIColor.systemOrange.withAlphaComponent(CGFloat(int2))
+        } else {
+            backgroundColor = Design.grayBackround()
+        }
     }
 
 }

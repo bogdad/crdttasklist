@@ -36,6 +36,8 @@
 		E74D1881241ECCD600EE3815 /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74D1880241ECCD600EE3815 /* DebugViewController.swift */; };
 		E755519B22A2FCBC004A111C /* .travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = E755519A22A2FCBC004A111C /* .travis.yml */; };
 		E755519D22A3E85F004A111C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E755519C22A3E85F004A111C /* README.md */; };
+		E75AD1E32484367700BF8ADB /* ChecklistWeeklyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75AD1E22484367700BF8ADB /* ChecklistWeeklyViewController.swift */; };
+		E75AD1E5248438C800BF8ADB /* ChecklistWeeklyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75AD1E4248438C800BF8ADB /* ChecklistWeeklyTableViewCell.swift */; };
 		E75B38692300147B005013E0 /* Tabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75B38682300147B005013E0 /* Tabs.swift */; };
 		E75B386B230015CF005013E0 /* Find.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75B386A230015CF005013E0 /* Find.swift */; };
 		E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9922DA5DCE003572EC /* Hashes.swift */; };
@@ -137,6 +139,8 @@
 		E74D1880241ECCD600EE3815 /* DebugViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
 		E755519A22A2FCBC004A111C /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		E755519C22A3E85F004A111C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		E75AD1E22484367700BF8ADB /* ChecklistWeeklyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistWeeklyViewController.swift; sourceTree = "<group>"; };
+		E75AD1E4248438C800BF8ADB /* ChecklistWeeklyTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistWeeklyTableViewCell.swift; sourceTree = "<group>"; };
 		E75B38682300147B005013E0 /* Tabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tabs.swift; sourceTree = "<group>"; };
 		E75B386A230015CF005013E0 /* Find.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Find.swift; sourceTree = "<group>"; };
 		E763DF9922DA5DCE003572EC /* Hashes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hashes.swift; sourceTree = "<group>"; };
@@ -268,6 +272,8 @@
 			children = (
 				E776E3D52470022600738B66 /* ChecklistCRDT.swift */,
 				E78F4AD82479210700DB0A69 /* ChecklistViewController.swift */,
+				E75AD1E4248438C800BF8ADB /* ChecklistWeeklyTableViewCell.swift */,
+				E75AD1E22484367700BF8ADB /* ChecklistWeeklyViewController.swift */,
 			);
 			path = checklist;
 			sourceTree = "<group>";
@@ -321,8 +327,8 @@
 				E73DB3752482B7F8004AABB8 /* NoteNavigationController.swift */,
 				E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */,
 				E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */,
-				E7FFF0AB246716BD006713E9 /* UIFont.swift */,
 				E776E3D3246FFF7100738B66 /* Optional.swift */,
+				E7FFF0AB246716BD006713E9 /* UIFont.swift */,
 			);
 			path = crdttasklist;
 			sourceTree = "<group>";
@@ -588,6 +594,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7B3F80F242BE0EE004095D8 /* ArraySlice.swift in Sources */,
+				E75AD1E32484367700BF8ADB /* ChecklistWeeklyViewController.swift in Sources */,
 				E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */,
 				E716D56C24156885002F7652 /* Breaks.swift in Sources */,
 				E7F5A82524548C96006AB4CA /* SortedSet.swift in Sources */,
@@ -641,6 +648,7 @@
 				E74D187F241EC31E00EE3815 /* CRDT.swift in Sources */,
 				E72FC386240BFF4F00611A75 /* Config.swift in Sources */,
 				E7A895D423DF807D008626EA /* NoteStorage.swift in Sources */,
+				E75AD1E5248438C800BF8ADB /* ChecklistWeeklyTableViewCell.swift in Sources */,
 				E71589902466BD2B007AD153 /* NoteRemoteStorage.swift in Sources */,
 				E74D187D241EB75000EE3815 /* EmojiTable.swift in Sources */,
 			);

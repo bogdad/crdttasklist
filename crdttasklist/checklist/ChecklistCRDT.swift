@@ -267,13 +267,13 @@ struct ChecklistCRDT: Codable, Equatable {
     }
 
     func weekStart(_ curDate: Date) -> Date {
-        let gregorian = Calendar(identifier: .gregorian)
+        let gregorian = Calendar.current
         let sunday = gregorian.date(from: gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: curDate))!
         return gregorian.date(byAdding: .day, value: 1, to: sunday)!
     }
 
     func weekEnd(_ curDate: Date) -> Date {
-        let gregorian = Calendar(identifier: .gregorian)
+        let gregorian = Calendar.current
         let sunday = gregorian.date(from: gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: curDate))!
         return gregorian.date(byAdding: .day, value: 7, to: sunday)!
     }
