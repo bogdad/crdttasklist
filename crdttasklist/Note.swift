@@ -78,7 +78,7 @@ class Note: Codable, Equatable {
     }
 
     func intensity() -> Double {
-        return checklistCRDT!.intensity();
+        return checklistCRDT!.intensityDaily();
     }
 
     func markDeleted() {

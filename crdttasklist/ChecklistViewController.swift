@@ -44,7 +44,7 @@ class ChecklistViewController: UIViewController {
         notePreview.text = note!.crdt.to_string()
         titleLab.title = note?.getDisplayName()
 
-        enabled = checklist!.isSet()
+        enabled = checklist!.isSetDaily()
         handleEnabled()
         handleComplete()
     }
@@ -53,10 +53,10 @@ class ChecklistViewController: UIViewController {
         handleEnabled()
     }
     @IBAction func completeChanged(_ sender: Any) {
-        if !checklist!.isCompleted() {
-            checklist!.complete()
+        if !checklist!.isCompletedDaily() {
+            checklist!.completeDaily()
         } else {
-            checklist!.uncomplete()
+            checklist!.uncompleteDaily()
         }
         handleComplete()
     }
@@ -72,7 +72,7 @@ class ChecklistViewController: UIViewController {
     }
 
     func handleComplete() {
-        complete.setOn(checklist!.isCompleted(), animated: true)
+        complete.setOn(checklist!.isCompletedDaily(), animated: true)
     }
 
     func handleEnabled() {
@@ -88,11 +88,11 @@ class ChecklistViewController: UIViewController {
         } else {
             tomePicker.isEnabled = false
             print("\(checklist?.to_string() ?? "??")")
-            checklist?.clear()
+            checklist?.clearDaily()
             print("\(checklist?.to_string() ?? "??")")
             complete.isEnabled = false
             onSwitch.isOn = false
-            checklist!.uncomplete()
+            checklist!.uncompleteDaily()
         }
     }
 
