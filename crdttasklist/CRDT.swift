@@ -120,6 +120,7 @@ struct CRDT: Codable, Equatable {
 
         insert(str)
         lastModificationDateTimeInterval = Date().timeIntervalSince1970
+        lastModificationDate = Date(timeIntervalSince1970: lastModificationDateTimeInterval!)
     }
 
     private func position() -> Interval {

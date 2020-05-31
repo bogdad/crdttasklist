@@ -70,7 +70,7 @@ class Note: Codable, Equatable {
     }
 
     func modificationDate() -> Date {
-        return Swift.max(crdt.modificationDate(), checklistCRDT?.modificationDate() ?? Date.distantPast)
+        return Swift.max(crdt.modificationDate(), checklistCRDT!.modificationDate())
     }
 
     func isActive() -> Bool {
