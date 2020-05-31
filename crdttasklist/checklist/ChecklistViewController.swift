@@ -32,6 +32,7 @@ class ChecklistViewController: UIViewController {
 
         Design.applyToUIView(self.view)
         Design.applyToUIView(bar)
+        Design.applyToTextView(notePreview)
 
         note = NoteStorage.shared.currentNote!
 
