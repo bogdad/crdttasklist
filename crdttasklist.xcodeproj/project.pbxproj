@@ -38,6 +38,7 @@
 		E755519D22A3E85F004A111C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E755519C22A3E85F004A111C /* README.md */; };
 		E75AD1E32484367700BF8ADB /* ChecklistWeeklyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75AD1E22484367700BF8ADB /* ChecklistWeeklyViewController.swift */; };
 		E75AD1E5248438C800BF8ADB /* ChecklistWeeklyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75AD1E4248438C800BF8ADB /* ChecklistWeeklyTableViewCell.swift */; };
+		E75AD1E924844C2D00BF8ADB /* ChecklistTabController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75AD1E824844C2D00BF8ADB /* ChecklistTabController.swift */; };
 		E75B38692300147B005013E0 /* Tabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75B38682300147B005013E0 /* Tabs.swift */; };
 		E75B386B230015CF005013E0 /* Find.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75B386A230015CF005013E0 /* Find.swift */; };
 		E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9922DA5DCE003572EC /* Hashes.swift */; };
@@ -141,6 +142,7 @@
 		E755519C22A3E85F004A111C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E75AD1E22484367700BF8ADB /* ChecklistWeeklyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistWeeklyViewController.swift; sourceTree = "<group>"; };
 		E75AD1E4248438C800BF8ADB /* ChecklistWeeklyTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistWeeklyTableViewCell.swift; sourceTree = "<group>"; };
+		E75AD1E824844C2D00BF8ADB /* ChecklistTabController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistTabController.swift; sourceTree = "<group>"; };
 		E75B38682300147B005013E0 /* Tabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tabs.swift; sourceTree = "<group>"; };
 		E75B386A230015CF005013E0 /* Find.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Find.swift; sourceTree = "<group>"; };
 		E763DF9922DA5DCE003572EC /* Hashes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hashes.swift; sourceTree = "<group>"; };
@@ -274,6 +276,7 @@
 				E78F4AD82479210700DB0A69 /* ChecklistViewController.swift */,
 				E75AD1E4248438C800BF8ADB /* ChecklistWeeklyTableViewCell.swift */,
 				E75AD1E22484367700BF8ADB /* ChecklistWeeklyViewController.swift */,
+				E75AD1E824844C2D00BF8ADB /* ChecklistTabController.swift */,
 			);
 			path = checklist;
 			sourceTree = "<group>";
@@ -611,6 +614,7 @@
 				E716D56A2413F6FE002F7652 /* LineWrap.swift in Sources */,
 				E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */,
 				E7DD4EB4242E87DE00E2B5B9 /* IndexSet.swift in Sources */,
+				E75AD1E924844C2D00BF8ADB /* ChecklistTabController.swift in Sources */,
 				E74C3DC022D23620001B9CA7 /* Engine.swift in Sources */,
 				E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */,
 				E7B3F80D242BDD63004095D8 /* Interval.swift in Sources */,

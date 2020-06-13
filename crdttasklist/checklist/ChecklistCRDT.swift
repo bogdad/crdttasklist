@@ -30,6 +30,10 @@ struct ChecklistCRDT: Codable, Equatable {
     var checksDaily: DeletionsInsertions?
     var checksWeekly: DeletionsInsertions?
 
+
+    var intensityDailyCache: Double?
+    var intensityWeeklyCache: Double?
+
     init() {
         lastModificationDate = Date()
         lastCheckTime = Date.distantPast
@@ -75,7 +79,15 @@ struct ChecklistCRDT: Codable, Equatable {
                          storage.modificationDate())
     }
 
-    func intensityDaily() -> Double {
+    mutating func intensityDaily() -> Double {
+        if let intensityDailyCache = intensityDailyCache {
+            return intensityDailyCache
+        }
+        let res = intensityDailyInner()
+        intensityDailyCache = res
+        return res
+    }
+    private func intensityDailyInner() -> Double {
         if !isSetDaily() {
             return 0
         }
@@ -142,12 +154,14 @@ struct ChecklistCRDT: Codable, Equatable {
     mutating func completeDaily() {
         if !isCompletedDaily() {
             checksDaily!.markCreated()
+            intensityDailyCache = nil
         }
     }
 
     mutating func uncompleteDaily() {
         if isCompletedDaily() {
             checksDaily!.markDeleted()
+            intensityDailyCache = nil
         }
     }
 
@@ -161,6 +175,7 @@ struct ChecklistCRDT: Codable, Equatable {
             return
         }
         storage.replace(match.range(at: 0).to_interval(), "")
+        intensityDailyCache = nil
     }
 
     func maybeDailyFromString() -> (Int, Int)? {
@@ -196,8 +211,10 @@ struct ChecklistCRDT: Codable, Equatable {
 
     mutating func setDaily(_ daily: (Int, Int)) {
         if !isSetDaily() {
+            intensityDailyCache = nil
             storage.replace(Interval(0, 0), dailyAsString(daily.0, daily.1))
         } else {
+            intensityDailyCache = nil
             storage.replace(Interval(0, storage.editor.get_buffer().len()), dailyAsString(daily.0, daily.1))
         }
     }
@@ -235,9 +252,18 @@ struct ChecklistCRDT: Codable, Equatable {
             return
         }
         storage.replace(match.range(at: 0).to_interval(), "")
+        intensityWeeklyCache = nil
     }
 
-    func intensityWeekly() -> Double {
+    mutating func intensityWeekly() -> Double {
+        if let itensityWeeklyCache = intensityWeeklyCache {
+            return itensityWeeklyCache
+        }
+        let res = intensityWeeklyInner()
+        intensityWeeklyCache = res
+        return res
+    }
+    private func intensityWeeklyInner() -> Double {
         if !isSetWeekly() {
             return 0
         }
@@ -297,37 +323,41 @@ struct ChecklistCRDT: Codable, Equatable {
     mutating func completeWeekly() {
         if !isCompletedWeekly() {
             checksWeekly!.markCreated()
+            intensityWeeklyCache = nil
         }
     }
 
     mutating func uncompleteWeekly() {
         if isCompletedWeekly() {
             checksWeekly!.markDeleted()
+            intensityWeeklyCache = nil
         }
     }
 
     func weeklyFromString(_ str: String) -> Int {
-          guard let res = maybeWeeklyFromString() else {
-              fatalError("bad state")
-          }
-          return res
-      }
+        guard let res = maybeWeeklyFromString() else {
+            fatalError("bad state")
+        }
+        return res
+    }
 
-      func weeklyAsString(_ weekday: Int) -> String {
-          return "weekly: \(weekday)"
-      }
+    func weeklyAsString(_ weekday: Int) -> String {
+        return "weekly: \(weekday)"
+    }
 
-      mutating func setWeekly(_ weekday: Int) {
-          if !isSetWeekly() {
-              storage.replace(Interval(0, 0), weeklyAsString(weekday))
-          } else {
-              let descr = storage.to_string()
-              guard let match = ChecklistCRDT.weeklyRegEx.firstMatch(in: descr, options: [], range: NSRange(location: 0, length: descr.utf8.count)) else {
-                  return
-              }
-              storage.replace(match.range(at: 0).to_interval(), weeklyAsString(weekday))
-          }
-      }
+    mutating func setWeekly(_ weekday: Int) {
+        if !isSetWeekly() {
+            intensityWeeklyCache = nil
+            storage.replace(Interval(0, 0), weeklyAsString(weekday))
+        } else {
+            let descr = storage.to_string()
+            guard let match = ChecklistCRDT.weeklyRegEx.firstMatch(in: descr, options: [], range: NSRange(location: 0, length: descr.utf8.count)) else {
+                return
+            }
+            storage.replace(match.range(at: 0).to_interval(), weeklyAsString(weekday))
+            intensityWeeklyCache = nil
+        }
+    }
 
 
 }

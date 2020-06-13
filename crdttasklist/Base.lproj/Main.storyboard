@@ -253,10 +253,10 @@
             </objects>
             <point key="canvasLocation" x="2263.768115942029" y="815.625"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Checklist Tab Controller-->
         <scene sceneID="qVc-bN-4iS">
             <objects>
-                <tabBarController storyboardIdentifier="ChecklistViewController" id="0qA-Hj-5B5" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="ChecklistViewController" id="0qA-Hj-5B5" customClass="ChecklistTabController" customModule="crdttasklist" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="CMP-KO-kiC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>

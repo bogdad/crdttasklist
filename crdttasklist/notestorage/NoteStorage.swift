@@ -19,7 +19,19 @@ class NoteStorage {
     var currentNote: Note?
 
     func notes() -> [Note] {
-        return Array(_notes.values).filter { $0.isActive() } .sorted{ $0.modificationDate() > $1.modificationDate() }
+        return orderNotes(Array(_notes.values).filter { $0.isActive() })
+    }
+
+    func orderNotes(_ notes: [Note]) -> [Note] {
+        var checklist =
+            notes
+                .filter { $0.intensity1() > 0 || $0.intensity2() > 0}
+                .sorted { $0.intensity1() * 100 + $0.intensity2() > $1.intensity1() * 100 + $1.intensity2()}
+
+        let texts = notes.filter { $0.intensity1() == 0 && $0.intensity2() == 0}
+                .sorted{ $0.modificationDate() > $1.modificationDate() }
+        checklist.append(contentsOf: texts)
+        return checklist
     }
 
     func noteByIndexPath(_ row: NSInteger) -> Note {
