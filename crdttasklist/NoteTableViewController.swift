@@ -168,6 +168,10 @@ class NoteTableViewController: UITableViewController {
     }
 
     @objc func notesChangedRemotely() {
+        guard let updated = NoteRemoteStorage.shared.popLatest() else {
+            return
+        }
+        NoteStorage.shared._notes = updated
         self.tableView.reloadData()
     }
 

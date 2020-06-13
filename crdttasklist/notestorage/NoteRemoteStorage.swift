@@ -8,12 +8,30 @@
 
 import Foundation
 import SwiftyDropbox
+import NIOConcurrencyHelpers
 
 class NoteRemoteStorage {
 
     static let shared = NoteRemoteStorage()
 
     let noteStorage = NoteStorage.shared
+
+    let lock = Lock()
+    var updatesQueue: Notes?
+    func appendToQueue(_ notes: Notes) {
+        lock.withLock {
+            updatesQueue = notes
+        }
+    }
+
+    func popLatest() -> Notes? {
+        lock.withLock {
+            let res = updatesQueue
+            updatesQueue = nil
+            return res
+        }
+    }
+
 
     func checkRemotes() {
         if isStorageLinked() {
@@ -93,8 +111,9 @@ class NoteRemoteStorage {
                 let otherNotes = arg!.0
                 let rev = arg!.1
                 let wasMigrated = arg!.2
-                let mergeStatus = self.noteStorage.mergeNotes(otherNotes)
+                let (mergeStatus, newLocalNotes) = self.noteStorage.mergeNotes(otherNotes)
                 if mergeStatus.needsLocalRedraw {
+                    self.appendToQueue(newLocalNotes)
                     self.noteStorage.notesChangedRemotely()
                 }
                 if mergeStatus.needsUpload || wasMigrated {

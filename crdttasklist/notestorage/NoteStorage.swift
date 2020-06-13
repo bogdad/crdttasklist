@@ -92,7 +92,7 @@ class NoteStorage {
         return true
     }
 
-    func mergeNotes(_ remoteNotes: Notes) -> MergeStatus {
+    func mergeNotes(_ remoteNotes: Notes) -> (MergeStatus, Notes) {
         let localNotes = self._notes
         var localDict = localNotes
         let remoteDict = remoteNotes
@@ -121,8 +121,7 @@ class NoteStorage {
 
         let needsUpload = numMissingRemotely > 0 || numLocalNewer > 0
         let needsLocalRedraw = numMissingLocally > 0 || numRemoteNewer > 0
-        self._notes = newLocalNotes
-        return MergeStatus(needsUpload: needsUpload, needsLocalRedraw: needsLocalRedraw)
+        return (MergeStatus(needsUpload: needsUpload, needsLocalRedraw: needsLocalRedraw), newLocalNotes)
     }
 
     func notesChangedRemotely() {

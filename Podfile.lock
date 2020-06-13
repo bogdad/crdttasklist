@@ -1,19 +1,38 @@
 PODS:
   - Alamofire (4.8.2)
   - BTree (4.1.0)
+  - CNIOAtomics (2.18.0)
+  - CNIODarwin (2.18.0)
+  - CNIOLinux (2.18.0)
+  - CNIOSHA1 (2.18.0)
   - IteratorTools (1.1.0)
+  - SwiftNIO (2.18.0):
+    - CNIOAtomics (= 2.18.0)
+    - CNIODarwin (= 2.18.0)
+    - CNIOLinux (= 2.18.0)
+    - CNIOSHA1 (= 2.18.0)
+    - SwiftNIOConcurrencyHelpers (= 2.18.0)
+  - SwiftNIOConcurrencyHelpers (2.18.0):
+    - CNIOAtomics (= 2.18.0)
   - SwiftyDropbox (5.1.0):
     - Alamofire (~> 4.8.2)
 
 DEPENDENCIES:
   - BTree (from `https://github.com/bogdad/BTree.git`, commit `0658371e574a0a66b1cd4bf5efe2665e00cf1ed8`)
   - IteratorTools (~> 1.1.0)
+  - SwiftNIO (~> 2.18)
   - SwiftyDropbox
 
 SPEC REPOS:
   trunk:
     - Alamofire
+    - CNIOAtomics
+    - CNIODarwin
+    - CNIOLinux
+    - CNIOSHA1
     - IteratorTools
+    - SwiftNIO
+    - SwiftNIOConcurrencyHelpers
     - SwiftyDropbox
 
 EXTERNAL SOURCES:
@@ -29,9 +48,15 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   BTree: 8aff5613df4863cdbd9bd5ce6a75bcf393dd64fe
+  CNIOAtomics: b6053043649c8b9afbf2560d9d64899d5d7ce368
+  CNIODarwin: 2e814fe13ee1b16a6d7603affbd95b3fbf1e65b1
+  CNIOLinux: 45e91eaba50bb850a48135aabbd7671625f15188
+  CNIOSHA1: f8f5b0c8cbd067c195d1b44ab237927765bd4914
   IteratorTools: 085fb5125062d3dc2f7a9919be1b805bef72a94f
+  SwiftNIO: c17d311e9006fc10c1d17fbc6a7a9cb21aa46368
+  SwiftNIOConcurrencyHelpers: 69762a04ed76d7254012e1f17787ee162d2cf764
   SwiftyDropbox: 7ca4961e0340c62c8d6d1ece91d67badfe4c0380
 
-PODFILE CHECKSUM: 22d0343ff560c4ff36fc278eba4e80a23b133973
+PODFILE CHECKSUM: 3298696af7b3585ac3e11282d2633b3d2008be79
 
 COCOAPODS: 1.8.4
