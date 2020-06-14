@@ -49,6 +49,8 @@ struct ChecklistCRDT: Codable, Equatable {
         res.merge(storageMerge)
         res.merge(checksDaily!.merge(other.checksDaily!))
         res.merge(checksWeekly!.merge(other.checksWeekly!))
+        intensityDailyCache = nil
+        intensityWeeklyCache = nil
         return res
     }
 
