@@ -26,7 +26,7 @@ class LinkToStorageViewController: UIViewController {
         if NoteStorage.shared.isStorageLinked() {
             let navigationController = self.storyboard?.instantiateViewController(withIdentifier: "NavigationController")
 
-            NoteStorage.shared.loadNotes()
+            NoteStorage.shared.loadNotes({_ in })
             DispatchQueue.main.async {
                 self.present(navigationController!, animated: true, completion: nil)
             }

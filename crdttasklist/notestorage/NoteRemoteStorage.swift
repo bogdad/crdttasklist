@@ -13,6 +13,7 @@ import NIOConcurrencyHelpers
 class NoteRemoteStorage {
 
     static let shared = NoteRemoteStorage()
+    static let queue = DispatchQueue(label: "remote")
 
     let noteStorage = NoteStorage.shared
 
@@ -74,8 +75,7 @@ class NoteRemoteStorage {
     }
 
     func uploadInBackground(_ rev: String?) {
-
-        DispatchQueue(label: "uploading").async {
+        NoteRemoteStorage.queue.async {
             guard let client = DropboxClientsManager.authorizedClient else {
                 return
             }
@@ -102,30 +102,32 @@ class NoteRemoteStorage {
     }
 
     func conflictDetected() {
-        if !isStorageLinked() {
-            return
-        }
-        self.downloadFromDropbox(toUrl: Note.TempArchiveURL, closure: { arg in
-
-            if arg != nil {
-                let otherNotes = arg!.0
-                let rev = arg!.1
-                let wasMigrated = arg!.2
-                let (mergeStatus, newLocalNotes) = self.noteStorage.mergeNotes(otherNotes)
-                if mergeStatus.needsLocalRedraw {
-                    self.appendToQueue(newLocalNotes)
-                    self.noteStorage.notesChangedRemotely()
-                }
-                if mergeStatus.needsUpload || wasMigrated {
-                    NoteLocalStorage.justSaveNotes()
-                    print("conflictDetected: needs upload, uploading \(self.noteStorage._notes.count)")
-                    self.uploadInBackground(rev)
-                }
-            } else {
-                self.uploadInBackground(nil)
+        NoteRemoteStorage.queue.async {
+            if !self.isStorageLinked() {
+                return
             }
+            self.downloadFromDropbox(toUrl: Note.TempArchiveURL, closure: { arg in
 
-        });
+                if arg != nil {
+                    let otherNotes = arg!.0
+                    let rev = arg!.1
+                    let wasMigrated = arg!.2
+                    let (mergeStatus, newLocalNotes) = self.noteStorage.mergeNotes(otherNotes)
+                    if mergeStatus.needsLocalRedraw {
+                        self.appendToQueue(newLocalNotes)
+                        self.noteStorage.notesChangedRemotely()
+                    }
+                    if mergeStatus.needsUpload || wasMigrated {
+                        NoteLocalStorage.justSaveNotes()
+                        print("conflictDetected: needs upload, uploading \(self.noteStorage._notes.count)")
+                        self.uploadInBackground(rev)
+                    }
+                } else {
+                    self.uploadInBackground(nil)
+                }
+
+            });
+        }
     }
 
     private func downloadFromDropbox(toUrl: URL, closure: @escaping ((Notes, String, Bool)?) -> Void) {
@@ -138,14 +140,15 @@ class NoteRemoteStorage {
         client.files.download(path: "/notes", overwrite: true, destination: destination)
         .response { response, error in
             if let response = response {
-                guard let (fileNotes, wasMigrated) = NoteLocalStorage.loadFrom(toUrl) else {
-                    // TODO: what are we doing if we consistently cant download/parse from dropbox
-                    return
-                }
-                print("downloadFromDropBox: downoladed \(fileNotes.count) with revision \(response.0.rev)")
-                DispatchQueue.main.async {
-                    closure((fileNotes, response.0.rev, wasMigrated))
-                }
+                NoteLocalStorage.loadFrom(toUrl, { (res)->Void in
+                    guard let (fileNotes, wasMigrated) = res else {
+                        return
+                    }
+                    DispatchQueue.main.async {
+                        print("downloadFromDropBox: downoladed \(fileNotes.count) with revision \(response.0.rev)")
+                        closure((fileNotes, response.0.rev, wasMigrated))
+                    }
+                })
             } else if let error = error {
                 switch error {
                 case .routeError(let fileDownloadError, _, _, _):

@@ -24,7 +24,11 @@ class NoteTableViewController: UITableViewController {
             let linkToSorageViewController = self.storyboard?.instantiateViewController(withIdentifier: "LinkToStorageViewController")
             present(linkToSorageViewController!, animated: true, completion: nil)
         } else {
-            NoteStorage.shared.loadNotes()
+            NoteStorage.shared.loadNotes({_ in
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            })
             navigationItem.leftBarButtonItem = editButtonItem
 
             NotificationCenter.default.addObserver(self, selector: #selector(notesChangedRemotely), name: NSNotification.Name("notesChangedRemotely"), object: nil)

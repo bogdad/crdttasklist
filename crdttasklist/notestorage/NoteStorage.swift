@@ -13,7 +13,6 @@ typealias Notes = [String: Note]
 class NoteStorage {
     static let shared = NoteStorage()
 
-
     var _notes: Notes = [:]
     var rev: String?
     var currentNote: Note?
@@ -76,20 +75,23 @@ class NoteStorage {
         return notes()
     }
 
-    func loadNotes() -> Bool {
-        guard let (notes, wasMigrated) = NoteLocalStorage.loadFrom(try! Note.ArchiveURL.asURL()) else {
-            self._notes = [:]
-            NoteLocalStorage.saveNotes()
-            NoteRemoteStorage.shared.conflictDetected()
-            return false
-        }
-        self._notes = notes
-        if wasMigrated {
-            NoteLocalStorage.saveNotes()
-        }
-        NoteRemoteStorage.shared.conflictDetected()
-
-        return true
+    func loadNotes(_ closure: @escaping ((Notes, Bool)) -> Void) {
+        NoteLocalStorage.loadFrom(try! Note.ArchiveURL.asURL(), {
+            (res:(Notes, Bool)?) -> Void in
+            guard let (notes, wasMigrated) = res else {
+                self._notes = [:]
+                NoteLocalStorage.saveNotes()
+                closure((self._notes, false))
+                return
+            }
+            self._notes = notes
+            if wasMigrated {
+                NoteLocalStorage.saveNotes()
+            } else {
+                NoteRemoteStorage.shared.conflictDetected()
+            }
+            closure((self._notes, wasMigrated))
+        });
     }
 
     func mergeNotes(_ remoteNotes: Notes) -> (MergeStatus, Notes) {
