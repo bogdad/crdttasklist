@@ -211,7 +211,7 @@ class NoteTableViewController: UITableViewController {
         }
         switch type {
         case .add:
-            tableView.reloadRows(at: [IndexPath(item: newIndex!, section: 0)], with: .none)
+            tableView.insertRows(at: [IndexPath(item: newIndex!, section: 0)], with: .automatic)
         case .update:
             tableView.reloadRows(at: indexPaths(oldIndex!, newIndex!), with: .none)
         case .delete:
