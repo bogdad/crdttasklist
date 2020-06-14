@@ -13,6 +13,7 @@ class NoteTableViewController: UITableViewController {
 
     var remoteTimer: Timer?
     var debugShown = false
+    var editedNoteIndex: Int?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -116,12 +117,15 @@ class NoteTableViewController: UITableViewController {
         switch(segue.identifier ?? "") {
         case "AddItem":
             NoteStorage.shared.currentNote = nil
+            editedNoteIndex = nil
             break
         case "ShowDetail":
             let selectedNote = noteForSender(sender)
+            editedNoteIndex = indexNote(selectedNote)
             NoteStorage.shared.currentNote = selectedNote
         case "checklistSegue":
             let selectedNote = noteForSender(sender)
+            editedNoteIndex = indexNote(selectedNote)
             NoteStorage.shared.currentNote = selectedNote
         default:
             fatalError("Unexpected Segue Identifier; \(segue.identifier ?? "???")")
@@ -132,26 +136,19 @@ class NoteTableViewController: UITableViewController {
     @IBAction func unwindToNoteList(sender: UIStoryboardSegue) {
         if sender.identifier == "unwindNote" {
             if var note = NoteStorage.shared.currentNote {
-                if let selectedIndexPath = tableView.indexPathForSelectedRow {
-                    // Update an existing meal.
-                    NoteStorage.shared.update(&note)
-                    tableView.reloadRows(at: [selectedIndexPath, IndexPath.init(row: 0, section: 0)], with: .none)
+                if let _ = tableView.indexPathForSelectedRow {
+                    // Update an existing note.
+                    noteUpdate(&note)
                 }
                 else {
                     // Add a new note.w
-                    let pos = NoteStorage.shared.append(&NoteStorage.shared.currentNote!)
-                    tableView.insertRows(at: [IndexPath(row: pos, section: 0)], with: .automatic)
+                    noteUpdate(&NoteStorage.shared.currentNote!)
                 }
             }
         } else if sender.identifier == "unwindChecklist" {
-                if var note = NoteStorage.shared.currentNote {
-                    NoteStorage.shared.update(&note)
-                    let index = indexNote(note)
-                    let indexPath =  IndexPath(item: index, section: 0)
-                    let cell = tableView.cellForRow(at: indexPath)! as! NoteTableViewCell
-                    cell.setIntensity(note)
-                    tableView.reloadRows(at: [indexPath, IndexPath(item: 0, section: 0)], with: .none)
-                }
+            if var note = NoteStorage.shared.currentNote {
+                noteUpdate(&note)
+            }
         }
     }
 
@@ -163,8 +160,50 @@ class NoteTableViewController: UITableViewController {
         }
     }
 
+    func noteUpdate(_ note: inout Note) {
+        let oldIndex = editedNoteIndex
+        if oldIndex == nil {
+            NoteStorage.shared.append(&note)
+        } else {
+            NoteStorage.shared.update(&note)
+        }
+        let newIndex = indexNote(note)
+        let newCell = cellByIndex(newIndex)
+        if let oldIndex = oldIndex {
+            let oldNote = noteByIndex(oldIndex)
+            let oldCell = cellByIndex(oldIndex)
+            oldCell.setIntensity(oldNote)
+        }
+        newCell.setIntensity(note)
+        if let oldIndex = oldIndex {
+            tableView.reloadRows(at: indexPaths(oldIndex, newIndex), with: .none)
+        } else {
+            tableView.reloadRows(at: [IndexPath(item: newIndex, section: 0)], with: .none)
+        }
+
+    }
+
+    func indexPaths(_ i: Int...) -> [IndexPath] {
+        return i.map { IndexPath(item: $0, section: 0)}
+    }
+
     func indexNote(_ note: Note) -> Int {
         return getNotes().firstIndex(where: {$0.id! == note.id!})!
+    }
+
+    func cellByIndex(_ i: Int) -> NoteTableViewCell {
+        let indexPath =  IndexPath(item: i, section: 0)
+        return tableView.cellForRow(at: indexPath)! as! NoteTableViewCell
+    }
+
+    func cellByNote(_ note: Note) -> NoteTableViewCell {
+        let index = indexNote(note)
+        let indexPath =  IndexPath(item: index, section: 0)
+        return tableView.cellForRow(at: indexPath)! as! NoteTableViewCell
+    }
+
+    func noteByIndex(_ i: Int) -> Note {
+        return getNotes()[i]
     }
 
     private func getNotes() -> [Note] {
