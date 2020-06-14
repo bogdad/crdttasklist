@@ -9,11 +9,20 @@
 import UIKit
 import SwiftyDropbox
 
+enum CellEditType {
+    case add
+    case update
+    case delete
+    case undelete
+}
+
 class NoteTableViewController: UITableViewController {
 
     var remoteTimer: Timer?
     var debugShown = false
     var editedNoteIndex: Int?
+    @IBOutlet weak var filterButton: UIBarButtonItem!
+    var filter: NoteTableFilter = .active
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +44,9 @@ class NoteTableViewController: UITableViewController {
             NotificationCenter.default.addObserver(self, selector: #selector(notesChangedRemotely), name: NSNotification.Name("notesChangedRemotely"), object: nil)
             remoteTimer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(runTimedCode), userInfo: nil, repeats: true)
         }
+
+        filterButton.title = "Active"
+        filter = .active
     }
 
     // MARK: - Table view data source
@@ -44,7 +56,7 @@ class NoteTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return NoteStorage.shared.getNotes().count
+        return getNotes().count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -54,7 +66,7 @@ class NoteTableViewController: UITableViewController {
             fatalError("The dequeued cell is not an instance of NoteTableViewCell.")
         }
 
-        let note = getNotes()[indexPath.row]
+        let note = noteByIndex(indexPath.row)
         Design.applyToLabel(cell.nameLabel!, note.getDisplayName())
         cell.setIntensity(note)
 
@@ -64,8 +76,9 @@ class NoteTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
-            NoteStorage.shared.markDeleted(indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
+            var note = noteByIndex(indexPath.row)
+            editedNoteIndex = indexPath.row
+            noteUpdate(&note, .delete)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
             var note = Note.newNote()
@@ -84,8 +97,9 @@ class NoteTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (_, _, completionHandler) in
-            NoteStorage.shared.markDeleted(indexPath.row)
-            self.tableView.deleteRows(at: [indexPath], with: .fade)
+            self.editedNoteIndex = indexPath.row
+            var note = self.noteByIndex(indexPath.row)
+            self.noteUpdate(&note, .delete)
             completionHandler(true)
         }
         let swipeConfig = UISwipeActionsConfiguration(actions: [deleteAction])
@@ -93,12 +107,22 @@ class NoteTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        var note = noteByIndex(indexPath.row)
         let setChecklistAction = UIContextualAction(style: .normal, title: "Checklist") { (action, sourceView, completionHandler) in
             let cell = tableView.cellForRow(at: indexPath)
             self.performSegue(withIdentifier: "checklistSegue", sender: cell)
             completionHandler(true)
         }
-        let swipeConfig = UISwipeActionsConfiguration(actions: [setChecklistAction])
+        var actions = [setChecklistAction]
+        if filter == .all && (note.isActive() == false) {
+            let undeleteAction = UIContextualAction(style: .normal, title: "Undelete") { (action, sourceView, completionHandler) in
+                self.editedNoteIndex = indexPath.row
+                self.noteUpdate(&note, .undelete)
+                completionHandler(true)
+            }
+            actions.append(undeleteAction)
+        }
+        let swipeConfig = UISwipeActionsConfiguration(actions: actions)
         return swipeConfig
     }
 
@@ -136,18 +160,19 @@ class NoteTableViewController: UITableViewController {
     @IBAction func unwindToNoteList(sender: UIStoryboardSegue) {
         if sender.identifier == "unwindNote" {
             if var note = NoteStorage.shared.currentNote {
-                if let _ = tableView.indexPathForSelectedRow {
+                if let oldIndex = tableView.indexPathForSelectedRow {
                     // Update an existing note.
-                    noteUpdate(&note)
+                    editedNoteIndex = oldIndex.row
+                    noteUpdate(&note, .update)
                 }
                 else {
                     // Add a new note.w
-                    noteUpdate(&NoteStorage.shared.currentNote!)
+                    noteUpdate(&NoteStorage.shared.currentNote!, .add)
                 }
             }
         } else if sender.identifier == "unwindChecklist" {
             if var note = NoteStorage.shared.currentNote {
-                noteUpdate(&note)
+                noteUpdate(&note, .update)
             }
         }
     }
@@ -160,27 +185,40 @@ class NoteTableViewController: UITableViewController {
         }
     }
 
-    func noteUpdate(_ note: inout Note) {
-        let oldIndex = editedNoteIndex
-        if oldIndex == nil {
+    func noteUpdate(_ note: inout Note, _ type: CellEditType) {
+        var oldIndex: Int? = editedNoteIndex
+        var newIndex: Int? = nil
+        switch type {
+        case .add:
             NoteStorage.shared.append(&note)
-        } else {
+            newIndex = indexNote(note)
+        case .update:
             NoteStorage.shared.update(&note)
+            newIndex = indexNote(note)
+        case .delete:
+            NoteStorage.shared.markDeleted(note)
+        case .undelete:
+            NoteStorage.shared.markUndeleted(note)
         }
-        let newIndex = indexNote(note)
-        let newCell = cellByIndex(newIndex)
+        if let newIndex = newIndex {
+            let newCell = cellByIndex(newIndex)
+            newCell.setIntensity(note)
+        }
         if let oldIndex = oldIndex {
             let oldNote = noteByIndex(oldIndex)
             let oldCell = cellByIndex(oldIndex)
             oldCell.setIntensity(oldNote)
         }
-        newCell.setIntensity(note)
-        if let oldIndex = oldIndex {
-            tableView.reloadRows(at: indexPaths(oldIndex, newIndex), with: .none)
-        } else {
-            tableView.reloadRows(at: [IndexPath(item: newIndex, section: 0)], with: .none)
+        switch type {
+        case .add:
+            tableView.reloadRows(at: [IndexPath(item: newIndex!, section: 0)], with: .none)
+        case .update:
+            tableView.reloadRows(at: indexPaths(oldIndex!, newIndex!), with: .none)
+        case .delete:
+            tableView.deleteRows(at: [IndexPath(item: oldIndex!, section: 0)], with: .fade)
+        case .undelete:
+            tableView.reloadRows(at: [IndexPath(item: oldIndex!, section: 0)], with: .none)
         }
-
     }
 
     func indexPaths(_ i: Int...) -> [IndexPath] {
@@ -207,7 +245,7 @@ class NoteTableViewController: UITableViewController {
     }
 
     private func getNotes() -> [Note] {
-        return NoteStorage.shared.getNotes()
+        return NoteStorage.shared.notes(filter)
     }
 
     @objc func notesChangedRemotely() {
@@ -223,4 +261,22 @@ class NoteTableViewController: UITableViewController {
             //NoteStorage.shared.checkRemotes()
         }
     }
+    @IBAction func filterClicked(_ sender: Any) {
+        if filter == .active {
+            filter = .all
+        } else {
+            filter = .active
+        }
+        handleFilter()
+    }
+
+    func handleFilter() {
+        if filter == .active {
+            filterButton.title = "Active"
+        } else {
+            filterButton.title = "All"
+        }
+        tableView.reloadData()
+    }
+
 }

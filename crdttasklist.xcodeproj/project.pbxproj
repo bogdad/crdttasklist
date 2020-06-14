@@ -51,6 +51,7 @@
 		E776E3D62470022600738B66 /* ChecklistCRDT.swift in Sources */ = {isa = PBXBuildFile; fileRef = E776E3D52470022600738B66 /* ChecklistCRDT.swift */; };
 		E778F217238C8A0E0036EB29 /* NoteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */; };
 		E78674DA23E7626100728436 /* CRDTTextStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78674D923E7626100728436 /* CRDTTextStorage.swift */; };
+		E788A4A524964E0F0011EEDA /* NoteTableFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E788A4A424964E0F0011EEDA /* NoteTableFilter.swift */; };
 		E78F4AD92479210700DB0A69 /* ChecklistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78F4AD82479210700DB0A69 /* ChecklistViewController.swift */; };
 		E78F4ADB24792AB100DB0A69 /* Int.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78F4ADA24792AB100DB0A69 /* Int.swift */; };
 		E79E1F8722C7ED06007099E5 /* Delta.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79E1F8622C7ED06007099E5 /* Delta.swift */; };
@@ -155,6 +156,7 @@
 		E776E3D52470022600738B66 /* ChecklistCRDT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCRDT.swift; sourceTree = "<group>"; };
 		E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewController.swift; sourceTree = "<group>"; };
 		E78674D923E7626100728436 /* CRDTTextStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTTextStorage.swift; sourceTree = "<group>"; };
+		E788A4A424964E0F0011EEDA /* NoteTableFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableFilter.swift; sourceTree = "<group>"; };
 		E78F4AD82479210700DB0A69 /* ChecklistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistViewController.swift; sourceTree = "<group>"; };
 		E78F4ADA24792AB100DB0A69 /* Int.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
 		E79E1F8622C7ED06007099E5 /* Delta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delta.swift; sourceTree = "<group>"; };
@@ -281,6 +283,16 @@
 			path = checklist;
 			sourceTree = "<group>";
 		};
+		E788A4A324964DCF0011EEDA /* notetableview */ = {
+			isa = PBXGroup;
+			children = (
+				E788A4A424964E0F0011EEDA /* NoteTableFilter.swift */,
+				E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */,
+				E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */,
+			);
+			path = notetableview;
+			sourceTree = "<group>";
+		};
 		E7B05EE12298223300D2A094 = {
 			isa = PBXGroup;
 			children = (
@@ -309,6 +321,7 @@
 		E7B05EEC2298223300D2A094 /* crdttasklist */ = {
 			isa = PBXGroup;
 			children = (
+				E788A4A324964DCF0011EEDA /* notetableview */,
 				E73DB3772483CA83004AABB8 /* checklist */,
 				E7235CAA247AB1CA0062FDE8 /* featurenote */,
 				E705C49A24683D8A00D5363F /* crdttasklist.entitlements */,
@@ -328,8 +341,6 @@
 				E7A2E22F23DF3D1E00C65976 /* LinkToStorageController.swift */,
 				E70B862923DC9A3300C48E3C /* Note.swift */,
 				E73DB3752482B7F8004AABB8 /* NoteNavigationController.swift */,
-				E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */,
-				E778F216238C8A0E0036EB29 /* NoteTableViewController.swift */,
 				E776E3D3246FFF7100738B66 /* Optional.swift */,
 				E7FFF0AB246716BD006713E9 /* UIFont.swift */,
 			);
@@ -597,6 +608,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7B3F80F242BE0EE004095D8 /* ArraySlice.swift in Sources */,
+				E788A4A524964E0F0011EEDA /* NoteTableFilter.swift in Sources */,
 				E75AD1E32484367700BF8ADB /* ChecklistWeeklyViewController.swift in Sources */,
 				E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */,
 				E716D56C24156885002F7652 /* Breaks.swift in Sources */,

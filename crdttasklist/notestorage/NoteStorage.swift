@@ -17,8 +17,13 @@ class NoteStorage {
     var rev: String?
     var currentNote: Note?
 
-    func notes() -> [Note] {
-        return orderNotes(Array(_notes.values).filter { $0.isActive() })
+    func notes(_ filter: NoteTableFilter) -> [Note] {
+        let n = orderNotes(Array(_notes.values))
+        if filter == .active {
+            return n.filter { $0.isActive() }
+        } else {
+            return n
+        }
     }
 
     func orderNotes(_ notes: [Note]) -> [Note] {
@@ -31,10 +36,6 @@ class NoteStorage {
                 .sorted{ $0.modificationDate() > $1.modificationDate() }
         checklist.append(contentsOf: texts)
         return checklist
-    }
-
-    func noteByIndexPath(_ row: NSInteger) -> Note {
-        return self.notes()[row]
     }
 
     func editingFinished(_ crdt: CRDT) {
@@ -60,19 +61,19 @@ class NoteStorage {
         NoteLocalStorage.saveNotes()
     }
 
-    func append(_ note: inout Note) -> Int {
+    func append(_ note: inout Note) {
         _notes[note.id!] = note
         NoteLocalStorage.saveNotes()
-        return getNotes().firstIndex(of: note)!
     }
 
-    func markDeleted(_ row: NSInteger) {
-        noteByIndexPath(row).markDeleted()
+    func markDeleted(_ note: Note) {
+        note.markDeleted()
         NoteLocalStorage.saveNotes()
     }
 
-    func getNotes() -> [Note] {
-        return notes()
+    func markUndeleted(_ note: Note) {
+        note.markUndeleted()
+        NoteLocalStorage.saveNotes()
     }
 
     func loadNotes(_ closure: @escaping ((Notes, Bool)) -> Void) {

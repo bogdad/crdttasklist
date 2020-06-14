@@ -76,6 +76,11 @@ struct CRDT: Codable, Equatable {
         deletionsInsertions!.markDeleted()
     }
 
+
+    mutating func markUndeleted() {
+        deletionsInsertions!.markCreated()
+    }
+
     func len() -> UInt {
         return editor.get_buffer().len()
     }

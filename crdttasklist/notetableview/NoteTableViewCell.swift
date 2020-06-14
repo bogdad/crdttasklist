@@ -22,14 +22,15 @@ class NoteTableViewCell: UITableViewCell {
     }
 
     func setIntensity(_ note: Note) {
+        let base = note.baseIntensity()
         let int1 = note.intensity1()
         let int2 = note.intensity2()
         if int1 > 0 && int2 > 0 {
-            backgroundColor = UIColor.systemRed.withAlphaComponent(CGFloat(int1 + int2))
+            backgroundColor = UIColor.systemRed.withAlphaComponent(CGFloat((int1 + int2) * base))
         } else if int1 > 0 {
-            backgroundColor = UIColor.systemPink.withAlphaComponent(CGFloat(int1))
+            backgroundColor = UIColor.systemPink.withAlphaComponent(CGFloat(int1 * base))
         } else if int2 > 0 {
-            backgroundColor = UIColor.systemOrange.withAlphaComponent(CGFloat(int2))
+            backgroundColor = UIColor.systemOrange.withAlphaComponent(CGFloat(int2 * base))
         } else {
             backgroundColor = Design.grayBackround()
         }

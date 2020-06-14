@@ -77,6 +77,14 @@ class Note: Codable, Equatable {
         return crdt.isActive()
     }
 
+    func baseIntensity() -> Double {
+        if isActive() {
+            return 1
+        } else {
+            return 0.3
+        }
+    }
+
     func intensity1() -> Double {
         return checklistCRDT!.intensityDaily()
     }
@@ -87,6 +95,10 @@ class Note: Codable, Equatable {
 
     func markDeleted() {
         crdt.markDeleted()
+    }
+
+    func markUndeleted() {
+        crdt.markUndeleted()
     }
 
     static func newNote() -> Note {

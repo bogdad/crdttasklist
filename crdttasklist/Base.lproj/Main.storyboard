@@ -315,14 +315,22 @@
                                 <action selector="startEditing:" destination="knq-3P-Pf0" id="vUy-KE-pGu"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="zqu-lk-Wnj">
-                            <color key="tintColor" systemColor="linkColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <connections>
-                                <segue destination="iZE-Um-twB" kind="show" identifier="AddItem" id="vfV-OV-MJf"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="add" id="zqu-lk-Wnj">
+                                <color key="tintColor" systemColor="linkColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <connections>
+                                    <segue destination="iZE-Um-twB" kind="show" identifier="AddItem" id="vfV-OV-MJf"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Filter" id="PSj-M9-Ymu">
+                                <connections>
+                                    <action selector="filterClicked:" destination="knq-3P-Pf0" id="sJ5-r7-Bad"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <connections>
+                        <outlet property="filterButton" destination="PSj-M9-Ymu" id="QLe-KY-MBB"/>
                         <segue destination="0qA-Hj-5B5" kind="presentation" identifier="checklistSegue" id="VB2-Kp-n40"/>
                     </connections>
                 </tableViewController>
