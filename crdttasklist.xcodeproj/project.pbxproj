@@ -84,6 +84,8 @@
 		E7F88FD323EF203B005EE3FD /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD223EF203B005EE3FD /* Utils.swift */; };
 		E7F88FD523EF2CC8005EE3FD /* NoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD423EF2CC8005EE3FD /* NoteTests.swift */; };
 		E7F88FD723EF2F77005EE3FD /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F88FD623EF2F77005EE3FD /* FileUtils.swift */; };
+		E7FD0308249CE95A00DAE780 /* PeriodicChecklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7FD0307249CE95A00DAE780 /* PeriodicChecklist.swift */; };
+		E7FD030C249CF5BA00DAE780 /* PeriodicChecklistDaily.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7FD030B249CF5BA00DAE780 /* PeriodicChecklistDaily.swift */; };
 		E7FFF0AC246716BD006713E9 /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7FFF0AB246716BD006713E9 /* UIFont.swift */; };
 		E7FFF0AE24671D42006713E9 /* Design.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7FFF0AD24671D42006713E9 /* Design.swift */; };
 /* End PBXBuildFile section */
@@ -195,6 +197,8 @@
 		E7F88FD223EF203B005EE3FD /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		E7F88FD423EF2CC8005EE3FD /* NoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTests.swift; sourceTree = "<group>"; };
 		E7F88FD623EF2F77005EE3FD /* FileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUtils.swift; sourceTree = "<group>"; };
+		E7FD0307249CE95A00DAE780 /* PeriodicChecklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodicChecklist.swift; sourceTree = "<group>"; };
+		E7FD030B249CF5BA00DAE780 /* PeriodicChecklistDaily.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodicChecklistDaily.swift; sourceTree = "<group>"; };
 		E7FFF0AB246716BD006713E9 /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
 		E7FFF0AD24671D42006713E9 /* Design.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Design.swift; sourceTree = "<group>"; };
 		F25EA82BD8892AE33DAF952B /* Pods-crdttasklist.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-crdttasklist.release.xcconfig"; path = "Pods/Target Support Files/Pods-crdttasklist/Pods-crdttasklist.release.xcconfig"; sourceTree = "<group>"; };
@@ -279,6 +283,8 @@
 				E75AD1E4248438C800BF8ADB /* ChecklistWeeklyTableViewCell.swift */,
 				E75AD1E22484367700BF8ADB /* ChecklistWeeklyViewController.swift */,
 				E75AD1E824844C2D00BF8ADB /* ChecklistTabController.swift */,
+				E7FD0307249CE95A00DAE780 /* PeriodicChecklist.swift */,
+				E7FD030B249CF5BA00DAE780 /* PeriodicChecklistDaily.swift */,
 			);
 			path = checklist;
 			sourceTree = "<group>";
@@ -616,6 +622,7 @@
 				E7A2E23023DF3D1E00C65976 /* LinkToStorageController.swift in Sources */,
 				E7F88FD723EF2F77005EE3FD /* FileUtils.swift in Sources */,
 				E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */,
+				E7FD030C249CF5BA00DAE780 /* PeriodicChecklistDaily.swift in Sources */,
 				E716D56E24156C04002F7652 /* Array.swift in Sources */,
 				E73DB37224827FCF004AABB8 /* Mergeable.swift in Sources */,
 				E74D187B241D3FFC00EE3815 /* Iterator.swift in Sources */,
@@ -655,6 +662,7 @@
 				E73DB37424828083004AABB8 /* Date.swift in Sources */,
 				E715898D24669179007AD153 /* DeletionsInsertions.swift in Sources */,
 				E763DF9E22E4CD2E003572EC /* Cow.swift in Sources */,
+				E7FD0308249CE95A00DAE780 /* PeriodicChecklist.swift in Sources */,
 				E7B05F202298284100D2A094 /* Event.swift in Sources */,
 				E7B62C182299B8D1000143C6 /* Rope.swift in Sources */,
 				E7F465E82315AC4200030F3A /* CRDTTextView.swift in Sources */,

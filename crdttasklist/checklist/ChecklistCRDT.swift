@@ -31,7 +31,9 @@ struct ChecklistCRDT: Codable, Equatable {
     var checksWeekly: DeletionsInsertions?
 
 
-    var intensityDailyCache: Double?
+    var daily: PeriodicChecklistDaily?
+
+
     var intensityWeeklyCache: Double?
 
     init() {
@@ -41,6 +43,7 @@ struct ChecklistCRDT: Codable, Equatable {
         checks = DeletionsInsertions(Date.distantPast)
         checksDaily = DeletionsInsertions(Date.distantPast)
         checksWeekly = DeletionsInsertions(Date.distantPast)
+        daily = PeriodicChecklistDaily(storage, checksDaily!)
     }
 
     mutating func merge(_ other: ChecklistCRDT) -> CRDTMergeResult {
@@ -49,7 +52,7 @@ struct ChecklistCRDT: Codable, Equatable {
         res.merge(storageMerge)
         res.merge(checksDaily!.merge(other.checksDaily!))
         res.merge(checksWeekly!.merge(other.checksWeekly!))
-        intensityDailyCache = nil
+        res.merge(daily!.merge(other.daily!))
         intensityWeeklyCache = nil
         return res
     }
@@ -71,6 +74,10 @@ struct ChecklistCRDT: Codable, Equatable {
             checksWeekly = DeletionsInsertions(Date.distantPast)
             res = true
         }
+        if let _ = daily {
+        } else {
+            daily = PeriodicChecklistDaily(storage, checksDaily!)
+        }
         return res
     }
 
@@ -79,146 +86,6 @@ struct ChecklistCRDT: Codable, Equatable {
                          checksDaily!.modificationDate(),
                          checksWeekly!.modificationDate(),
                          storage.modificationDate())
-    }
-
-    mutating func intensityDaily() -> Double {
-        if let intensityDailyCache = intensityDailyCache {
-            return intensityDailyCache
-        }
-        let res = intensityDailyInner()
-        intensityDailyCache = res
-        return res
-    }
-    private func intensityDailyInner() -> Double {
-        if !isSetDaily() {
-            return 0
-        }
-        let curDate = Date()
-        let dayStartDate = dateStartDay(curDate)
-        let endDate = dateEnd(curDate)
-        let checkTime = checksDaily!.lastCreatedDate() ?? Date.distantPast
-
-        print("\(dayStartDate) \(endDate) \(checkTime) ")
-        if dayStartDate < checkTime {
-            return 0
-        } else {
-            let start = curDate
-            if start > endDate {
-                return 1
-            }
-            let secondsLeft: Double = endDate.timeIntervalSince1970 - start.timeIntervalSince1970
-            let daily = getDaily()!
-            var hours = daily.0
-            if hours > 8 {
-                hours -= 8
-            }
-            let secondsTotal: Double = Double((hours * 60 + daily.1) * 60)
-            let interval: Double = (secondsTotal - secondsLeft) / secondsTotal
-            if interval < 0 {
-                return 0
-            }
-            print("\(start) \(secondsLeft) \(secondsTotal) \(interval)")
-            return interval
-        }
-    }
-
-    func dateStartDay(_ curDate: Date) -> Date {
-        let calendar = Calendar.current
-        var startComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: curDate)
-        startComponents.hour = 0
-        startComponents.minute = 0
-        let dayStartDate = calendar.date(from: startComponents)!
-        return dayStartDate
-    }
-
-    func dateEnd(_ curDate: Date) -> Date {
-        let calendar = Calendar.current
-        var endComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: curDate)
-        let daily = getDaily()!
-        endComponents.hour = daily.0
-        endComponents.minute = daily.1
-        let endDate = calendar.date(from: endComponents)!
-        return endDate
-    }
-
-    func isSetDaily() -> Bool {
-        return maybeDailyFromString() != nil
-    }
-
-    func isCompletedDaily() -> Bool {
-        if !isSetDaily() {
-            return false
-        }
-        let completeDate = checksDaily?.lastCreatedDate() ?? Date.distantPast
-        return completeDate > dateStartDay(Date())
-    }
-
-    mutating func completeDaily() {
-        if !isCompletedDaily() {
-            checksDaily!.markCreated()
-            intensityDailyCache = nil
-        }
-    }
-
-    mutating func uncompleteDaily() {
-        if isCompletedDaily() {
-            checksDaily!.markDeleted()
-            intensityDailyCache = nil
-        }
-    }
-
-    func getDaily() -> (Int, Int)? {
-        return maybeDailyFromString()
-    }
-
-    mutating func clearDaily() {
-        let descr = storage.to_string()
-        guard let match = ChecklistCRDT.dailyRegEx.firstMatch(in: descr, options: [], range: NSRange(location: 0, length: descr.utf8.count)) else {
-            return
-        }
-        storage.replace(match.range(at: 0).to_interval(), "")
-        intensityDailyCache = nil
-    }
-
-    func maybeDailyFromString() -> (Int, Int)? {
-        let descr = storage.to_string()
-        guard let match = ChecklistCRDT.dailyRegEx.firstMatch(in: descr, options: [], range: NSRange(location: 0, length: descr.utf8.count)) else {
-            return nil
-        }
-        guard let hourRange = Range(match.range(at: 1), in: descr) else {
-            return nil
-        }
-        guard let minutesRange = Range(match.range(at: 2), in: descr) else {
-            return nil
-        }
-        guard let hours = Int(descr[hourRange]) else {
-            return nil
-        }
-        guard let minutes = Int(descr[minutesRange]) else {
-            return nil
-        }
-        return (hours, minutes)
-    }
-
-    func dailyFromString(_ str: String) -> (Int, Int) {
-        guard let res = maybeDailyFromString() else {
-            fatalError("bad state")
-        }
-        return res
-    }
-
-    func dailyAsString(_ hour: Int, _ minute: Int) -> String {
-        return "daily: \(hour.pad_to(2)):\(minute.pad_to(2))"
-    }
-
-    mutating func setDaily(_ daily: (Int, Int)) {
-        if !isSetDaily() {
-            intensityDailyCache = nil
-            storage.replace(Interval(0, 0), dailyAsString(daily.0, daily.1))
-        } else {
-            intensityDailyCache = nil
-            storage.replace(Interval(0, storage.editor.get_buffer().len()), dailyAsString(daily.0, daily.1))
-        }
     }
 
     func to_string() -> String {
@@ -231,6 +98,33 @@ struct ChecklistCRDT: Codable, Equatable {
 
     mutating func editing_finished() {
         storage.editing_finished()
+        daily?.editing_finished()
+    }
+
+
+    func getDaily() -> (Int, Int)? {
+        return daily?.get()
+    }
+    func isSetDaily() -> Bool {
+        return daily!.isSet()
+    }
+    func isCompletedDaily() -> Bool {
+        return daily!.isCompleted()
+    }
+    mutating func completeDaily() {
+        daily!.complete()
+    }
+    mutating func uncompleteDaily() {
+        daily!.uncomplete()
+    }
+    mutating func setDaily(_ item: (Int, Int)) {
+        daily!.set(item)
+    }
+    mutating func clearDaily() {
+        daily!.clear()
+    }
+    mutating func intensityDaily() -> Double {
+        return daily!.intensity()
     }
 
     func maybeWeeklyFromString() -> Int? {
@@ -360,6 +254,4 @@ struct ChecklistCRDT: Codable, Equatable {
             intensityWeeklyCache = nil
         }
     }
-
-
 }
