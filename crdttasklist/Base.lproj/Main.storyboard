@@ -86,7 +86,7 @@
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="right" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cfb-mR-4f7">
                                 <rect key="frame" x="347" y="113" width="49" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="onChanged:" destination="Zv9-aa-IZV" eventType="valueChanged" id="93Q-fU-muE"/>
                                     <action selector="onChanged:" destination="by7-Qd-DWS" eventType="valueChanged" id="iYT-rG-ky0"/>
@@ -94,7 +94,7 @@
                             </switch>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="right" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cw2-Ee-NWQ">
                                 <rect key="frame" x="347" y="158" width="49" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="completeChanged:" destination="Zv9-aa-IZV" eventType="valueChanged" id="Bas-Xt-jqi"/>
                                     <action selector="completeChanged:" destination="by7-Qd-DWS" eventType="valueChanged" id="d0X-80-IQa"/>
@@ -183,7 +183,7 @@
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2EN-bb-e5U">
                                 <rect key="frame" x="347" y="110" width="49" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="onChanged:" destination="by7-Qd-DWS" eventType="valueChanged" id="I4Z-kI-3tU"/>
                                 </connections>
@@ -197,7 +197,7 @@
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="leading" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bF2-1h-mXJ">
                                 <rect key="frame" x="347" y="155" width="49" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="completeChanged:" destination="by7-Qd-DWS" eventType="valueChanged" id="X2G-At-eVr"/>
                                 </connections>
