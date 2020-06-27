@@ -19,7 +19,9 @@ struct DeletionsInsertions: Codable, Equatable {
         return lhs.items == rhs.items
     }
 
-    var items: BTree<Date, DeletionsInsertionsType>
+    typealias DeletionsInsertionsMap = BTree<Date, DeletionsInsertionsType>
+
+    var items:DeletionsInsertionsMap
 
     init() {
         self.init(Date.init())

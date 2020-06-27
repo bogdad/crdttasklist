@@ -33,6 +33,14 @@ class NoteRemoteStorage {
         }
     }
 
+    func remoteNameFrom(_ str: String) -> String {
+        let deviceId = UIDevice.current.identifierForVendor!.uuidString
+        return "/\(deviceId)/\(str)"
+    }
+
+    func remoteSnapshot() -> String {
+        return remoteNameFrom("notes")
+    }
 
     func checkRemotes() {
         if isStorageLinked() {
@@ -82,7 +90,7 @@ class NoteRemoteStorage {
             
             NoteLocalStorage.justSaveNotes()
             if let rev = rev {
-                let _ = client.files.upload(path: "/notes",
+                let _ = client.files.upload(path: self.remoteSnapshot(),
                                         mode: .update(rev),
                                         strictConflict: true,
                                         input: try! Note.ArchiveURL.asURL())
@@ -90,7 +98,7 @@ class NoteRemoteStorage {
                     self.handleUpload(response, error)
                 }
             } else {
-                _ = client.files.upload(path: "/notes",
+                _ = client.files.upload(path: self.remoteSnapshot(),
                                     mode: .add,
                                     strictConflict: true,
                                     input: try! Note.ArchiveURL.asURL())

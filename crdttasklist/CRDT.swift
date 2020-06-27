@@ -114,7 +114,7 @@ struct CRDT: Codable, Equatable {
 
     mutating func replace(_ range: Interval, _ str: String) {
         //print("crdt replace \(range) \(str)")
-        if to_string() == str {
+        if editor.engine.value.get_head().equals_to_str(str) {
             return
         }
         set_position(range)

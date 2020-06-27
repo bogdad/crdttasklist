@@ -22,6 +22,7 @@
 		E725DC9F245EABA600F091D2 /* CRDTTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E725DC9E245EABA600F091D2 /* CRDTTests.swift */; };
 		E72FC386240BFF4F00611A75 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FC385240BFF4F00611A75 /* Config.swift */; };
 		E72FC388240C00C600611A75 /* Backspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FC387240C00C600611A75 /* Backspace.swift */; };
+		E7340BB724A782CC000B81BD /* TaskListEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7340BB624A782CC000B81BD /* TaskListEvent.swift */; };
 		E737A29322FEDB1600E5AAD8 /* TestHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */; };
 		E737A29522FEE1AE00E5AAD8 /* EditorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */; };
 		E73DB37224827FCF004AABB8 /* Mergeable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E73DB37124827FCF004AABB8 /* Mergeable.swift */; };
@@ -129,6 +130,7 @@
 		E725DC9E245EABA600F091D2 /* CRDTTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTTests.swift; sourceTree = "<group>"; };
 		E72FC385240BFF4F00611A75 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		E72FC387240C00C600611A75 /* Backspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backspace.swift; sourceTree = "<group>"; };
+		E7340BB624A782CC000B81BD /* TaskListEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListEvent.swift; sourceTree = "<group>"; };
 		E737A29222FEDB1600E5AAD8 /* TestHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpersTests.swift; sourceTree = "<group>"; };
 		E737A29422FEE1AE00E5AAD8 /* EditorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTests.swift; sourceTree = "<group>"; };
 		E73DB37124827FCF004AABB8 /* Mergeable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mergeable.swift; sourceTree = "<group>"; };
@@ -348,6 +350,7 @@
 				E70B862923DC9A3300C48E3C /* Note.swift */,
 				E73DB3752482B7F8004AABB8 /* NoteNavigationController.swift */,
 				E776E3D3246FFF7100738B66 /* Optional.swift */,
+				E7340BB624A782CC000B81BD /* TaskListEvent.swift */,
 				E7FFF0AB246716BD006713E9 /* UIFont.swift */,
 			);
 			path = crdttasklist;
@@ -387,6 +390,7 @@
 				E7B3F80E242BE0EE004095D8 /* ArraySlice.swift */,
 				E72FC387240C00C600611A75 /* Backspace.swift */,
 				E716D56B24156885002F7652 /* Breaks.swift */,
+				E7112DE62466CC9A00F884D8 /* CRDTMergeResult.swift */,
 				E7D05486245C06260097E298 /* Character.swift */,
 				E72FC385240BFF4F00611A75 /* Config.swift */,
 				E7B5D57222F34EC90020AFAC /* Collections.swift */,
@@ -415,7 +419,6 @@
 				E7F0325D22BD261F00D0BF2D /* Tree.swift */,
 				E7F0325F22BD26F300D0BF2D /* Utils.swift */,
 				E74C3DC122D23E7F001B9CA7 /* View.swift */,
-				E7112DE62466CC9A00F884D8 /* CRDTMergeResult.swift */,
 			);
 			path = crdt;
 			sourceTree = "<group>";
@@ -634,6 +637,7 @@
 				E79E1F8D22C7FA36007099E5 /* Multiset.swift in Sources */,
 				E7DD4EB4242E87DE00E2B5B9 /* IndexSet.swift in Sources */,
 				E75AD1E924844C2D00BF8ADB /* ChecklistTabController.swift in Sources */,
+				E7340BB724A782CC000B81BD /* TaskListEvent.swift in Sources */,
 				E74C3DC022D23620001B9CA7 /* Engine.swift in Sources */,
 				E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */,
 				E7B3F80D242BDD63004095D8 /* Interval.swift in Sources */,

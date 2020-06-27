@@ -184,6 +184,18 @@ typealias Rope = Node<RopeInfo>
 
 extension Rope {
 
+    func equals_to_str(_ str: String) -> Bool {
+        if str.len() != len() {
+            return false
+        }
+        for i in 0..<len() {
+            if byte_at(i) != str.byte_at(i) {
+                return false
+            }
+        }
+        return true
+    }
+
     // callers should be encouraged to use cursor instead
     func byte_at(_ offset: UInt) -> UInt8 {
         let cursor = Cursor(self, offset)

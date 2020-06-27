@@ -6,6 +6,21 @@
 //  Copyright © 2019 Vladimir Shakhov. All rights reserved.
 //
 
-class Event {
+protocol Event: Codable {
     
+}
+
+struct EngineEvent: Event {
+    var revs: [Revision]
+    var text: Rope
+    var tombstones: Rope
+    var deletesFromUnion: Subset
+}
+
+struct EditorEvent: Event {
+    var engineEvent: EngineEvent
+}
+
+struct DeletionsInsertionsEvent: Event {
+    var insertions: DeletionsInsertions.DeletionsInsertionsMap
 }
