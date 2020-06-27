@@ -14,23 +14,23 @@ struct DateEvent: Event {
 }
 
 struct CRDTEvent: Event {
-    var editorEvent: EditorEvent
-    var deletionsInsertionsEvent: DeletionsInsertionsEvent
-    var lastModificationDateEvent: DateEvent
+    var editorEvents: [EditorEvent]
+    var deletionsInsertionsEvents: [DeletionsInsertionsEvent]
+    var lastModificationDateEvents: [DateEvent]
 }
 
 struct PeriodicChecklistDailyEvent: Event {
-    var storageEvent: CRDTEvent
-    var checksEvent: DeletionsInsertionsEvent
+    var storageEvents: [CRDTEvent]
+    var checksEvents: [DeletionsInsertionsEvent]
 }
 
 struct ChecklistCRDTEvent: Event {
-    var storageEvent: CRDTEvent
-    var checksWeekly: DeletionsInsertionsEvent
-    var daily: PeriodicChecklistDailyEvent
+    var storageEvents: [CRDTEvent]
+    var checksWeeklyEvents: [DeletionsInsertionsEvent]
+    var dailyEvents: [PeriodicChecklistDailyEvent]
 }
 
 struct NoteEvent: Event {
-    var crdtEvent: CRDTEvent
-    var checklistCRDTEvent: ChecklistCRDTEvent
+    var crdtEvents: [CRDTEvent]
+    var checklistCRDTEvents: [ChecklistCRDTEvent]
 }

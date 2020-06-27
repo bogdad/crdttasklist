@@ -22,6 +22,7 @@ struct DeletionsInsertions: Codable, Equatable {
     typealias DeletionsInsertionsMap = BTree<Date, DeletionsInsertionsType>
 
     var items:DeletionsInsertionsMap
+    var events: [DeletionsInsertionsEvent]
 
     init() {
         self.init(Date.init())
@@ -30,6 +31,7 @@ struct DeletionsInsertions: Codable, Equatable {
     init(_ date: Date) {
         self.items = BTree()
         self.items.insert((date, DeletionsInsertionsType.Insert))
+        self.events = []
     }
 
     func creationDate() -> Date {
@@ -54,11 +56,17 @@ struct DeletionsInsertions: Codable, Equatable {
     }
 
     mutating func markCreated() {
-        self.items.insert((Date(), .Insert))
+        let date = Date()
+        self.items.insert((date, .Insert))
+        let event = DeletionsInsertionsEvent(insertion: DeletionsInsertionsEvent.Pair(date: date, type: .Insert))
+        self.events.append(event)
     }
 
     mutating func markDeleted() {
-        self.items.insert((Date(), .Delete))
+        let date = Date()
+        self.items.insert((date, .Delete))
+        let event = DeletionsInsertionsEvent(insertion: DeletionsInsertionsEvent.Pair(date: date, type: .Delete))
+        self.events.append(event)
     }
 
     mutating func merge(_ other: DeletionsInsertions) -> CRDTMergeResult {
@@ -87,6 +95,15 @@ struct DeletionsInsertions: Codable, Equatable {
             }
         }
         items = items.union(other.items, by: .groupingMatches)
+        self.events.removeAll()
         return CRDTMergeResult(selfChanged: selfChanged, otherChanged: otherChanged)
+    }
+}
+
+extension DeletionsInsertions: Storable {
+    mutating func commitEvents() -> [Event] {
+        let events = Array(self.events)
+        self.events.removeAll()
+        return events
     }
 }

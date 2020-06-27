@@ -268,3 +268,11 @@ struct EditorMergeResult {
     let selfChanged: Bool
     let newChanged: Bool
 }
+
+extension Editor: Storable {
+    mutating func commitEvents() -> [Event] {
+        let engineEvents = self.engine.value.commitEvents() as! [EngineEvent]
+        let editorEvent = EditorEvent(engineEvents: engineEvents)
+        return [editorEvent]
+    }
+}

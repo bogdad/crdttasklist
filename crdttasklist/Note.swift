@@ -11,6 +11,7 @@ import UIKit
 import os.log
 
 class Note: Codable, Equatable {
+
     static func == (lhs: Note, rhs: Note) -> Bool {
         return lhs.id == rhs.id && lhs.crdt == rhs.crdt
     }
@@ -141,5 +142,14 @@ class IdGenerator {
             value += 1
             return value
         }
+    }
+}
+
+extension Note: Storable {
+    func commitEvents() -> [Event] {
+        let crdtEvents = self.crdt.commitEvents() as! [CRDTEvent]
+        let checklistCRDTEvents = self.checklistCRDT!.commitEvents() as! [ChecklistCRDTEvent]
+        let noteEvent = NoteEvent(crdtEvents: crdtEvents, checklistCRDTEvents: checklistCRDTEvents)
+        return [noteEvent]
     }
 }

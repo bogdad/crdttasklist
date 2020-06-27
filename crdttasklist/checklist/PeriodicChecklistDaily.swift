@@ -184,3 +184,13 @@ struct PeriodicChecklistDaily: PeriodicChecklist, Codable, Equatable {
 
     typealias Item = (Int, Int)
  }
+
+extension PeriodicChecklistDaily: Storable {
+    mutating func commitEvents() -> [Event] {
+        let storageEvents = self.storage.commitEvents() as! [CRDTEvent]
+        let checkEvents = self.checks.commitEvents() as! [DeletionsInsertionsEvent]
+        let periodicDailyEvents = PeriodicChecklistDailyEvent(storageEvents: storageEvents,
+                                                              checksEvents: checkEvents)
+        return [periodicDailyEvents]
+    }
+}

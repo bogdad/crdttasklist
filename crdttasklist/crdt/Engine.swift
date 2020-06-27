@@ -265,6 +265,9 @@ struct Engine: Codable, Equatable {
     /// The revision history of the document
     var revs: [Revision]
 
+
+    var revs_since_last_merge: [Revision]
+
     init() {
         let deletes_from_union = Subset.make_empty(0)
         let rev = Revision(
@@ -281,6 +284,7 @@ struct Engine: Codable, Equatable {
         self.deletes_from_union = deletes_from_union
         self.undone_groups = CowSortedSet<UInt>()
         self.revs = [rev]
+        self.revs_since_last_merge = []
     }
 
     static func new(_ initial_contents: Rope) -> Engine {
@@ -381,6 +385,7 @@ struct Engine: Codable, Equatable {
             self.tombstones = new_tombstones
             // print("try_edit_rev: tombstones \(self.tombstones.len())")
             self.deletes_from_union = new_deletes_from_union
+            self.revs_since_last_merge.append(new_rev)
         }
         return .success(())
     }
@@ -688,6 +693,7 @@ struct Engine: Codable, Equatable {
         self.tombstones = tombstones
         self.deletes_from_union = deletes_from_union
         self.revs.append(contentsOf: new_revs)
+        self.revs_since_last_merge = []
         return EngineMergeResult(aChanged: a_new.len() > 0, bChanged: b_new.len() > 0)
     }
 
@@ -720,6 +726,17 @@ struct Engine: Codable, Equatable {
             }
         }
         return res
+    }
+}
+
+extension Engine: Storable {
+    mutating func commitEvents() -> Array<Event> {
+        let ev = EngineEvent(revs: revs_since_last_merge,
+                             text: text,
+                             tombstones: tombstones,
+                             deletesFromUnion: deletes_from_union)
+        revs_since_last_merge.removeAll()
+        return [ev]
     }
 }
 

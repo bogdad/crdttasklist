@@ -5,6 +5,7 @@
 //  Created by Vladimir Shakhov on 5/24/19.
 //  Copyright © 2019 Vladimir Shakhov. All rights reserved.
 //
+import Foundation
 
 protocol Event: Codable {
     
@@ -18,9 +19,15 @@ struct EngineEvent: Event {
 }
 
 struct EditorEvent: Event {
-    var engineEvent: EngineEvent
+    var engineEvents: [EngineEvent]
 }
 
 struct DeletionsInsertionsEvent: Event {
-    var insertions: DeletionsInsertions.DeletionsInsertionsMap
+    var insertion: Pair
+
+
+    struct Pair: Codable {
+        var date: Date
+        var type: DeletionsInsertionsType
+    }
 }
