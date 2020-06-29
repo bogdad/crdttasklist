@@ -1,0 +1,66 @@
+{
+	"build_systems":
+	[
+		{
+			"cmd":
+			[
+				"make",
+				"project_path=$project_path",
+				"project_base_name=$project_base_name",
+				"run-sim"
+			],
+            "working_dir":"$project_path",
+			"name": "Xcode Build",
+			"variants":
+			[
+				{
+					"cmd":
+                        [
+                            "make",
+                            "project_path=$project_path",
+                            "project_base_name=$project_base_name",
+                            "run-sim"
+                        ],
+					"name": "Xcode Run Debug"
+				},
+				{
+					"cmd":
+					[
+						"~/local/bin/xctool",
+						"-project",
+						"$project_path/$project_base_name.xcodeproj",
+						"-configuration",
+						"Release",
+						"SYMROOT=$project_path/build/Products/Release",
+						"OBJROOT=$project_path/build"
+					],
+					"name": "Xcode Build Release"
+				},
+				{
+					"cmd":
+					[
+						"$project_path/build/Products/Release/$project_base_name.app/Contents/MacOS/$project_base_name"
+					],
+					"name": "Xcode Run Release"
+				}
+			]
+		}
+	],
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"LSP":
+		{
+			"SourceKit-LSP":
+			{
+				"enabled": true
+			}
+		}
+	}
+}
