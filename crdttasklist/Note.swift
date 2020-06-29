@@ -43,9 +43,10 @@ class Note: Codable, Equatable {
 
     func merge(_ other: Note) -> (Note, CRDTMergeResult) {
         var res = crdt.merge(other.crdt)
-        if let sf = checklistCRDT {
-            if let ot = other.checklistCRDT {
-                res.merge(self.checklistCRDT!.merge(ot))
+        if let _ = checklistCRDT {
+            if let _ = other.checklistCRDT {
+                let mr = self.checklistCRDT!.merge(other.checklistCRDT!)
+                res.merge(mr)
             } else {
                 res.selfChanged = true
             }
@@ -109,8 +110,9 @@ class Note: Codable, Equatable {
 
     func tryMigrate() -> Bool {
         var res = crdt.tryMigrate()
-        if let _ = checklistCRDT {
-            if checklistCRDT!.tryMigrate() {
+        if var checklistCRDT = checklistCRDT {
+            if checklistCRDT.tryMigrate() {
+                self.checklistCRDT = checklistCRDT
                 res = true
             }
         } else {

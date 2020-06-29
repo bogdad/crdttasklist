@@ -59,24 +59,41 @@ struct ChecklistCRDT: Codable, Equatable {
 
     mutating func tryMigrate() -> Bool {
         var res = storage.tryMigrate()
-        if let _ = checks {
+        if var checks = checks {
+            if checks.tryMigrate() {
+                self.checks = checks
+                res = true
+            }
         } else {
             checks = DeletionsInsertions(Date.distantPast)
             res = true
         }
-        if let _ = checksDaily {
+        if var checksDaily = checksDaily {
+            if checksDaily.tryMigrate() {
+                self.checksDaily = checksDaily
+                res = true
+            }
         } else {
             checksDaily = checks
             res = true
         }
-        if let _ = checksWeekly {
+        if var checksWeekly = checksWeekly {
+            if checksWeekly.tryMigrate() {
+                self.checksWeekly = checksWeekly
+                res = true
+            }
         } else {
             checksWeekly = DeletionsInsertions(Date.distantPast)
             res = true
         }
-        if let _ = daily {
+        if var daily = daily {
+            if daily.tryMigrate() {
+                self.daily = daily
+                res = true
+            }
         } else {
             daily = PeriodicChecklistDaily(storage, checksDaily!)
+            res = true
         }
         return res
     }

@@ -35,6 +35,10 @@ struct CRDT: Codable, Equatable {
         if self.deletionsInsertions == nil {
             self.deletionsInsertions = DeletionsInsertions()
             res = true
+        } else {
+            if self.deletionsInsertions!.tryMigrate() {
+                res = true
+            }
         }
         if let _ = self.lastModificationDateTimeInterval {
             //

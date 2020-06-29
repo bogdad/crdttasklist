@@ -15,7 +15,7 @@ class FileUtils {
         try! dataWriter.write(to: url)
     }
 
-    private static func saveToFileJson<T: Codable>(obj: T, url: URL) {
+    static func saveToFileJson<T: Codable>(obj: T, url: URL) {
         let data = try! JSONEncoder().encode(obj)
         if let file = FileHandle(forWritingAtPath:url.path) {
             file.write(data)
@@ -32,7 +32,7 @@ class FileUtils {
         return fileObj
     }
 
-    private static func loadFromFileJson<T: Codable>(type: T.Type, url: URL) -> T? {
+    static func loadFromFileJson<T: Codable>(type: T.Type, url: URL) -> T? {
         guard let file = try? FileHandle(forReadingFrom: url) else {
             return nil
         }
