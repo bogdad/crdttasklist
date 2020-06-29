@@ -143,6 +143,7 @@ class NoteStorage {
         self._notes = [:]
         do {
             try FileManager.default.removeItem(at: Note.ArchiveURL)
+            try FileManager.default.removeItem(at: NoteRemoteStorage.MigrationsUrl1)
         } catch let error as NSError {
             print("Error: \(error.domain)")
         }

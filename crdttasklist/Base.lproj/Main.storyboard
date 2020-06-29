@@ -13,7 +13,7 @@
             <objects>
                 <viewController storyboardIdentifier="DebugViewController" id="nQB-Bl-EW2" customClass="DebugViewController" customModule="crdttasklist" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="lbf-Vg-Dbh">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KmX-ql-ecz">
@@ -332,6 +332,7 @@
                     <connections>
                         <outlet property="filterButton" destination="PSj-M9-Ymu" id="QLe-KY-MBB"/>
                         <segue destination="0qA-Hj-5B5" kind="presentation" identifier="checklistSegue" id="VB2-Kp-n40"/>
+                        <segue destination="nQB-Bl-EW2" kind="presentation" identifier="debugShake" id="ZGE-Hn-BAR"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="osm-ho-Ssr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

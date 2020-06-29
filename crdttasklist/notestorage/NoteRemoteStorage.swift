@@ -12,10 +12,64 @@ import NIOConcurrencyHelpers
 
 class NoteRemoteStorage {
 
+    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    static let MigrationsUrl1 = DocumentsDirectory.appendingPathComponent("noteremotestoragemigrations")
+
     static let shared = NoteRemoteStorage()
     static let queue = DispatchQueue(label: "remote")
 
+
     let noteStorage = NoteStorage.shared
+    class Migrations {
+        class Migration1: Codable {
+            var started = false
+            var finished = false
+            func start(_ selv: NoteRemoteStorage, _ i: Int) {
+                if started {
+                    return
+                }
+                if finished {
+                    return
+                }
+                guard let client = DropboxClientsManager.authorizedClient else {
+                    fatalError("bad state")
+                }
+                started = true
+                client.files.moveV2(fromPath: selv.remoteSnapshot(), toPath: "\(selv.remoteSnapshot())_backup")
+                    .response { r, e in
+                        client.files.copyV2(fromPath: "/notes", toPath: selv.remoteSnapshot())
+                            .response(completionHandler: { response, error in
+                                self.started = false
+                                self.finished = true
+                                selv.migrations.start(selv, i + 1)
+                        })
+                }
+            }
+        }
+        var migration1: Migration1
+
+        init() {
+            migration1 = FileUtils.loadFromFile(type: Migration1.self, url: NoteRemoteStorage.MigrationsUrl1)
+                ?? Migration1()
+        }
+
+        deinit {
+            FileUtils.saveToFile(obj: migration1, url: NoteRemoteStorage.MigrationsUrl1)
+        }
+
+        func start(_ selv: NoteRemoteStorage, _ i: Int) {
+            if i == 0 {
+                migration1.start(selv, 0)
+            } else {
+                // finished
+                FileUtils.saveToFile(obj: migration1, url: NoteRemoteStorage.MigrationsUrl1)
+            }
+        }
+    }
+    var migrations = Migrations()
+
+
+
 
     let lock = Lock()
     var updatesQueue: Notes?
@@ -50,6 +104,9 @@ class NoteRemoteStorage {
 
     func isStorageLinked() -> Bool {
         if DropboxClientsManager.authorizedClient != nil {
+            NoteRemoteStorage.queue.async {
+                self.migrations.start(self, 0)
+            }
             return true
         }
         return false
@@ -145,9 +202,12 @@ class NoteRemoteStorage {
         let destination: (URL, HTTPURLResponse) -> URL = { temporaryURL, response in
             return toUrl
         }
-        client.files.download(path: "/notes", overwrite: true, destination: destination)
+        client.files.download(path: remoteSnapshot(), overwrite: true, destination: destination)
         .response { response, error in
             if let response = response {
+                if response.0.size == 0 {
+
+                }
                 NoteLocalStorage.loadFrom(toUrl, { (res)->Void in
                     guard let (fileNotes, wasMigrated) = res else {
                         return

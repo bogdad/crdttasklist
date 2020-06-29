@@ -49,6 +49,12 @@ class NoteTableViewController: UITableViewController {
         filter = .active
     }
 
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?){
+        if motion == .motionShake {
+            performSegue(withIdentifier: "debugShake", sender: self)
+        }
+    }
+
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -151,6 +157,8 @@ class NoteTableViewController: UITableViewController {
             let selectedNote = noteForSender(sender)
             editedNoteIndex = indexNote(selectedNote)
             NoteStorage.shared.currentNote = selectedNote
+        case "debugShake":
+            break
         default:
             fatalError("Unexpected Segue Identifier; \(segue.identifier ?? "???")")
         }
