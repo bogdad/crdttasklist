@@ -7,33 +7,38 @@
 //
 
 import Foundation
-import UIKit
 import SwiftyDropbox
+import UIKit
 
 class LinkToStorageViewController: UIViewController {
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
 
-        Design.applyToUIView(view)
-        // Check if the user is logged in
-        // If so, display photo view controller
-        NotificationCenter.default.addObserver(self, selector: #selector(onDropboxAvailable), name: NSNotification.Name("DropboxLogin"), object: nil)
-        onDropboxAvailable()
+    Design.applyToUIView(view)
+    // Check if the user is logged in
+    // If so, display photo view controller
+    NotificationCenter.default.addObserver(
+      self, selector: #selector(onDropboxAvailable), name: NSNotification.Name("DropboxLogin"),
+      object: nil)
+    onDropboxAvailable()
+  }
+
+  @objc func onDropboxAvailable() {
+    if NoteStorage.shared.isStorageLinked() {
+      let navigationController = self.storyboard?.instantiateViewController(
+        withIdentifier: "NavigationController")
+
+      NoteStorage.shared.loadNotes({ _ in })
+      DispatchQueue.main.async {
+        self.present(navigationController!, animated: true, completion: nil)
+      }
     }
+  }
 
-    @objc func onDropboxAvailable() {
-        if NoteStorage.shared.isStorageLinked() {
-            let navigationController = self.storyboard?.instantiateViewController(withIdentifier: "NavigationController")
-
-            NoteStorage.shared.loadNotes({_ in })
-            DispatchQueue.main.async {
-                self.present(navigationController!, animated: true, completion: nil)
-            }
-        }
-    }
-
-    @IBAction func linkToDropboxPressed(_ sender: Any) {
-        DropboxClientsManager.authorizeFromController(UIApplication.shared, controller: self, openURL: {(url: URL) -> Void in UIApplication.shared.openURL(url)})
-    }
+  @IBAction func linkToDropboxPressed(_ sender: Any) {
+    DropboxClientsManager.authorizeFromController(
+      UIApplication.shared, controller: self,
+      openURL: { (url: URL) -> Void in UIApplication.shared.openURL(url) })
+  }
 }

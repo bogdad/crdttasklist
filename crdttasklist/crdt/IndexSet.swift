@@ -29,21 +29,20 @@
 // Note: this data structure has nontrivial overlap with Subset in the rope
 // crate. Maybe we don't need both.
 
-
 import Foundation
 
 struct IndexSet {
-    var ranges: [(UInt, UInt)]
+  var ranges: [(UInt, UInt)]
 }
 
 func remove_n_at<T>(_ v: inout [T], _ index: UInt, _ n: UInt) {
-    if n == 1 {
-        v.remove(at: Int(index))
-    } else if n > 1 {
-        let new_len: Int = v.len() - Int(n)
-        for i in Int(index)..<new_len {
-            v[i] = v[i + Int(n)]
-        }
-        v.truncate(new_len)
+  if n == 1 {
+    v.remove(at: Int(index))
+  } else if n > 1 {
+    let new_len: Int = v.len() - Int(n)
+    for i in Int(index)..<new_len {
+      v[i] = v[i + Int(n)]
     }
+    v.truncate(new_len)
+  }
 }

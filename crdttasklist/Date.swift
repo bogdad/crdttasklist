@@ -8,23 +8,23 @@
 
 import Foundation
 
-extension Date : Mergeable {
-    mutating func merge(_ other: Date) -> CRDTMergeResult {
-        var res = CRDTMergeResult(selfChanged: false, otherChanged: false)
-        let max = Swift.max(self, other)
-        if self != max {
-            res.otherChanged = true
-        }
-        if other != max {
-            res.selfChanged = true
-        }
-        self = max
-        return res
+extension Date: Mergeable {
+  mutating func merge(_ other: Date) -> CRDTMergeResult {
+    var res = CRDTMergeResult(selfChanged: false, otherChanged: false)
+    let max = Swift.max(self, other)
+    if self != max {
+      res.otherChanged = true
     }
+    if other != max {
+      res.selfChanged = true
+    }
+    self = max
+    return res
+  }
 }
 
 extension Date: Storable {
-    mutating func commitEvents() -> [Event] {
-        return [DateEvent(date: self)]
-    }
+  mutating func commitEvents() -> [Event] {
+    return [DateEvent(date: self)]
+  }
 }

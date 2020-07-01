@@ -9,23 +9,23 @@
 import Foundation
 
 protocol PeriodicChecklist {
-    associatedtype Item
+  associatedtype Item
 
-    mutating func intensity() -> Double
-    func start(_ curDate: Date) -> Date
-    func end(_ curDate: Date) -> Date
-    func isSet() -> Bool
-    func isCompleted() -> Bool
+  mutating func intensity() -> Double
+  func start(_ curDate: Date) -> Date
+  func end(_ curDate: Date) -> Date
+  func isSet() -> Bool
+  func isCompleted() -> Bool
 
-    func get() -> Item?
+  func get() -> Item?
 
-    mutating func complete()
-    mutating func uncomplete()
-    mutating func set(_ item: Item)
-    mutating func clear()
-    mutating func editing_finished()
+  mutating func complete()
+  mutating func uncomplete()
+  mutating func set(_ item: Item)
+  mutating func clear()
+  mutating func editing_finished()
 
-    func maybeFromString() -> Item?
-    func fromString() -> Item
-    func toString(_ item: Item) -> String
+  func maybeFromString() -> Item?
+  func fromString() -> Item
+  func toString(_ item: Item) -> String
 }

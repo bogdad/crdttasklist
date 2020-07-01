@@ -26,7 +26,7 @@
 import Foundation
 
 class BufferItems {
-    var tab_size: UInt = 4
-    var translate_tabs_to_spaces = false
-    var use_tab_stops = false
+  var tab_size: UInt = 4
+  var translate_tabs_to_spaces = false
+  var use_tab_stops = false
 }

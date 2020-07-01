@@ -11,17 +11,17 @@ import UIKit
 
 class ChecklistTabController: UITabBarController {
 
-    var note: Note?
+  var note: Note?
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+  override func viewDidLoad() {
+    super.viewDidLoad()
 
-        note = NoteStorage.shared.currentNote!
+    note = NoteStorage.shared.currentNote!
 
-        if (note!.checklistCRDT!.isSetDaily()) {
-            selectedIndex = 0
-        } else if (note!.checklistCRDT!.isSetWeekly()) {
-            selectedIndex = 1
-        }
+    if note!.checklistCRDT!.isSetDaily() {
+      selectedIndex = 0
+    } else if (note!.checklistCRDT!.isSetWeekly()) {
+      selectedIndex = 1
     }
+  }
 }

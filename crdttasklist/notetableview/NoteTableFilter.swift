@@ -9,6 +9,6 @@
 import Foundation
 
 enum NoteTableFilter {
-    case active
-    case all
+  case active
+  case all
 }

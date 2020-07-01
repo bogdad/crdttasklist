@@ -9,5 +9,5 @@
 import Foundation
 
 protocol Mergeable {
-    mutating func merge(_ other: Self) -> CRDTMergeResult
+  mutating func merge(_ other: Self) -> CRDTMergeResult
 }

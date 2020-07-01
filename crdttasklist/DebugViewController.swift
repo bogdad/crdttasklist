@@ -11,13 +11,14 @@ import UIKit
 
 class DebugViewController: UIViewController {
 
-    @IBAction func eraseDataClicked(_ sender: Any) {
-        NoteStorage.shared.eraseAllData()
-    }
+  @IBAction func eraseDataClicked(_ sender: Any) {
+    NoteStorage.shared.eraseAllData()
+  }
 
-    @IBAction func proceedClicked(_ sender: Any) {
-        let navigationController = self.storyboard?.instantiateViewController(withIdentifier: "NavigationController")
-        self.present(navigationController!, animated: true, completion: nil)
-    }
+  @IBAction func proceedClicked(_ sender: Any) {
+    let navigationController = self.storyboard?.instantiateViewController(
+      withIdentifier: "NavigationController")
+    self.present(navigationController!, animated: true, completion: nil)
+  }
 
 }

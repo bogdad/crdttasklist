@@ -9,8 +9,8 @@
 import Foundation
 
 extension Int {
-    func pad_to(_ n: Int) -> String {
-        let raw = "\(self)"
-        return "0".repeate(n - raw.count) + raw
-    }
+  func pad_to(_ n: Int) -> String {
+    let raw = "\(self)"
+    return "0".repeate(n - raw.count) + raw
+  }
 }

@@ -6,11 +6,11 @@
 //  Copyright © 2020 Vladimir Shakhov. All rights reserved.
 //
 
-import Foundation
 import BTree
+import Foundation
 
 extension SortedSet {
-    func len() -> Int {
-        return count
-    }
+  func len() -> Int {
+    return count
+  }
 }

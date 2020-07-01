@@ -8,26 +8,25 @@
 import Foundation
 
 protocol Event: Codable {
-    
+
 }
 
 struct EngineEvent: Event {
-    var revs: [Revision]
-    var text: Rope
-    var tombstones: Rope
-    var deletesFromUnion: Subset
+  var revs: [Revision]
+  var text: Rope
+  var tombstones: Rope
+  var deletesFromUnion: Subset
 }
 
 struct EditorEvent: Event {
-    var engineEvents: [EngineEvent]
+  var engineEvents: [EngineEvent]
 }
 
 struct DeletionsInsertionsEvent: Event {
-    var insertion: Pair
+  var insertion: Pair
 
-
-    struct Pair: Codable {
-        var date: Date
-        var type: DeletionsInsertionsType
-    }
+  struct Pair: Codable {
+    var date: Date
+    var type: DeletionsInsertionsType
+  }
 }

@@ -12,5 +12,5 @@
 import Foundation
 
 struct Find {
-    
+
 }

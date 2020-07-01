@@ -9,6 +9,6 @@
 import Foundation
 
 protocol Storable {
-    
-    mutating func commitEvents() -> [Event]
+
+  mutating func commitEvents() -> [Event]
 }

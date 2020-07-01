@@ -9,34 +9,34 @@
 import Foundation
 
 extension ArraySlice {
-    // returns slice with the first element and slice with the rest
-    func split_first() -> (ArraySlice<Element>, ArraySlice<Element>)? {
-        if count > 0 {
-            if count > 1 {
-                return (self[0..<0], self[1...])
-            }
-            return (self[0...0], [])
-        }
-        return nil
+  // returns slice with the first element and slice with the rest
+  func split_first() -> (ArraySlice<Element>, ArraySlice<Element>)? {
+    if count > 0 {
+      if count > 1 {
+        return (self[0..<0], self[1...])
+      }
+      return (self[0...0], [])
     }
+    return nil
+  }
 
-    // returns slice with the last element and slice with the all without last
-    func split_last() -> (ArraySlice<Element>, ArraySlice<Element>)? {
-        if count > 0 {
-            if count > 1 {
-                return (self.suffix(1), self.prefix(upTo: count - 2))
-            } else {
-                return (self.suffix(1), [])
-            }
-        }
-        return nil
+  // returns slice with the last element and slice with the all without last
+  func split_last() -> (ArraySlice<Element>, ArraySlice<Element>)? {
+    if count > 0 {
+      if count > 1 {
+        return (self.suffix(1), self.prefix(upTo: count - 2))
+      } else {
+        return (self.suffix(1), [])
+      }
     }
+    return nil
+  }
 
-    func len() -> Int {
-        return count
-    }
+  func len() -> Int {
+    return count
+  }
 
-    func split_at(_ ai: Int) -> (ArraySlice<Element>, ArraySlice<Element>) {
-        return (self[0..<ai], self[ai...])
-    }
+  func split_at(_ ai: Int) -> (ArraySlice<Element>, ArraySlice<Element>) {
+    return (self[0..<ai], self[ai...])
+  }
 }

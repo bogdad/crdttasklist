@@ -28,73 +28,73 @@
 import Foundation
 
 protocol IntervalBounds {
-    func into_interval(upper_bound:UInt) -> Interval
+  func into_interval(upper_bound: UInt) -> Interval
 }
 
 struct RangeFull: IntervalBounds {
-    func into_interval(upper_bound: UInt) -> Interval {
-        return Interval(0, upper_bound)
-    }
+  func into_interval(upper_bound: UInt) -> Interval {
+    return Interval(0, upper_bound)
+  }
 }
 
 struct Interval: Equatable, IntervalBounds {
-    var start: UInt
-    var end: UInt
-    init(_ start: UInt, _ end: UInt) {
-        assert(start <= end)
-        self.start = start
-        self.end = end
-    }
+  var start: UInt
+  var end: UInt
+  init(_ start: UInt, _ end: UInt) {
+    assert(start <= end)
+    self.start = start
+    self.end = end
+  }
 
-    init(from: Int, length: Int) {
-        self.init(UInt(from), UInt(from + length))
-    }
+  init(from: Int, length: Int) {
+    self.init(UInt(from), UInt(from + length))
+  }
 
-    func is_empty() -> Bool {
-        return end <= start
-    }
+  func is_empty() -> Bool {
+    return end <= start
+  }
 
-    static func == (lhs: Interval, rhs: Interval) -> Bool {
-        return lhs.start == rhs.start && lhs.end == rhs.end
-    }
+  static func == (lhs: Interval, rhs: Interval) -> Bool {
+    return lhs.start == rhs.start && lhs.end == rhs.end
+  }
 
-    func is_before(val: UInt) -> Bool {
-        return end <= val
-    }
+  func is_before(val: UInt) -> Bool {
+    return end <= val
+  }
 
-    func intersect(other: Interval) -> Interval {
-        let start = max(self.start, other.start)
-        let end = min(self.end, other.end)
-        return Interval(start, max(start, end))
-    }
+  func intersect(other: Interval) -> Interval {
+    let start = max(self.start, other.start)
+    let end = min(self.end, other.end)
+    return Interval(start, max(start, end))
+  }
 
-    func translate(amount: UInt) -> Interval {
-        return Interval(start + amount, end + amount)
-    }
+  func translate(amount: UInt) -> Interval {
+    return Interval(start + amount, end + amount)
+  }
 
-    func translate_neg(amount: UInt) -> Interval {
-        assert(start >= amount)
-        return Interval(start - amount, end - amount)
-    }
+  func translate_neg(amount: UInt) -> Interval {
+    assert(start >= amount)
+    return Interval(start - amount, end - amount)
+  }
 
-    func start_end() -> (UInt, UInt) {
-        return (self.start, self.end)
-    }
-    func into_interval(upper_bound: UInt) -> Interval {
-        return self.intersect(other: Interval(0, upper_bound))
-    }
+  func start_end() -> (UInt, UInt) {
+    return (self.start, self.end)
+  }
+  func into_interval(upper_bound: UInt) -> Interval {
+    return self.intersect(other: Interval(0, upper_bound))
+  }
 
-    // the first half of self - other
-    func prefix(_ other: Interval) -> Interval {
-        return Interval(min(self.start, other.start), min(self.end, other.start))
-    }
+  // the first half of self - other
+  func prefix(_ other: Interval) -> Interval {
+    return Interval(min(self.start, other.start), min(self.end, other.start))
+  }
 
-    // the second half of self - other
-    func suffix(_ other: Interval) -> Interval {
-        return Interval(max(self.start, other.end), max(self.end, other.end))
-    }
+  // the second half of self - other
+  func suffix(_ other: Interval) -> Interval {
+    return Interval(max(self.start, other.end), max(self.end, other.end))
+  }
 
-    func len() -> Int {
-        return Int(end) - Int(start)
-    }
+  func len() -> Int {
+    return Int(end) - Int(start)
+  }
 }
