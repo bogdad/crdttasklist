@@ -8,28 +8,63 @@
 
 import Foundation
 
-struct DateEvent: Event {
+struct DateEvent: Event, Hashable {
+  var id = UUID()
   var date: Date
+  func getId() -> UUID {
+    return id
+  }
+  func getHash() -> Int {
+    return hashValue
+  }
 }
 
-struct CRDTEvent: Event {
+struct CRDTEvent: Event, Hashable {
+  var id = UUID()
   var editorEvents: [EditorEvent]
   var deletionsInsertionsEvents: [DeletionsInsertionsEvent]
   var lastModificationDateEvents: [DateEvent]
+  func getId() -> UUID {
+    return id
+  }
+  func getHash() -> Int {
+    return hashValue
+  }
 }
 
-struct PeriodicChecklistDailyEvent: Event {
+struct PeriodicChecklistDailyEvent: Event, Hashable {
+  var id = UUID()
   var storageEvents: [CRDTEvent]
   var checksEvents: [DeletionsInsertionsEvent]
+  func getId() -> UUID {
+    return id
+  }
+  func getHash() -> Int {
+    return hashValue
+  }
 }
 
-struct ChecklistCRDTEvent: Event {
+struct ChecklistCRDTEvent: Event, Hashable {
+  var id = UUID()
   var storageEvents: [CRDTEvent]
   var checksWeeklyEvents: [DeletionsInsertionsEvent]
   var dailyEvents: [PeriodicChecklistDailyEvent]
+  func getId() -> UUID {
+    return id
+  }
+  func getHash() -> Int {
+    return hashValue
+  }
 }
 
-struct NoteEvent: Event {
+struct NoteEvent: Event, Hashable {
+  var id = UUID()
   var crdtEvents: [CRDTEvent]
   var checklistCRDTEvents: [ChecklistCRDTEvent]
+  func getId() -> UUID {
+    return id
+  }
+  func getHash() -> Int {
+    return hashValue
+  }
 }

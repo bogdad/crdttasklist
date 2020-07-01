@@ -27,7 +27,7 @@
 
 import IteratorTools
 
-protocol NodeInfo: Equatable, Codable {
+protocol NodeInfo: Codable, Hashable {
   associatedtype L: Leaf
   associatedtype DefaultMetric: Metric
 
@@ -46,7 +46,7 @@ extension NodeInfo {
   }
 }
 
-struct NodeBody<N: NodeInfo>: Equatable, Codable {
+struct NodeBody<N: NodeInfo>: Equatable, Codable, Hashable {
   var height: UInt
   var len: UInt
   var info: N
@@ -73,7 +73,7 @@ struct PropertyKeyNode {
   static let valNodes = "valNodes"
 }
 
-class Node<N: NodeInfo>: Equatable, Codable {
+class Node<N: NodeInfo>: Equatable, Codable, Hashable {
   var body: NodeBody<N>
 
   init(body: NodeBody<N>) {
@@ -316,9 +316,13 @@ class Node<N: NodeInfo>: Equatable, Codable {
     self.push_subseq(b: &b, iv: self_iv.suffix(iv))
     return b.build()
   }
+
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(body)
+  }
 }
 
-enum NodeVal<N: NodeInfo>: Codable, Equatable {
+enum NodeVal<N: NodeInfo>: Codable, Equatable, Hashable {
   case Leaf(N.L)
   case Internal([Node<N>])
 }

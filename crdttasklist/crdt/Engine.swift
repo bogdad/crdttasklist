@@ -66,7 +66,7 @@ enum CrdtError: Error {
   case MalformedDelta(rev_len: UInt, delta_len: UInt)
 }
 
-enum Contents: Codable, Equatable {
+enum Contents: Codable, Equatable, Hashable {
   static func == (lhs: Contents, rhs: Contents) -> Bool {
     switch (lhs, rhs) {
     case (
@@ -223,7 +223,7 @@ struct RevId: Hashable, Codable, Equatable, Comparable {
   }
 }
 
-struct Revision: Codable, Equatable {
+struct Revision: Codable, Equatable, Hashable {
   /// This uniquely represents the identity of this revision and it stays
   /// the same even if it is rebased or merged between devices.
   var rev_id: RevId
