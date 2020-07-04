@@ -32,12 +32,12 @@ class Note: Codable, Equatable {
   }
 
   func update(_ crdt: CRDT) {
-    self.crdt.merge(crdt)
+    let _ = self.crdt.merge(crdt)
     self.crdt.editing_finished()
   }
 
   func update(_ checklistCRDT: ChecklistCRDT) {
-    self.checklistCRDT!.merge(checklistCRDT)
+    let _ = self.checklistCRDT!.merge(checklistCRDT)
     self.checklistCRDT!.editing_finished()
     print("checklist \(self.checklistCRDT?.to_string() ?? "??")")
   }

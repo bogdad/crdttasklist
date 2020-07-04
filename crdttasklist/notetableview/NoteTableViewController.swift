@@ -212,7 +212,7 @@ class NoteTableViewController: UITableViewController {
   }
 
   func noteUpdate(_ note: inout Note, _ type: CellEditType) {
-    var oldIndex: Int? = editedNoteIndex
+    let oldIndex: Int? = editedNoteIndex
     var newIndex: Int? = nil
     switch type {
     case .add:

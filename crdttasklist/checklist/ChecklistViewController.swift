@@ -39,7 +39,7 @@ class ChecklistViewController: UIViewController {
     checklist = ChecklistCRDT()
     checklist?.newSession()
 
-    checklist?.merge(note!.checklistCRDT!)
+    let _ = checklist?.merge(note!.checklistCRDT!)
 
     print("checkist \(checklist?.to_string() ?? "??")")
     let daily = checklist!.getDaily() ?? (23, 59)

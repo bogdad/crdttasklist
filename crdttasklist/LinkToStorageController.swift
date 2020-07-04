@@ -39,6 +39,6 @@ class LinkToStorageViewController: UIViewController {
   @IBAction func linkToDropboxPressed(_ sender: Any) {
     DropboxClientsManager.authorizeFromController(
       UIApplication.shared, controller: self,
-      openURL: { (url: URL) -> Void in UIApplication.shared.openURL(url) })
+      openURL: { (url: URL) -> Void in UIApplication.shared.open(url) })
   }
 }

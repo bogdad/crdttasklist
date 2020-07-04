@@ -135,11 +135,11 @@ struct LinesW: Codable, Equatable {
     //TODO: we should be able to avoid wrapping the whole para in most cases,
     // but the logic is trickier.
     let prev_break = text.offset_of_line(logical_start_line)
-    let next_hard_break = text.offset_of_line(new_logical_end_line)
+    let _next_hard_break = text.offset_of_line(new_logical_end_line)
 
     // count the soft breaks in the region we will rewrap, before we update them.
 
-    let inval_soft =
+    let _inval_soft =
       NodeMeasurable<BreaksInfo, BreaksMetric>.count(self.breaks, old_logical_end_offset)
       - NodeMeasurable<BreaksInfo, BreaksMetric>.count(self.breaks, prev_break)
 

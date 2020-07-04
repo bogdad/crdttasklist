@@ -144,16 +144,16 @@ extension Contents {
   func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     switch self {
-    case .Edit(let edit):
+    case .Edit(let priority, let undo_group, let inserts, let deletes):
       try container.encode(0, forKey: .type)
-      try container.encode(edit.priority, forKey: .priority)
-      try container.encode(edit.undo_group, forKey: .undo_group)
-      try container.encode(edit.inserts, forKey: .inserts)
-      try container.encode(edit.deletes, forKey: .deletes)
-    case .Undo(let undo):
+      try container.encode(priority, forKey: .priority)
+      try container.encode(undo_group, forKey: .undo_group)
+      try container.encode(inserts, forKey: .inserts)
+      try container.encode(deletes, forKey: .deletes)
+    case .Undo(let toggled_groups, let deletes_bitxor):
       try container.encode(1, forKey: .type)
-      try container.encode(undo.toggled_groups, forKey: .toggled_groups)
-      try container.encode(undo.deletes_bitxor, forKey: .deletes_bitxor)
+      try container.encode(toggled_groups, forKey: .toggled_groups)
+      try container.encode(deletes_bitxor, forKey: .deletes_bitxor)
     }
   }
 }
@@ -568,7 +568,7 @@ struct Engine: Codable, Equatable {
       self.deletes_from_union_before_index(first_candidate, false)
 
     for rev in self.revs[Int(first_candidate)...] {
-      if case .Edit(_, let undo_group, let inserts, var deletes) = rev.edit {
+      if case .Edit(_, let undo_group, let inserts, let deletes) = rev.edit {
         if groups.contains(undo_group) {
           if !inserts.is_empty() {
             deletes_from_union = deletes_from_union.transform_union(inserts)
@@ -653,7 +653,7 @@ struct Engine: Codable, Equatable {
             deletes: transformed_deletes
           )
         }
-      case .Undo(_):
+      case .Undo(_, _):
         fatalError("can merge undo yet")
       }
       if case .some(let edit) = contents {
@@ -831,8 +831,9 @@ func compute_transforms(_ revs: [Revision]) -> [(FullPriority, Subset)] {
         continue
       }
       if priority == last_priority {
-        let last = UnsafeMutablePointer<(FullPriority, Subset)>(&out[out.count - 1])
-        last.pointee.1 = last.pointee.1.transform_union(inserts)
+        withUnsafeMutablePointer(to: &out[out.count - 1]) {
+          $0.pointee.1 = $0.pointee.1.transform_union(inserts)
+        }
       } else {
         last_priority = priority
         let prio = FullPriority(priority: priority, session_id: r.rev_id.session_id())

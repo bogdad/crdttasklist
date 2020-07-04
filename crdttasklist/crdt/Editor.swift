@@ -251,7 +251,7 @@ struct Editor: Codable, Equatable {
     // histories for low concurrency.
     self.undo_group_id = self.engine.value.max_undo_group_id() + 1
     self.last_synced_rev = self.engine.value.get_head_rev_id()
-    self.commit_delta()
+    let _ = self.commit_delta()
     //self.render();
     //FIXME: render after fuchsia sync
     return CRDTMergeResult(

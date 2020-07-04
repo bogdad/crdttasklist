@@ -43,7 +43,7 @@ class ChecklistWeeklyViewController: UIViewController, UITableViewDataSource, UI
     checklist?.newSession()
 
     setupTableView()
-    checklist?.merge(note!.checklistCRDT!)
+    let _ = checklist?.merge(note!.checklistCRDT!)
 
     print("checkist \(checklist?.to_string() ?? "??")")
 

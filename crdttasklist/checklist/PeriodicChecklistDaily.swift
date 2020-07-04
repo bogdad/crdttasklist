@@ -24,7 +24,7 @@ struct PeriodicChecklistDaily: PeriodicChecklist, Codable, Equatable {
   }
 
   mutating func tryMigrate() -> Bool {
-    var res = checks.tryMigrate()
+    let res = checks.tryMigrate()
     return res
   }
 

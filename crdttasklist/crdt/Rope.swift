@@ -39,7 +39,7 @@ struct RopeConstants {
   static let MAX_LEAF: UInt = 1024
 }
 
-protocol Leaf: Equatable, Codable, Hashable {
+protocol Leaf: Codable, Hashable {
   static func def() -> Self
   func len() -> UInt
   func is_ok_child() -> Bool

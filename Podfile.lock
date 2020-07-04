@@ -5,6 +5,7 @@ PODS:
   - CNIODarwin (2.18.0)
   - CNIOLinux (2.18.0)
   - CNIOSHA1 (2.18.0)
+  - HLClock (0.3.0)
   - IteratorTools (1.1.0)
   - SwiftNIO (2.18.0):
     - CNIOAtomics (= 2.18.0)
@@ -19,6 +20,7 @@ PODS:
 
 DEPENDENCIES:
   - BTree (from `https://github.com/bogdad/BTree.git`, commit `1d47f57b4ae9f21d22c3fb51930ae171ac88f77c`)
+  - HLClock (from `https://github.com/bogdad/HLClock.git`, commit `75a343f12c53e3fd60465ec36768f2a2b84b9131`)
   - IteratorTools (~> 1.1.0)
   - SwiftNIO (~> 2.18)
   - SwiftyDropbox
@@ -39,11 +41,17 @@ EXTERNAL SOURCES:
   BTree:
     :commit: 1d47f57b4ae9f21d22c3fb51930ae171ac88f77c
     :git: https://github.com/bogdad/BTree.git
+  HLClock:
+    :commit: 75a343f12c53e3fd60465ec36768f2a2b84b9131
+    :git: https://github.com/bogdad/HLClock.git
 
 CHECKOUT OPTIONS:
   BTree:
     :commit: 1d47f57b4ae9f21d22c3fb51930ae171ac88f77c
     :git: https://github.com/bogdad/BTree.git
+  HLClock:
+    :commit: 75a343f12c53e3fd60465ec36768f2a2b84b9131
+    :git: https://github.com/bogdad/HLClock.git
 
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
@@ -52,11 +60,12 @@ SPEC CHECKSUMS:
   CNIODarwin: 2e814fe13ee1b16a6d7603affbd95b3fbf1e65b1
   CNIOLinux: 45e91eaba50bb850a48135aabbd7671625f15188
   CNIOSHA1: f8f5b0c8cbd067c195d1b44ab237927765bd4914
+  HLClock: 3ffdf712f42b45566c3f4d4a0cfed20d3bc413e1
   IteratorTools: 085fb5125062d3dc2f7a9919be1b805bef72a94f
   SwiftNIO: c17d311e9006fc10c1d17fbc6a7a9cb21aa46368
   SwiftNIOConcurrencyHelpers: 69762a04ed76d7254012e1f17787ee162d2cf764
   SwiftyDropbox: 7ca4961e0340c62c8d6d1ece91d67badfe4c0380
 
-PODFILE CHECKSUM: 7b68e0419b5786b6a8961577de309b95cf6de14d
+PODFILE CHECKSUM: d0bb40f6151d135e2a96b9cc6da1c94c6971aec7
 
 COCOAPODS: 1.8.4

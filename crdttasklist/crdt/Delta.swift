@@ -59,8 +59,8 @@ class Delta<N: NodeInfo> {
     var b = TreeBuilder<N>()
     for elem in self.els {
       switch elem {
-      case .Copy(let tpl):
-        base.push_subseq(b: &b, iv: Interval(tpl.0, tpl.1))
+      case .Copy(let start, let end):
+        base.push_subseq(b: &b, iv: Interval(start, end))
       case .Insert(let n):
         b.push(n: n.clone())
       }

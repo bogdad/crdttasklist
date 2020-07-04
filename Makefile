@@ -40,7 +40,8 @@ build-mac-release:
 	-configuration Release \
 	-scheme ${project_base_name} \
     -sdk macosx10.15 \
-	-destination 'platform=macOS,arch=x86_64,variant=Mac Catalyst'
+	-destination 'platform=macOS,arch=x86_64,variant=Mac Catalyst' \
+	build
 
 install-sim: build-sim
 	xcrun simctl install 'iPhone 11' ${project_path}/build/Products/Debug/Sim/Debug-iphonesimulator/crdttasklist.app/
@@ -63,7 +64,8 @@ deploy-ipad: build-ipad-release
 		--bundle ${project_path}/build/Products/Release/iPad13.5/Release-iphoneos/${project_base_name}.app/	
 
 deploy-mac: build-mac-release
-	echo 1
+	cp -r /Users/vladimir/Library/Developer/Xcode/DerivedData/crdttasklist-fvfomftncmqetjdqnvwfjgfpjvrg/Build/Products/Release-maccatalyst/crdttasklist.app \
+	  /Applications/
 
 all: run-sim
 
