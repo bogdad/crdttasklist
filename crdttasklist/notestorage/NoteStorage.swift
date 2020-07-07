@@ -16,6 +16,7 @@ class NoteStorage {
   var _notes: Notes = [:]
   var rev: String?
   var currentNote: Note?
+  var appState = AppState.shared
 
   func notes(_ filter: NoteTableFilter) -> [Note] {
     let n = orderNotes(Array(_notes.values))
@@ -54,22 +55,22 @@ class NoteStorage {
 
   func update(_ note: inout Note) {
     _notes[note.id!] = note
-    NoteLocalStorage.saveNotes(note.commitEvents() as! [NoteEvent])
+    NoteLocalStorage.saveNotes(note.commitEvents(appState) as! [NoteEvent])
   }
 
   func append(_ note: inout Note) {
     _notes[note.id!] = note
-    NoteLocalStorage.saveNotes(note.commitEvents() as! [NoteEvent])
+    NoteLocalStorage.saveNotes(note.commitEvents(appState) as! [NoteEvent])
   }
 
   func markDeleted(_ note: Note) {
     note.markDeleted()
-    NoteLocalStorage.saveNotes(note.commitEvents() as! [NoteEvent])
+    NoteLocalStorage.saveNotes(note.commitEvents(appState) as! [NoteEvent])
   }
 
   func markUndeleted(_ note: Note) {
     note.markUndeleted()
-    NoteLocalStorage.saveNotes(note.commitEvents() as! [NoteEvent])
+    NoteLocalStorage.saveNotes(note.commitEvents(appState) as! [NoteEvent])
   }
 
   func loadNotes(_ closure: @escaping ((Notes, Bool)) -> Void) {

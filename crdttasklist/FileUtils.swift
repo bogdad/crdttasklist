@@ -21,7 +21,8 @@ class FileUtils {
     if let file = FileHandle(forWritingAtPath: url.path) {
       file.write(data)
     } else {
-      fatalError("could not save json")
+      // TODO: might fail writing
+      try! data.write(to: url, options: .atomic)
     }
   }
 

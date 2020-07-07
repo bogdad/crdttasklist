@@ -282,10 +282,10 @@ struct ChecklistCRDT: Codable, Equatable {
 }
 
 extension ChecklistCRDT: Storable {
-  mutating func commitEvents() -> [Event] {
-    let storageEvents = self.storage.commitEvents() as! [CRDTEvent]
-    let checklistWeeklyEvents = self.checksWeekly!.commitEvents() as! [DeletionsInsertionsEvent]
-    let dailyEvents = self.daily!.commitEvents() as! [PeriodicChecklistDailyEvent]
+  mutating func commitEvents(_ appState: AppState) -> [Event] {
+    let storageEvents = self.storage.commitEvents(appState) as! [CRDTEvent]
+    let checklistWeeklyEvents = self.checksWeekly!.commitEvents(appState) as! [DeletionsInsertionsEvent]
+    let dailyEvents = self.daily!.commitEvents(appState) as! [PeriodicChecklistDailyEvent]
     let checklistCRDTEvent = ChecklistCRDTEvent(
       storageEvents: storageEvents,
       checksWeeklyEvents: checklistWeeklyEvents,

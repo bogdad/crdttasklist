@@ -178,11 +178,11 @@ struct CRDT: Codable, Equatable {
 }
 
 extension CRDT: Storable {
-  mutating func commitEvents() -> [Event] {
-    let editorEvents = self.editor.commitEvents() as! [EditorEvent]
+  mutating func commitEvents(_ appState: AppState) -> [Event] {
+    let editorEvents = self.editor.commitEvents(appState) as! [EditorEvent]
     let deletionsAndInsertionsEvents =
-      self.deletionsInsertions!.commitEvents() as! [DeletionsInsertionsEvent]
-    let dateEvents = self.lastModificationDate!.commitEvents() as! [DateEvent]
+      self.deletionsInsertions!.commitEvents(appState) as! [DeletionsInsertionsEvent]
+    let dateEvents = self.lastModificationDate!.commitEvents(appState) as! [DateEvent]
     let crdtEvent = CRDTEvent(
       editorEvents: editorEvents,
       deletionsInsertionsEvents: deletionsAndInsertionsEvents,

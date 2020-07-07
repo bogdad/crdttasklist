@@ -153,10 +153,10 @@ class IdGenerator {
 }
 
 extension Note: Storable {
-  func commitEvents() -> [Event] {
-    let crdtEvents = self.crdt.commitEvents() as! [CRDTEvent]
-    let checklistCRDTEvents = self.checklistCRDT!.commitEvents() as! [ChecklistCRDTEvent]
-    let sendId = HLClock.global.now()
+  func commitEvents(_ appState: AppState) -> [Event] {
+    let crdtEvents = self.crdt.commitEvents(appState) as! [CRDTEvent]
+    let checklistCRDTEvents = self.checklistCRDT!.commitEvents(appState) as! [ChecklistCRDTEvent]
+    let sendId = appState.currentEventTime()
     let noteEvent = NoteEvent(id: sendId, crdtEvents: crdtEvents, checklistCRDTEvents: checklistCRDTEvents)
     return [noteEvent]
   }

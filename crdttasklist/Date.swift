@@ -24,7 +24,7 @@ extension Date: Mergeable {
 }
 
 extension Date: Storable {
-  mutating func commitEvents() -> [Event] {
+  mutating func commitEvents(_ appState: AppState) -> [Event] {
     return [DateEvent(date: self)]
   }
 }

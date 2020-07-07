@@ -747,7 +747,7 @@ struct Engine: Codable, Equatable {
 }
 
 extension Engine: Storable {
-  mutating func commitEvents() -> [Event] {
+  mutating func commitEvents(_ appState: AppState) -> [Event] {
     let ev = EngineEvent(
       revs: revs_since_last_merge!,
       text: text,

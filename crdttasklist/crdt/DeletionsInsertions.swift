@@ -113,7 +113,7 @@ struct DeletionsInsertions: Codable, Equatable {
 }
 
 extension DeletionsInsertions: Storable {
-  mutating func commitEvents() -> [Event] {
+  mutating func commitEvents(_ appState: AppState) -> [Event] {
     let events = Array(self.events!)
     self.events!.removeAll()
     return events

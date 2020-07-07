@@ -61,11 +61,12 @@ class NoteLocalStorage {
   }
 
   static func eventUrl(_ event: NoteEvent) -> URL {
-    return Note.ArchiveEventURL.appendingPathComponent(String(event.id))
+    return Note.ArchiveEventURL.appendingPathComponent(String(event.id), isDirectory: false)
   }
 
   static func saveEvent(_ event: NoteEvent) {
-    FileUtils.saveToFileJson(obj: event, url: eventUrl(event))
+    let eUrl = eventUrl(event)
+    FileUtils.saveToFileJson(obj: event, url: eUrl)
   }
 
   static func saveEvents(_ events: [NoteEvent], completion:  @escaping () -> Void) {
