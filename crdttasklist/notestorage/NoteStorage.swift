@@ -54,22 +54,22 @@ class NoteStorage {
 
   func update(_ note: inout Note) {
     _notes[note.id!] = note
-    NoteLocalStorage.saveNotes()
+    NoteLocalStorage.saveNotes(note.commitEvents() as! [NoteEvent])
   }
 
   func append(_ note: inout Note) {
     _notes[note.id!] = note
-    NoteLocalStorage.saveNotes()
+    NoteLocalStorage.saveNotes(note.commitEvents() as! [NoteEvent])
   }
 
   func markDeleted(_ note: Note) {
     note.markDeleted()
-    NoteLocalStorage.saveNotes()
+    NoteLocalStorage.saveNotes(note.commitEvents() as! [NoteEvent])
   }
 
   func markUndeleted(_ note: Note) {
     note.markUndeleted()
-    NoteLocalStorage.saveNotes()
+    NoteLocalStorage.saveNotes(note.commitEvents() as! [NoteEvent])
   }
 
   func loadNotes(_ closure: @escaping ((Notes, Bool)) -> Void) {
@@ -79,13 +79,13 @@ class NoteStorage {
         (res: (Notes, Bool)?) -> Void in
         guard let (notes, wasMigrated) = res else {
           self._notes = [:]
-          NoteLocalStorage.saveNotes()
+          NoteLocalStorage.saveNotes([])
           closure((self._notes, false))
           return
         }
         self._notes = notes
         if wasMigrated {
-          NoteLocalStorage.saveNotes()
+          NoteLocalStorage.saveNotes([])
         } else {
           NoteRemoteStorage.shared.conflictDetected()
         }

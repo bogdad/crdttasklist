@@ -334,12 +334,13 @@
 		E7B05EEC2298223300D2A094 /* crdttasklist */ = {
 			isa = PBXGroup;
 			children = (
-				E788A4A324964DCF0011EEDA /* notetableview */,
+				E7B54F2424B246DF00F994C0 /* events */,
 				E73DB3772483CA83004AABB8 /* checklist */,
 				E7235CAA247AB1CA0062FDE8 /* featurenote */,
+				E7F465E92315AF5500030F3A /* crdt */,
+				E788A4A324964DCF0011EEDA /* notetableview */,
 				E705C49A24683D8A00D5363F /* crdttasklist.entitlements */,
 				E715898E24669933007AD153 /* notestorage */,
-				E7F465E92315AF5500030F3A /* crdt */,
 				E7B05EF42298223400D2A094 /* Assets.xcassets */,
 				E7B05EF12298223300D2A094 /* Main.storyboard */,
 				E7B05EF92298223400D2A094 /* Info.plist */,
@@ -356,7 +357,6 @@
 				E73DB3752482B7F8004AABB8 /* NoteNavigationController.swift */,
 				E776E3D3246FFF7100738B66 /* Optional.swift */,
 				E7340BB824A7C7EB000B81BD /* Storable.swift */,
-				E7340BB624A782CC000B81BD /* TaskListEvent.swift */,
 				E7FFF0AB246716BD006713E9 /* UIFont.swift */,
 			);
 			path = crdttasklist;
@@ -389,6 +389,15 @@
 			path = crdttasklistUITests;
 			sourceTree = "<group>";
 		};
+		E7B54F2424B246DF00F994C0 /* events */ = {
+			isa = PBXGroup;
+			children = (
+				E7B05F1F2298284100D2A094 /* Event.swift */,
+				E7340BB624A782CC000B81BD /* TaskListEvent.swift */,
+			);
+			path = events;
+			sourceTree = "<group>";
+		};
 		E7F465E92315AF5500030F3A /* crdt */ = {
 			isa = PBXGroup;
 			children = (
@@ -406,7 +415,6 @@
 				E71F38AA22D231B8007FC0E8 /* Editor.swift */,
 				E74D187C241EB75000EE3815 /* EmojiTable.swift */,
 				E74C3DBF22D23620001B9CA7 /* Engine.swift */,
-				E7B05F1F2298284100D2A094 /* Event.swift */,
 				E75B386A230015CF005013E0 /* Find.swift */,
 				E763DF9922DA5DCE003572EC /* Hashes.swift */,
 				E7DD4EB3242E87DE00E2B5B9 /* IndexSet.swift */,

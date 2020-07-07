@@ -18,10 +18,10 @@ class NoteLocalStorage {
     }
   }
 
-  static func saveNotes() {
+  static func saveNotes(_ events: [NoteEvent]) {
     savingQueue.async {
       justSaveNotes()
-      NoteRemoteStorage.shared.conflictDetected()
+      NoteRemoteStorage.shared.saveEvents(events)
     }
   }
 
@@ -58,5 +58,26 @@ class NoteLocalStorage {
   }
   static func loadFromUrlInnerMap(_ toUrl: URL) -> Notes? {
     return FileUtils.loadFromFile(type: Notes.self, url: toUrl)
+  }
+
+  static func eventUrl(_ event: NoteEvent) -> URL {
+    return Note.ArchiveEventURL.appendingPathComponent(String(event.id))
+  }
+
+  static func saveEvent(_ event: NoteEvent) {
+    FileUtils.saveToFileJson(obj: event, url: eventUrl(event))
+  }
+
+  static func saveEvents(_ events: [NoteEvent], completion:  @escaping () -> Void) {
+    savingQueue.async {
+      events.forEach{ event in saveEvent(event) }
+      completion()
+    }
+  }
+
+  static func deleteEvents(_ events: [NoteEvent]) {
+    savingQueue.async {
+      events.forEach { event in try? FileManager.default.removeItem(at: eventUrl(event))}
+    }
   }
 }

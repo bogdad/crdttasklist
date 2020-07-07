@@ -10,6 +10,8 @@ import Foundation
 import UIKit
 import os.log
 
+import HLClock
+
 class Note: Codable, Equatable {
 
   static func == (lhs: Note, rhs: Note) -> Bool {
@@ -19,6 +21,7 @@ class Note: Codable, Equatable {
   static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask)
     .first!
   static let ArchiveURL = DocumentsDirectory.appendingPathComponent("notes")
+  static let ArchiveEventURL = DocumentsDirectory.appendingPathComponent("events")
   static let TempArchiveURL = DocumentsDirectory.appendingPathComponent("temp-notes")
 
   var id: String?
@@ -153,7 +156,8 @@ extension Note: Storable {
   func commitEvents() -> [Event] {
     let crdtEvents = self.crdt.commitEvents() as! [CRDTEvent]
     let checklistCRDTEvents = self.checklistCRDT!.commitEvents() as! [ChecklistCRDTEvent]
-    let noteEvent = NoteEvent(crdtEvents: crdtEvents, checklistCRDTEvents: checklistCRDTEvents)
+    let sendId = HLClock.global.now()
+    let noteEvent = NoteEvent(id: sendId, crdtEvents: crdtEvents, checklistCRDTEvents: checklistCRDTEvents)
     return [noteEvent]
   }
 }

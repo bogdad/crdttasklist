@@ -97,6 +97,10 @@ class NoteRemoteStorage {
     return remoteNameFrom("notes")
   }
 
+  func remoteEvent(_ id: Int64) -> String {
+    return remoteNameFrom("events/\(id)")
+  }
+
   func checkRemotes() {
     if isStorageLinked() {
       conflictDetected()
@@ -252,5 +256,43 @@ class NoteRemoteStorage {
           }
         }
       }
+  }
+
+  func saveEvents(_ events: [NoteEvent]) {
+    // TODO: we might die in the middle of uploading, fix
+    NoteRemoteStorage.queue.async {
+      NoteLocalStorage.saveEvents(events) {
+        // called on the local queue
+        NoteRemoteStorage.queue.async {
+          self.saveEventsInner(events, 0) {
+            // called when all events are uploaded
+            NoteLocalStorage.deleteEvents(events)
+          }
+        }
+      }
+      self.conflictDetected()
+    }
+  }
+
+  private func saveEventsInner(_ events: [NoteEvent], _ i: Int, _ completion: @escaping () -> Void) {
+    // TODO: we might die in the middle of uploading, fix
+    guard let client = DropboxClientsManager.authorizedClient else {
+      return
+    }
+    let _ = client.files.upload(
+      path: self.remoteEvent(events[i].id),
+      mode: .add,
+      strictConflict: true,
+      input: NoteLocalStorage.eventUrl(events[i])
+    ).response { response, error in
+      NoteRemoteStorage.queue.async {
+        let nextI = i + 1
+        if nextI < events.count {
+          self.saveEventsInner(events, nextI, completion)
+        } else {
+          completion()
+        }
+      }
+    }
   }
 }
