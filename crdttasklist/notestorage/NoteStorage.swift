@@ -55,22 +55,27 @@ class NoteStorage {
 
   func update(_ note: inout Note) {
     _notes[note.id!] = note
-    NoteLocalStorage.saveNotes(note.commitEvents(appState) as! [NoteEvent])
+    saveNotesAndUpdateState(note)
   }
 
   func append(_ note: inout Note) {
     _notes[note.id!] = note
-    NoteLocalStorage.saveNotes(note.commitEvents(appState) as! [NoteEvent])
+    saveNotesAndUpdateState(note)
   }
 
   func markDeleted(_ note: Note) {
     note.markDeleted()
-    NoteLocalStorage.saveNotes(note.commitEvents(appState) as! [NoteEvent])
+    saveNotesAndUpdateState(note)
   }
 
   func markUndeleted(_ note: Note) {
     note.markUndeleted()
+    saveNotesAndUpdateState(note)
+  }
+
+  private func saveNotesAndUpdateState(_ note: Note) {
     NoteLocalStorage.saveNotes(note.commitEvents(appState) as! [NoteEvent])
+    appState.saveState()
   }
 
   func loadNotes(_ closure: @escaping ((Notes, Bool)) -> Void) {

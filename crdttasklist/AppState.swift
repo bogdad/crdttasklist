@@ -52,12 +52,12 @@ class AppState {
     try! FileManager.default.createDirectory(at: Note.ArchiveEventURL, withIntermediateDirectories: true, attributes: nil)
   }
 
-  private func saveState() {
+  func saveState() {
     FileUtils.saveToFileJson(obj: appStateCodable, url: AppState.ArchiveURL)
   }
 
   private func loadState() {
-    let state = FileUtils.loadFromFile(type: AppStateCodable.self, url: AppState.ArchiveURL)
+    let state = FileUtils.loadFromFileJson(type: AppStateCodable.self, url: AppState.ArchiveURL)
     if state != nil {
       appStateCodable = state!
     }
