@@ -5,9 +5,8 @@
 //  Created by Vladimir Shakhov on 5/24/19.
 //  Copyright © 2019 Vladimir Shakhov. All rights reserved.
 //
-
-import SwiftyDropbox
 import UIKit
+import SwiftyDropbox
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -18,16 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    if UIDevice.current.userInterfaceIdiom == .pad || UIDevice.current.userInterfaceIdiom == .phone
-    {
-      let dropboxAppKey = "yp4guugaz0yyawo"
-      DropboxClientsManager.setupWithAppKey(dropboxAppKey)
-    } else {
-      let dropboxAppKey = "yp4guugaz0yyawo"
-      DropboxClientsManager.setupWithAppKey(dropboxAppKey)
-    }
     // Override point for customization after application launch.
-    AppState.shared.ensureAllFilepathsCreated()
+    AppState.shared.onAppStart()
 
     return true
   }
@@ -57,6 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func applicationDidEnterBackground(_ application: UIApplication) {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    AppState.shared.onAppBackground()
   }
 
   func applicationWillEnterForeground(_ application: UIApplication) {
@@ -69,6 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func applicationWillTerminate(_ application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    AppState.shared.onAppStop()
   }
 
 }

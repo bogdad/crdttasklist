@@ -8,15 +8,62 @@
 
 import Foundation
 import HLClock
+import SwiftyDropbox
 
-class AppState: Codable {
+class AppState {
   static let shared = AppState()
+  static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask)
+    .first!
+  static let ArchiveURL = DocumentsDirectory.appendingPathComponent("appstate")
+
+  var appStateCodable = AppStateCodable()
 
   func currentEventTime() -> Int64 {
-    return HLClock.global.now()
+    let res = HLClock.global.now()
+    appStateCodable.time = res
+    return res
   }
 
-  func ensureAllFilepathsCreated() {
+  func onAppStart() {
+    if UIDevice.current.userInterfaceIdiom == .pad || UIDevice.current.userInterfaceIdiom == .phone {
+      let dropboxAppKey = "yp4guugaz0yyawo"
+      DropboxClientsManager.setupWithAppKey(dropboxAppKey)
+    } else {
+      let dropboxAppKey = "yp4guugaz0yyawo"
+      DropboxClientsManager.setupWithAppKey(dropboxAppKey)
+    }
+
+    ensureAllFilepathsCreated()
+    loadState()
+    if appStateCodable.time > 0 {
+      HLClock.global.update(m: appStateCodable.time)
+    }
+  }
+
+  func onAppStop() {
+    saveState()
+  }
+
+  func onAppBackground() {
+    saveState()
+  }
+
+  private func ensureAllFilepathsCreated() {
     try! FileManager.default.createDirectory(at: Note.ArchiveEventURL, withIntermediateDirectories: true, attributes: nil)
+  }
+
+  private func saveState() {
+    FileUtils.saveToFileJson(obj: appStateCodable, url: AppState.ArchiveURL)
+  }
+
+  private func loadState() {
+    let state = FileUtils.loadFromFile(type: AppStateCodable.self, url: AppState.ArchiveURL)
+    if state != nil {
+      appStateCodable = state!
+    }
+  }
+
+  struct AppStateCodable: Codable {
+    var time: Int64 = 0
   }
 }
