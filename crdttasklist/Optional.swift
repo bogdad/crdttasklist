@@ -9,22 +9,24 @@
 import Foundation
 
 extension Optional where Wrapped == CRDT {
-  mutating func merge(_ other: Wrapped?) -> CRDTMergeResult {
+  mutating func merge(_ other: Wrapped?) -> (CRDTMergeResult, Self) {
     switch self {
     case .none:
       switch other {
       case .none:
-        return CRDTMergeResult(selfChanged: false, otherChanged: false)
+        return (CRDTMergeResult(selfChanged: false, otherChanged: false), self)
       case .some(let otherCrdt):
         self = otherCrdt
-        return CRDTMergeResult(selfChanged: true, otherChanged: false)
+        return (CRDTMergeResult(selfChanged: true, otherChanged: false), self)
       }
     case .some(_):
       switch other {
       case .none:
-        return CRDTMergeResult(selfChanged: false, otherChanged: true)
+        return (CRDTMergeResult(selfChanged: false, otherChanged: true), self)
       case .some(let otherCrdt):
-        return self!.merge(otherCrdt)
+        let (mergeResult, wrapped) = self!.merge(otherCrdt)
+        self = wrapped
+        return (mergeResult, wrapped)
       }
 
     }
@@ -32,22 +34,23 @@ extension Optional where Wrapped == CRDT {
 }
 
 extension Optional where Wrapped == ChecklistCRDT {
-  mutating func merge(_ other: Wrapped?) -> CRDTMergeResult {
+  mutating func merge(_ other: Wrapped?) -> (CRDTMergeResult, Self) {
     switch self {
     case .none:
       switch other {
       case .none:
-        return CRDTMergeResult(selfChanged: false, otherChanged: false)
+        return (CRDTMergeResult(selfChanged: false, otherChanged: false), self)
       case .some(let otherCrdt):
-        self! = otherCrdt
-        return CRDTMergeResult(selfChanged: true, otherChanged: false)
+        self = otherCrdt
+        return (CRDTMergeResult(selfChanged: true, otherChanged: false), self)
       }
     case .some(_):
       switch other {
       case .none:
-        return CRDTMergeResult(selfChanged: false, otherChanged: true)
+        return (CRDTMergeResult(selfChanged: false, otherChanged: true), self)
       case .some(let otherCrdt):
-        return self!.merge(otherCrdt)
+        let (mergeResult, selv) = self!.merge(otherCrdt)
+        return (mergeResult, selv)
       }
 
     }

@@ -9,7 +9,7 @@
 import Foundation
 
 extension Date: Mergeable {
-  mutating func merge(_ other: Date) -> CRDTMergeResult {
+  mutating func merge(_ other: Date) -> (CRDTMergeResult, Self) {
     var res = CRDTMergeResult(selfChanged: false, otherChanged: false)
     let max = Swift.max(self, other)
     if self != max {
@@ -19,7 +19,7 @@ extension Date: Mergeable {
       res.selfChanged = true
     }
     self = max
-    return res
+    return (res, self)
   }
 }
 

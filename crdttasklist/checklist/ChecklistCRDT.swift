@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ChecklistCRDT: Codable, Equatable {
+struct ChecklistCRDT: Codable, Equatable, Mergeable {
 
   static let dailyRegEx = try! NSRegularExpression(pattern: "daily: ([0-9]{2}):([0-9]{2})")
   static let weeklyRegEx = try! NSRegularExpression(pattern: "weekly: ([0-6])")
@@ -44,15 +44,22 @@ struct ChecklistCRDT: Codable, Equatable {
     daily = PeriodicChecklistDaily(storage, checksDaily!)
   }
 
-  mutating func merge(_ other: ChecklistCRDT) -> CRDTMergeResult {
-    let storageMerge = storage.merge(other.storage)
+  mutating func merge(_ other: ChecklistCRDT) -> (CRDTMergeResult, Self) {
+    let (storageMerge, ns) = storage.merge(other.storage)
+    self.storage = ns
     var res = CRDTMergeResult(selfChanged: false, otherChanged: false)
     res.merge(storageMerge)
-    res.merge(checksDaily!.merge(other.checksDaily!))
-    res.merge(checksWeekly!.merge(other.checksWeekly!))
-    res.merge(daily!.merge(other.daily!))
+    let (cdr, ncd) = checksDaily!.merge(other.checksDaily!)
+    self.checksDaily = ncd
+    res.merge(cdr)
+    let (cwr, ncw) = checksWeekly!.merge(other.checksWeekly!)
+    self.checksWeekly = ncw
+    res.merge(cwr)
+    let (dr, nd) = daily!.merge(other.daily!)
+    self.daily = nd
+    res.merge(dr)
     intensityWeeklyCache = nil
-    return res
+    return (res, self)
   }
 
   mutating func tryMigrate() -> Bool {

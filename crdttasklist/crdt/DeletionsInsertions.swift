@@ -14,7 +14,7 @@ enum DeletionsInsertionsType: Int, Codable, Equatable {
   case Delete
 }
 
-struct DeletionsInsertions: Codable, Equatable {
+struct DeletionsInsertions: Codable, Equatable, Mergeable {
   static func == (lhs: DeletionsInsertions, rhs: DeletionsInsertions) -> Bool {
     return lhs.items == rhs.items
   }
@@ -71,7 +71,7 @@ struct DeletionsInsertions: Codable, Equatable {
     self.events!.append(event)
   }
 
-  mutating func merge(_ other: DeletionsInsertions) -> CRDTMergeResult {
+  mutating func merge(_ other: DeletionsInsertions) -> (CRDTMergeResult, DeletionsInsertions) {
     var selfChanged = false
     var otherChanged = false
     for left in items {
@@ -98,7 +98,7 @@ struct DeletionsInsertions: Codable, Equatable {
     }
     items = items.union(other.items, by: .groupingMatches)
     self.events!.removeAll()
-    return CRDTMergeResult(selfChanged: selfChanged, otherChanged: otherChanged)
+    return (CRDTMergeResult(selfChanged: selfChanged, otherChanged: otherChanged), self)
   }
 
   mutating func tryMigrate() -> Bool {

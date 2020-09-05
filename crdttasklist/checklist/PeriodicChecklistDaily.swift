@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct PeriodicChecklistDaily: PeriodicChecklist, Codable, Equatable {
+struct PeriodicChecklistDaily: PeriodicChecklist, Codable, Equatable, Mergeable {
   var intensityCache: Double?
   var storage: CRDT
   var checks: DeletionsInsertions
@@ -28,12 +28,15 @@ struct PeriodicChecklistDaily: PeriodicChecklist, Codable, Equatable {
     return res
   }
 
-  mutating func merge(_ other: PeriodicChecklistDaily) -> CRDTMergeResult {
-    let storageMerge = storage.merge(other.storage)
+  mutating func merge(_ other: PeriodicChecklistDaily) -> (CRDTMergeResult, Self) {
+    let (storageMerge, nv) = storage.merge(other.storage)
+    self.storage = nv
     var res = CRDTMergeResult(selfChanged: false, otherChanged: false)
     res.merge(storageMerge)
-    res.merge(checks.merge(other.checks))
-    return res
+    let (checkMerge, nvc) = checks.merge(other.checks)
+    self.checks = nvc
+    res.merge(checkMerge)
+    return (res, self)
   }
 
   mutating func intensity() -> Double {

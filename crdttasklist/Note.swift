@@ -46,10 +46,12 @@ class Note: Codable, Equatable {
   }
 
   func merge(_ other: Note) -> (Note, CRDTMergeResult) {
-    var res = crdt.merge(other.crdt)
+    var (res, nv) = crdt.merge(other.crdt)
+    self.crdt = nv
     if let _ = checklistCRDT {
       if let _ = other.checklistCRDT {
-        let mr = self.checklistCRDT!.merge(other.checklistCRDT!)
+        let (mr, nv) = self.checklistCRDT!.merge(other.checklistCRDT!)
+        self.checklistCRDT = nv
         res.merge(mr)
       } else {
         res.selfChanged = true

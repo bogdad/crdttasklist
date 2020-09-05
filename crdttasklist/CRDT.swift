@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct CRDT: Codable, Equatable {
+struct CRDT: Codable, Equatable, Mergeable {
   var editor: Editor
   var view: View
   var deletionsInsertions: DeletionsInsertions?
@@ -103,15 +103,18 @@ struct CRDT: Codable, Equatable {
     view.reset_selection()
   }
 
-  mutating func merge(_ other: CRDT) -> CRDTMergeResult {
-    let editorMerge = self.editor.merge(other.editor.engine)
-    let deletionsMerge = self.deletionsInsertions!.merge(other.deletionsInsertions!)
-    let lastModificationDateMerge = self.lastModificationDate!.merge(other.lastModificationDate!)
+  mutating func merge(_ other: CRDT) -> (CRDTMergeResult, CRDT) {
+    let (editorMerge, editor) = self.editor.merge(other.editor.engine)
+    self.editor = editor
+    let (deletionsMerge, deletionsInsertions) = self.deletionsInsertions!.merge(other.deletionsInsertions!)
+    self.deletionsInsertions = deletionsInsertions
+    let (lastModificationDateMerge, newModificationDate) = self.lastModificationDate!.merge(other.lastModificationDate!)
+    self.lastModificationDate = newModificationDate
     var res = CRDTMergeResult(selfChanged: false, otherChanged: false)
     res.merge(editorMerge)
     res.merge(deletionsMerge)
     res.merge(lastModificationDateMerge)
-    return res
+    return (res, self)
   }
 
   mutating func replace(_ range: Interval, _ str: String) {
