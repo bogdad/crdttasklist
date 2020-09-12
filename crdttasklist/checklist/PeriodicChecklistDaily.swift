@@ -177,6 +177,7 @@ struct PeriodicChecklistDaily: PeriodicChecklist, Codable, Equatable, Mergeable 
   }
 
   mutating func clear() {
+    print("clear storage \(storage.to_string())")
     let descr = storage.to_string()
     guard
       let match = ChecklistCRDT.dailyRegEx.firstMatch(
@@ -190,6 +191,18 @@ struct PeriodicChecklistDaily: PeriodicChecklist, Codable, Equatable, Mergeable 
 
   mutating func editing_finished() {
     storage.editing_finished()
+  }
+
+  func to_string() -> String {
+    return storage.to_string()
+  }
+
+  func modificationDate() -> Date {
+    return Swift.max(storage.modificationDate(), checks.modificationDate())
+  }
+
+  mutating func newSession() {
+    storage.new_session()
   }
 
   typealias Item = (Int, Int)

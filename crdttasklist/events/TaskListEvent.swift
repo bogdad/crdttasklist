@@ -32,10 +32,17 @@ struct PeriodicChecklistDailyEvent: Event, Hashable {
   }
 }
 
-struct ChecklistCRDTEvent: Event, Hashable {
+struct PeriodicChecklistWeeklyEvent: Event, Hashable {
   var storageEvents: [CRDTEvent]
-  var checksWeeklyEvents: [DeletionsInsertionsEvent]
+  var checksEvents: [DeletionsInsertionsEvent]
+  func getHash() -> Int {
+    return hashValue
+  }
+}
+
+struct ChecklistCRDTEvent: Event, Hashable {
   var dailyEvents: [PeriodicChecklistDailyEvent]
+  var weeklyEvents: [PeriodicChecklistWeeklyEvent]
   func getHash() -> Int {
     return hashValue
   }

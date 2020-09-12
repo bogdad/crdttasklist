@@ -13,91 +13,46 @@ struct ChecklistCRDT: Codable, Equatable, Mergeable {
   static let dailyRegEx = try! NSRegularExpression(pattern: "daily: ([0-9]{2}):([0-9]{2})")
   static let weeklyRegEx = try! NSRegularExpression(pattern: "weekly: ([0-6])")
 
-  // not used
-  var lastModificationDate: Date
-  /*
-     Storage:
-     empty - not set
-     or:
-     daily: 23:59
-     weekly: 0-6
-     */
-  var storage: CRDT
-  var lastCheckTime: Date?
-
-  // deprecate soon
-  var checks: DeletionsInsertions?
-  var checksDaily: DeletionsInsertions?
-  var checksWeekly: DeletionsInsertions?
-
   var daily: PeriodicChecklistDaily?
+  var weekly: PeriodicChecklistWeekly?
 
   var intensityWeeklyCache: Double?
 
   init() {
-    lastModificationDate = Date()
-    lastCheckTime = Date.distantPast
-    storage = CRDT("")
-    checks = DeletionsInsertions(Date.distantPast)
-    checksDaily = DeletionsInsertions(Date.distantPast)
-    checksWeekly = DeletionsInsertions(Date.distantPast)
-    daily = PeriodicChecklistDaily(storage, checksDaily!)
+    daily = PeriodicChecklistDaily()
+    weekly = PeriodicChecklistWeekly()
   }
 
   mutating func merge(_ other: ChecklistCRDT) -> (CRDTMergeResult, Self) {
-    let (storageMerge, ns) = storage.merge(other.storage)
-    self.storage = ns
     var res = CRDTMergeResult(selfChanged: false, otherChanged: false)
-    res.merge(storageMerge)
-    let (cdr, ncd) = checksDaily!.merge(other.checksDaily!)
-    self.checksDaily = ncd
-    res.merge(cdr)
-    let (cwr, ncw) = checksWeekly!.merge(other.checksWeekly!)
-    self.checksWeekly = ncw
-    res.merge(cwr)
     let (dr, nd) = daily!.merge(other.daily!)
     self.daily = nd
     res.merge(dr)
+    let (wr, nw) = weekly!.merge(other.weekly!)
+    self.weekly = nw
+    res.merge(wr)
     intensityWeeklyCache = nil
     return (res, self)
   }
 
   mutating func tryMigrate() -> Bool {
-    var res = storage.tryMigrate()
-    if var checks = checks {
-      if checks.tryMigrate() {
-        self.checks = checks
-        res = true
-      }
-    } else {
-      checks = DeletionsInsertions(Date.distantPast)
-      res = true
-    }
-    if var checksDaily = checksDaily {
-      if checksDaily.tryMigrate() {
-        self.checksDaily = checksDaily
-        res = true
-      }
-    } else {
-      checksDaily = checks
-      res = true
-    }
-    if var checksWeekly = checksWeekly {
-      if checksWeekly.tryMigrate() {
-        self.checksWeekly = checksWeekly
-        res = true
-      }
-    } else {
-      checksWeekly = DeletionsInsertions(Date.distantPast)
-      res = true
-    }
+  var res = false
     if var daily = daily {
       if daily.tryMigrate() {
         self.daily = daily
         res = true
       }
     } else {
-      daily = PeriodicChecklistDaily(storage, checksDaily!)
+      daily = PeriodicChecklistDaily()
+      res = true
+    }
+    if var weekly = weekly {
+      if weekly.tryMigrate() {
+        self.weekly = weekly
+        res = true
+      }
+    } else {
+      weekly = PeriodicChecklistWeekly()
       res = true
     }
     return res
@@ -105,23 +60,21 @@ struct ChecklistCRDT: Codable, Equatable, Mergeable {
 
   func modificationDate() -> Date {
     return Swift.max(
-      checks!.modificationDate(),
-      checksDaily!.modificationDate(),
-      checksWeekly!.modificationDate(),
-      storage.modificationDate())
+      weekly!.modificationDate(), daily!.modificationDate())
   }
 
   func to_string() -> String {
-    return storage.to_string()
+    return "\(daily!.to_string()) \(daily!.to_string())"
   }
 
   mutating func newSession() {
-    storage.new_session()
+    daily!.newSession()
+    weekly!.newSession()
   }
 
   mutating func editing_finished() {
-    storage.editing_finished()
-    daily?.editing_finished()
+    daily!.editing_finished()
+    weekly!.editing_finished()
   }
 
   func getDaily() -> (Int, Int)? {
@@ -149,154 +102,41 @@ struct ChecklistCRDT: Codable, Equatable, Mergeable {
     return daily!.intensity()
   }
 
-  func maybeWeeklyFromString() -> Int? {
-    let descr = storage.to_string()
-    guard
-      let match = ChecklistCRDT.weeklyRegEx.firstMatch(
-        in: descr, options: [], range: NSRange(location: 0, length: descr.utf8.count))
-    else {
-      return nil
-    }
-    guard let weekdayRange = Range(match.range(at: 1), in: descr) else {
-      return nil
-    }
-    guard let weekday = Int(descr[weekdayRange]) else {
-      return nil
-    }
-    return weekday
-  }
-
   mutating func clearWeekly() {
-    let descr = storage.to_string()
-    guard
-      let match = ChecklistCRDT.weeklyRegEx.firstMatch(
-        in: descr, options: [], range: NSRange(location: 0, length: descr.utf8.count))
-    else {
-      return
-    }
-    storage.replace(match.range(at: 0).to_interval(), "")
-    intensityWeeklyCache = nil
-  }
-
-  mutating func intensityWeekly() -> Double {
-    if let itensityWeeklyCache = intensityWeeklyCache {
-      return itensityWeeklyCache
-    }
-    let res = intensityWeeklyInner()
-    intensityWeeklyCache = res
-    return res
-  }
-  private func intensityWeeklyInner() -> Double {
-    if !isSetWeekly() {
-      return 0
-    }
-    let curDate = Date()
-    let weekStartDate = weekStart(curDate)
-    let endDate = weekEnd(curDate)
-    let checkTime = checksWeekly!.lastCreatedDate() ?? Date.distantPast
-
-    print("\(weekStartDate) \(endDate) \(checkTime) ")
-    if weekStartDate < checkTime {
-      return 0
-    } else {
-      let start = curDate
-      if start > endDate {
-        return 1
-      }
-      let secondsLeft: Double = endDate.timeIntervalSince1970 - start.timeIntervalSince1970
-      let weekly = getWeekly()!
-      let secondsTotal: Double = Double(weekly * 24 * 60 * 60)
-      let interval: Double = (secondsTotal - secondsLeft) / secondsTotal
-      if interval < 0 {
-        return 0
-      }
-      print("\(start) \(secondsLeft) \(secondsTotal) \(interval)")
-      return interval
-    }
-  }
-
-  func weekStart(_ curDate: Date) -> Date {
-    let gregorian = Calendar.current
-    let sunday = gregorian.date(
-      from: gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: curDate))!
-    return gregorian.date(byAdding: .day, value: 1, to: sunday)!
-  }
-
-  func weekEnd(_ curDate: Date) -> Date {
-    let gregorian = Calendar.current
-    let sunday = gregorian.date(
-      from: gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: curDate))!
-    return gregorian.date(byAdding: .day, value: 7, to: sunday)!
+    weekly!.clear()
   }
 
   func getWeekly() -> Int? {
-    return maybeWeeklyFromString()
+    return weekly!.get()
   }
 
   func isSetWeekly() -> Bool {
-    return maybeWeeklyFromString() != nil
+    return weekly!.isSet()
   }
 
   func isCompletedWeekly() -> Bool {
-    if !isSetWeekly() {
-      return false
-    }
-    let completeDate = checksWeekly?.lastCreatedDate() ?? Date.distantPast
-    return completeDate > weekStart(Date())
+    return weekly!.isCompleted()
   }
 
   mutating func completeWeekly() {
-    if !isCompletedWeekly() {
-      checksWeekly!.markCreated()
-      intensityWeeklyCache = nil
-    }
+    weekly!.complete()
   }
 
   mutating func uncompleteWeekly() {
-    if isCompletedWeekly() {
-      checksWeekly!.markDeleted()
-      intensityWeeklyCache = nil
-    }
-  }
-
-  func weeklyFromString(_ str: String) -> Int {
-    guard let res = maybeWeeklyFromString() else {
-      fatalError("bad state")
-    }
-    return res
-  }
-
-  func weeklyAsString(_ weekday: Int) -> String {
-    return "weekly: \(weekday)"
+    weekly!.uncomplete()
   }
 
   mutating func setWeekly(_ weekday: Int) {
-    if !isSetWeekly() {
-      intensityWeeklyCache = nil
-      storage.replace(Interval(0, 0), weeklyAsString(weekday))
-    } else {
-      let descr = storage.to_string()
-      guard
-        let match = ChecklistCRDT.weeklyRegEx.firstMatch(
-          in: descr, options: [], range: NSRange(location: 0, length: descr.utf8.count))
-      else {
-        return
-      }
-      storage.replace(match.range(at: 0).to_interval(), weeklyAsString(weekday))
-      intensityWeeklyCache = nil
-    }
+    weekly!.set(weekday)
   }
 }
 
 extension ChecklistCRDT: Storable {
   mutating func commitEvents(_ appState: AppState) -> [Event] {
-    let storageEvents = self.storage.commitEvents(appState) as! [CRDTEvent]
-    let checklistWeeklyEvents = self.checksWeekly!.commitEvents(appState) as! [DeletionsInsertionsEvent]
     let dailyEvents = self.daily!.commitEvents(appState) as! [PeriodicChecklistDailyEvent]
+    let weeklyEvents = self.weekly!.commitEvents(appState) as! [PeriodicChecklistWeeklyEvent]
     let checklistCRDTEvent = ChecklistCRDTEvent(
-      storageEvents: storageEvents,
-      checksWeeklyEvents: checklistWeeklyEvents,
-      dailyEvents: dailyEvents)
+      dailyEvents: dailyEvents, weeklyEvents: weeklyEvents)
     return [checklistCRDTEvent]
   }
 }

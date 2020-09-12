@@ -47,6 +47,7 @@
 		E763DF9A22DA5DCE003572EC /* Hashes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9922DA5DCE003572EC /* Hashes.swift */; };
 		E763DF9C22DA6FF4003572EC /* EngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9B22DA6FF4003572EC /* EngineTests.swift */; };
 		E763DF9E22E4CD2E003572EC /* Cow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763DF9D22E4CD2E003572EC /* Cow.swift */; };
+		E767A62B250542F3000C63AF /* PeriodicChecklistWeekly.swift in Sources */ = {isa = PBXBuildFile; fileRef = E767A62A250542F3000C63AF /* PeriodicChecklistWeekly.swift */; };
 		E76A859E23478EDB0094EBBF /* NoteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */; };
 		E76E278622A0120C00E86AB2 /* RopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76E278522A0120C00E86AB2 /* RopeTests.swift */; };
 		E776E3D2246FE6F400738B66 /* NoteLocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E776E3D1246FE6F400738B66 /* NoteLocalStorage.swift */; };
@@ -157,6 +158,7 @@
 		E763DF9922DA5DCE003572EC /* Hashes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hashes.swift; sourceTree = "<group>"; };
 		E763DF9B22DA6FF4003572EC /* EngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineTests.swift; sourceTree = "<group>"; };
 		E763DF9D22E4CD2E003572EC /* Cow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cow.swift; sourceTree = "<group>"; };
+		E767A62A250542F3000C63AF /* PeriodicChecklistWeekly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodicChecklistWeekly.swift; sourceTree = "<group>"; };
 		E76A859D23478EDB0094EBBF /* NoteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewCell.swift; sourceTree = "<group>"; };
 		E76E278522A0120C00E86AB2 /* RopeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RopeTests.swift; sourceTree = "<group>"; };
 		E776E3D1246FE6F400738B66 /* NoteLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteLocalStorage.swift; sourceTree = "<group>"; };
@@ -291,6 +293,7 @@
 				E75AD1E824844C2D00BF8ADB /* ChecklistTabController.swift */,
 				E7FD0307249CE95A00DAE780 /* PeriodicChecklist.swift */,
 				E7FD030B249CF5BA00DAE780 /* PeriodicChecklistDaily.swift */,
+				E767A62A250542F3000C63AF /* PeriodicChecklistWeekly.swift */,
 			);
 			path = checklist;
 			sourceTree = "<group>";
@@ -676,6 +679,7 @@
 				E75B386B230015CF005013E0 /* Find.swift in Sources */,
 				E7F0326022BD26F300D0BF2D /* Utils.swift in Sources */,
 				E7FFF0AE24671D42006713E9 /* Design.swift in Sources */,
+				E767A62B250542F3000C63AF /* PeriodicChecklistWeekly.swift in Sources */,
 				E70B862C23DCB3AF00C48E3C /* CRDTNoteViewController.swift in Sources */,
 				E7B05EEE2298223300D2A094 /* AppDelegate.swift in Sources */,
 				E78F4ADB24792AB100DB0A69 /* Int.swift in Sources */,

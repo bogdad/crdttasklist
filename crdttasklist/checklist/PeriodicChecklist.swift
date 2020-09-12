@@ -23,9 +23,12 @@ protocol PeriodicChecklist {
   mutating func uncomplete()
   mutating func set(_ item: Item)
   mutating func clear()
-  mutating func editing_finished()
 
   func maybeFromString() -> Item?
   func fromString() -> Item
   func toString(_ item: Item) -> String
+
+  func modificationDate() -> Date
+  mutating func newSession()
+  mutating func editing_finished()
 }
