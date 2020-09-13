@@ -102,6 +102,10 @@ struct ChecklistCRDT: Codable, Equatable, Mergeable {
     return daily!.intensity()
   }
 
+  mutating func intensityWeekly() -> Double {
+    return weekly!.intensity()
+  }
+
   mutating func clearWeekly() {
     weekly!.clear()
   }

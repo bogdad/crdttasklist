@@ -171,6 +171,14 @@ struct PeriodicChecklistWeekly: PeriodicChecklist, Codable, Equatable, Mergeable
     return storage.to_string()
   }
 
+  mutating func tryMigrate() -> Bool {
+    var res = checks.tryMigrate()
+    if storage.tryMigrate() {
+      res = true
+    }
+    return res
+  }
+
   mutating func merge(_ other: PeriodicChecklistWeekly) -> (CRDTMergeResult, Self) {
     let (storageMerge, nv) = storage.merge(other.storage)
     self.storage = nv

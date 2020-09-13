@@ -24,7 +24,10 @@ struct PeriodicChecklistDaily: PeriodicChecklist, Codable, Equatable, Mergeable 
   }
 
   mutating func tryMigrate() -> Bool {
-    let res = checks.tryMigrate()
+    var res = checks.tryMigrate()
+    if storage.tryMigrate() {
+      res = true
+    }
     return res
   }
 
