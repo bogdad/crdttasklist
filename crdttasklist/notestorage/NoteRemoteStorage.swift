@@ -279,7 +279,7 @@ class NoteRemoteStorage {
     guard let client = DropboxClientsManager.authorizedClient else {
       return
     }
-    if i > events.count {
+    if i >= events.count {
       completion()
     }
     let _ = client.files.upload(
