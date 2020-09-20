@@ -56,6 +56,10 @@ class AppState {
     FileUtils.saveToFileJson(obj: appStateCodable, url: AppState.ArchiveURL)
   }
 
+  func currentNodeId() -> String {
+    return UIDevice.current.identifierForVendor!.uuidString
+  }
+
   private func loadState() {
     let state = FileUtils.loadFromFileJson(type: AppStateCodable.self, url: AppState.ArchiveURL)
     if state != nil {
@@ -65,5 +69,6 @@ class AppState {
 
   struct AppStateCodable: Codable {
     var time: Int64 = 0
+    var lastEventFrom: [String : Int] = [:]
   }
 }

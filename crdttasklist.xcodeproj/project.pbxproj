@@ -20,6 +20,7 @@
 		E716D56E24156C04002F7652 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = E716D56D24156C04002F7652 /* Array.swift */; };
 		E71F38AB22D231B8007FC0E8 /* Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71F38AA22D231B8007FC0E8 /* Editor.swift */; };
 		E725DC9F245EABA600F091D2 /* CRDTTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E725DC9E245EABA600F091D2 /* CRDTTests.swift */; };
+		E72A6AC02517AF1C00E6ACAB /* DevicesState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72A6ABF2517AF1C00E6ACAB /* DevicesState.swift */; };
 		E72FC386240BFF4F00611A75 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FC385240BFF4F00611A75 /* Config.swift */; };
 		E72FC388240C00C600611A75 /* Backspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FC387240C00C600611A75 /* Backspace.swift */; };
 		E7340BB724A782CC000B81BD /* TaskListEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7340BB624A782CC000B81BD /* TaskListEvent.swift */; };
@@ -131,6 +132,7 @@
 		E716D56D24156C04002F7652 /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		E71F38AA22D231B8007FC0E8 /* Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Editor.swift; sourceTree = "<group>"; };
 		E725DC9E245EABA600F091D2 /* CRDTTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRDTTests.swift; sourceTree = "<group>"; };
+		E72A6ABF2517AF1C00E6ACAB /* DevicesState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesState.swift; sourceTree = "<group>"; };
 		E72FC385240BFF4F00611A75 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		E72FC387240C00C600611A75 /* Backspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backspace.swift; sourceTree = "<group>"; };
 		E7340BB624A782CC000B81BD /* TaskListEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListEvent.swift; sourceTree = "<group>"; };
@@ -283,6 +285,15 @@
 			path = featurenote;
 			sourceTree = "<group>";
 		};
+		E72A6ABE2517AEE800E6ACAB /* state */ = {
+			isa = PBXGroup;
+			children = (
+				E74E512824ACFE01007D0D9C /* AppState.swift */,
+				E72A6ABF2517AF1C00E6ACAB /* DevicesState.swift */,
+			);
+			path = state;
+			sourceTree = "<group>";
+		};
 		E73DB3772483CA83004AABB8 /* checklist */ = {
 			isa = PBXGroup;
 			children = (
@@ -343,11 +354,11 @@
 				E788A4A324964DCF0011EEDA /* notetableview */,
 				E705C49A24683D8A00D5363F /* crdttasklist.entitlements */,
 				E715898E24669933007AD153 /* notestorage */,
+				E72A6ABE2517AEE800E6ACAB /* state */,
 				E7B05EF42298223400D2A094 /* Assets.xcassets */,
 				E7B05EF12298223300D2A094 /* Main.storyboard */,
 				E7B05EF92298223400D2A094 /* Info.plist */,
 				E7B05EED2298223300D2A094 /* AppDelegate.swift */,
-				E74E512824ACFE01007D0D9C /* AppState.swift */,
 				E74D187E241EC31E00EE3815 /* CRDT.swift */,
 				E73DB37324828083004AABB8 /* Date.swift */,
 				E74D1880241ECCD600EE3815 /* DebugViewController.swift */,
@@ -639,6 +650,7 @@
 				E74C3DC622D24086001B9CA7 /* Selection.swift in Sources */,
 				E716D56C24156885002F7652 /* Breaks.swift in Sources */,
 				E7F5A82524548C96006AB4CA /* SortedSet.swift in Sources */,
+				E72A6AC02517AF1C00E6ACAB /* DevicesState.swift in Sources */,
 				E7A2E23023DF3D1E00C65976 /* LinkToStorageController.swift in Sources */,
 				E7F88FD723EF2F77005EE3FD /* FileUtils.swift in Sources */,
 				E74C3DC222D23E7F001B9CA7 /* View.swift in Sources */,

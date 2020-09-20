@@ -89,7 +89,7 @@ class NoteRemoteStorage {
   }
 
   func remoteNameFrom(_ str: String) -> String {
-    let deviceId = UIDevice.current.identifierForVendor!.uuidString
+    let deviceId = AppState.shared.currentNodeId()
     return "/\(deviceId)/\(str)"
   }
 
@@ -99,6 +99,10 @@ class NoteRemoteStorage {
 
   func remoteEvent(_ id: Int64) -> String {
     return remoteNameFrom("events/\(id)")
+  }
+
+  func remoteAllDevices() -> String {
+    return "/all_devices"
   }
 
   func checkRemotes() {
@@ -143,19 +147,16 @@ class NoteRemoteStorage {
     }
   }
 
-  func uploadInBackground(_ rev: String?) {
-    NoteRemoteStorage.queue.async {
-      guard let client = DropboxClientsManager.authorizedClient else {
+  func upsert(_ path: String, _ url: URL, _ rev: String?) {
+    guard let client = DropboxClientsManager.authorizedClient else {
         return
-      }
-
-      NoteLocalStorage.justSaveNotes()
-      if let rev = rev {
+    }
+    if let rev = rev {
         let _ = client.files.upload(
-          path: self.remoteSnapshot(),
+          path: path,
           mode: .update(rev),
           strictConflict: true,
-          input: try! Note.ArchiveURL.asURL()
+          input: url
         )
         .response { response, error in
           self.handleUpload(response, error)
@@ -165,12 +166,18 @@ class NoteRemoteStorage {
           path: self.remoteSnapshot(),
           mode: .add,
           strictConflict: true,
-          input: try! Note.ArchiveURL.asURL()
+          input: url
         )
         .response { response, error in
           self.handleUpload(response, error)
         }
       }
+  }
+
+  func uploadInBackground(_ rev: String?) {
+    NoteRemoteStorage.queue.async {
+      NoteLocalStorage.justSaveNotes()
+      self.upsert(self.remoteSnapshot(), try! Note.ArchiveURL.asURL(), rev)
     }
   }
 
@@ -179,6 +186,7 @@ class NoteRemoteStorage {
       if !self.isStorageLinked() {
         return
       }
+      self.downloadAllDevicesFromDropbox({ () -> Void in 
       self.downloadFromDropbox(
         toUrl: Note.TempArchiveURL,
         closure: { arg in
@@ -202,7 +210,60 @@ class NoteRemoteStorage {
           }
 
         })
+      })
     }
+  }
+
+  private func downloadAllDevicesFromDropbox(_ closure: () -> Void) {
+    let toUrl = DevicesState.TempURL
+    guard let client = DropboxClientsManager.authorizedClient else {
+      fatalError("bad state")
+    }
+    let destination: (URL, HTTPURLResponse) -> URL = { temporaryURL, response in
+      return toUrl
+    }
+    client.files.download(path: remoteAllDevices(), overwrite: true, destination: destination)
+      .response { response, error in
+        if let response = response {
+          DevicesState.load(toUrl,
+            { (res) -> Void in
+              self.downloadAllDevicesFromDropboxClosure((res!, response.0.rev), closure)
+            })
+        } else if let error = error {
+          switch error {
+          case .routeError(let fileDownloadError, _, _, _):
+            switch fileDownloadError.unboxed {
+            case .path(let pathError):
+              switch pathError {
+              case .notFound:
+                DispatchQueue.main.async {
+                  print("downloadFromDropBox: downolad not found")
+                  self.downloadAllDevicesFromDropboxClosure(nil, closure)
+                }
+              default:
+                fatalError("handle it!")
+              }
+            case .other:
+              fatalError(fileDownloadError.unboxed.description)
+            default:
+              fatalError("handle it!")
+            }
+          default:
+            fatalError("handle it!")
+          }
+        }
+      }
+  }
+
+  private func downloadAllDevicesFromDropboxClosure(_ res: (DevicesState, String)?,_ closure: () -> Void) {
+    let devicesState = res?.0 ?? DevicesState()
+    if devicesState.addMeToKnownDevices() {
+      NoteRemoteStorage.queue.async {
+        devicesState.save(DevicesState.TempURL)
+        self.upsert(self.remoteAllDevices(), DevicesState.TempURL, res?.1)
+      }
+    }
+    closure()
   }
 
   private func downloadFromDropbox(toUrl: URL, closure: @escaping ((Notes, String, Bool)?) -> Void)
