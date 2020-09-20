@@ -205,7 +205,7 @@ extension PeriodicChecklistWeekly: Storable {
   mutating func commitEvents(_ appState: AppState) -> [Event] {
     let storageEvents = self.storage.commitEvents(appState) as! [CRDTEvent]
     let checkEvents = self.checks.commitEvents(appState) as! [DeletionsInsertionsEvent]
-    let periodicWeeklyEvents = PeriodicChecklistDailyEvent(
+    let periodicWeeklyEvents = PeriodicChecklistWeeklyEvent(
       storageEvents: storageEvents,
       checksEvents: checkEvents)
     return [periodicWeeklyEvents]
