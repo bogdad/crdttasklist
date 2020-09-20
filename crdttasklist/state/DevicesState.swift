@@ -32,7 +32,8 @@ class DevicesState {
 
   func addMeToKnownDevices() -> Bool {
     let currentDevice = AppState.shared.currentNodeId()
-    if !devicesStateCodable!.devices.contains(currentDevice) {
+    let devices = devicesStateCodable?.devices ?? []
+    if !devices.contains(currentDevice) {
       devicesStateCodable!.devices.append(currentDevice)
       return true
     }

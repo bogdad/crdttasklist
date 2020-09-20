@@ -163,7 +163,7 @@ class NoteRemoteStorage {
         }
       } else {
         _ = client.files.upload(
-          path: self.remoteSnapshot(),
+          path: path,
           mode: .add,
           strictConflict: true,
           input: url
@@ -186,7 +186,7 @@ class NoteRemoteStorage {
       if !self.isStorageLinked() {
         return
       }
-      self.downloadAllDevicesFromDropbox({ () -> Void in 
+      self.downloadAllDevicesFromDropbox({ () -> Void in
       self.downloadFromDropbox(
         toUrl: Note.TempArchiveURL,
         closure: { arg in
@@ -214,7 +214,7 @@ class NoteRemoteStorage {
     }
   }
 
-  private func downloadAllDevicesFromDropbox(_ closure: () -> Void) {
+  private func downloadAllDevicesFromDropbox(_ closure: @escaping () -> Void) {
     let toUrl = DevicesState.TempURL
     guard let client = DropboxClientsManager.authorizedClient else {
       fatalError("bad state")
